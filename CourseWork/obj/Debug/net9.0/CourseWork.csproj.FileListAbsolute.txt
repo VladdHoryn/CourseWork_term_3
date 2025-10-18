@@ -95,3 +95,12 @@ C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\refint
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.pdb
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.genruntimeconfig.cache
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\ref\CourseWork.dll
+C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\bin\Debug\net9.0\BCrypt.Net-Next.dll
+C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\bin\Debug\net9.0\DnsClient.dll
+C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\bin\Debug\net9.0\MongoDB.Bson.dll
+C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\bin\Debug\net9.0\MongoDB.Driver.dll
+C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\bin\Debug\net9.0\SharpCompress.dll
+C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\bin\Debug\net9.0\Snappier.dll
+C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\bin\Debug\net9.0\ZstdSharp.dll
+C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.csproj.AssemblyReference.cache
+C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.csproj.Up2Date
