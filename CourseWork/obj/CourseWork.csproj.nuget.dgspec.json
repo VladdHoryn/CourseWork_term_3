@@ -44,9 +44,17 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "AspNetCore.Authentication.JwtBearer.Extension": {
+              "target": "Package",
+              "version": "[1.0.1, )"
+            },
             "BCrypt.Net-Next": {
               "target": "Package",
               "version": "[4.0.3, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.10, )"
             },
             "Microsoft.IdentityModel.Tokens": {
               "target": "Package",
