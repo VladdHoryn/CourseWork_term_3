@@ -4,6 +4,8 @@ using Сoursework.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllersWithViews();//added
+
 // 1. Налаштування MongoDB
 var mongoDbSettings = builder.Configuration.GetSection("MongoDbSettings");
 var connectionString = mongoDbSettings["ConnectionString"] ?? throw new InvalidOperationException("MongoDB ConnectionString not found.");
@@ -46,7 +48,7 @@ var app = builder.Build();
 // Налаштування HTTP-запитів
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
+    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
@@ -60,5 +62,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();
+
+app.MapStaticAssets();//added
+
+app.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}")
+    .WithStaticAssets();//added
 
 app.Run();
