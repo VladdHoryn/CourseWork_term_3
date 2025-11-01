@@ -20,10 +20,10 @@ public class PatientRepository
         return _users.Find(u => u.UserRole == Role.Patient).ToList();
     }
 
-    public User? GetByMedicalRecord(int record)
-    {
-        return _users.Find(u => u.UserRole == Role.Patient && u.MedicalRecordNumber == record).FirstOrDefault();
-    }
+    // public User? GetByMedicalRecord(int record)
+    // {
+    //     return _users.Find(u => u.UserRole == Role.Patient && u.MedicalRecordNumber == record).FirstOrDefault();
+    // }
 
     public List<User> GetBySurname(string surname)
     {
