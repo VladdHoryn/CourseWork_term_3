@@ -1,4 +1,7 @@
-﻿using Сoursework.Models;
+﻿
+
+using CourseWork.DTOs;
+using Сoursework.Models;
 using Сoursework.Repositories;
 
 namespace Сoursework.Services;
@@ -97,34 +100,38 @@ public class UserService
             return false;
         }
     }
-
-    public List<User> GetPatientsBySurname(string surname)
+    
+    public bool RegisterUser(RegistrationRequest request)
     {
-        try
+        if (string.IsNullOrWhiteSpace(request.UserName) || string.IsNullOrWhiteSpace(request.Password))
+            throw new ArgumentException("Username and password are required.");
+
+        if (_userRepo.GetUserByName(request.UserName) != null)
+            throw new InvalidOperationException("User already exists.");
+
+        var role = Enum.TryParse<Role>(request.Role, true, out var parsedRole) ? parsedRole : Role.Guest;
+        var user = new User(request.UserName, BCrypt.Net.BCrypt.HashPassword(request.Password), role)
         {
-            return _userRepo.GetPatientsBySurname(surname);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[Error] Failed to search patients by surname: {ex.Message}");
-            return new List<User>();
-        }
+            FullName = request.FullName,
+            Phone = request.Phone,
+            Address = request.Address,
+            Speciality = request.Speciality,
+            DateOfBirth = request.DateOfBirth,
+            MedicalRecordNumber = request.MedicalRecordNumber
+        };
+
+        _userRepo.CreateUser(user);
+        return true;
     }
 
-    public User GetPatientByMedicalRecord(int record)
+    public User Login(LoginRequest request)
     {
-        try
-        {
-            var patient = _userRepo.GetPatientByMedicalRecord(record);
-            if (patient == null)
-                throw new KeyNotFoundException($"No patient found with record {record}");
+        var user = _userRepo.GetUserByName(request.UserName)
+                   ?? throw new KeyNotFoundException("User not found.");
 
-            return patient;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[Error] GetPatientByMedicalRecord failed: {ex.Message}");
-            throw;
-        }
+        if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+            throw new UnauthorizedAccessException("Invalid password.");
+
+        return user;
     }
 }
