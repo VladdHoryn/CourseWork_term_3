@@ -16,21 +16,6 @@ public class AuthController : ControllerBase
         _userService = userService;
     }
 
-    [HttpPost("register")]
-    [AllowAnonymous]
-    public IActionResult Register([FromBody] RegistrationRequest request)
-    {
-        try
-        {
-            _userService.RegisterUser(request);
-            return Ok(new { message = "Registration successful" });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { error = ex.Message });
-        }
-    }
-
     [HttpPost("login")]
     [AllowAnonymous]
     public IActionResult Login([FromBody] LoginRequest request)

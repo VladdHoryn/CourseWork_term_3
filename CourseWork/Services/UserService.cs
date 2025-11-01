@@ -100,29 +100,6 @@ public class UserService
             return false;
         }
     }
-    
-    public bool RegisterUser(RegistrationRequest request)
-    {
-        if (string.IsNullOrWhiteSpace(request.UserName) || string.IsNullOrWhiteSpace(request.Password))
-            throw new ArgumentException("Username and password are required.");
-
-        if (_userRepo.GetUserByName(request.UserName) != null)
-            throw new InvalidOperationException("User already exists.");
-
-        var role = Enum.TryParse<Role>(request.Role, true, out var parsedRole) ? parsedRole : Role.Guest;
-        var user = new User(request.UserName, BCrypt.Net.BCrypt.HashPassword(request.Password), role)
-        {
-            FullName = request.FullName,
-            Phone = request.Phone,
-            Address = request.Address,
-            Speciality = request.Speciality,
-            DateOfBirth = request.DateOfBirth,
-            MedicalRecordNumber = request.MedicalRecordNumber
-        };
-
-        _userRepo.CreateUser(user);
-        return true;
-    }
 
     public User Login(LoginRequest request)
     {

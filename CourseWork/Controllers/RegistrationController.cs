@@ -6,7 +6,6 @@ namespace CourseWork.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Administrator")]
 public class RegistrationController : ControllerBase
 {
     private readonly RegistrationRequestService _service;
@@ -24,16 +23,22 @@ public class RegistrationController : ControllerBase
         return BadRequest("Username already exists or invalid data.");
     }
 
+    // Admin views pending requests
     [HttpGet("pending")]
+    [Authorize(Roles = "Administrator")]
     public IActionResult GetPending() => Ok(_service.GetPendingRequests());
 
+    // Admin approves
     [HttpPost("approve/{id}")]
+    [Authorize(Roles = "Administrator")]
     public IActionResult Approve(string id)
     {
         return _service.ApproveRequest(id) ? Ok("Request approved.") : BadRequest("Request not found or invalid.");
     }
 
+    // Admin rejects
     [HttpPost("reject/{id}")]
+    [Authorize(Roles = "Administrator")]
     public IActionResult Reject(string id)
     {
         return _service.RejectRequest(id) ? Ok("Request rejected.") : BadRequest("Request not found.");
