@@ -10,10 +10,12 @@ namespace CourseWork.Controllers.AuthController;
 public class AuthController : ControllerBase
 {
     private readonly UserService _userService;
+    private readonly TokenService _tokenService;
 
-    public AuthController(UserService userService)
+    public AuthController(UserService userService, TokenService tokenService)
     {
         _userService = userService;
+        _tokenService = tokenService;
     }
 
     [HttpPost("login")]
@@ -23,7 +25,18 @@ public class AuthController : ControllerBase
         try
         {
             var user = _userService.Login(request);
-            return Ok(new { message = "Login successful", user = user.UserName, role = user.UserRole });
+            var token = _tokenService.GenerateToken(user);
+
+            return Ok(new
+            {
+                token,
+                user = new
+                {
+                    user.Id,
+                    user.UserName,
+                    role = user.UserRole.ToString()
+                }
+            });
         }
         catch (Exception ex)
         {

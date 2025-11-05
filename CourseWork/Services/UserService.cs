@@ -10,6 +10,7 @@ namespace Сoursework.Services;
 public class UserService
 {
     private readonly UserRepository _userRepo;
+    private readonly PasswordHasher<User> _hasher = new();
 
     public UserService(UserRepository userRepo)
     {
@@ -129,9 +130,8 @@ public class UserService
                    ?? throw new KeyNotFoundException("User not found.");
 
         // Використовуємо ASP.NET Identity password hasher
-        var hasher = new PasswordHasher<User>();
 
-        var verificationResult = hasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
+        var verificationResult = _hasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
 
         if (verificationResult == PasswordVerificationResult.Failed)
             throw new UnauthorizedAccessException("Invalid password.");
