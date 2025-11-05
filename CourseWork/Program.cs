@@ -1,6 +1,7 @@
 using System.Text;
 using CourseWork.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Сoursework.Models;
 using Сoursework.Repositories;
@@ -59,6 +60,7 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(key)
     };
 });
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 // 5. Authorization policies
 builder.Services.AddAuthorization(options =>

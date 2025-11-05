@@ -1,6 +1,7 @@
 ﻿
 
 using CourseWork.DTOs;
+using Microsoft.AspNetCore.Identity;
 using Сoursework.Models;
 using Сoursework.Repositories;
 
@@ -55,7 +56,7 @@ public class UserService
             if (_userRepo.GetUserByName(newUser.UserName) != null)
                 throw new InvalidOperationException("User already exists.");
 
-            newUser.SetPasswordHash(password);
+            newUser.SetPasswordHash(password, new PasswordHasher<User>());
             _userRepo.CreateUser(newUser);
             return true;
         }
@@ -127,7 +128,12 @@ public class UserService
         var user = _userRepo.GetUserByName(request.UserName)
                    ?? throw new KeyNotFoundException("User not found.");
 
-        if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+        // Використовуємо ASP.NET Identity password hasher
+        var hasher = new PasswordHasher<User>();
+
+        var verificationResult = hasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
+
+        if (verificationResult == PasswordVerificationResult.Failed)
             throw new UnauthorizedAccessException("Invalid password.");
 
         return user;
