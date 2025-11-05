@@ -5,41 +5,41 @@ namespace Сoursework.Repositories;
 
 public class UserRepository
 {
-    private readonly IMongoCollection<User> _db_collection;
-    private readonly IMongoCollection<Visit> _visits_collection;
+    protected readonly IMongoCollection<User> Users;
+    protected readonly IMongoCollection<Visit> Visits;
 
     public UserRepository(MongoDBRepository db)
     {
-        _db_collection = db.GetCollection<User>("users");
-        _visits_collection = db.GetCollection<Visit>("visits");
+        Users = db.GetCollection<User>("users");
+        Visits = db.GetCollection<Visit>("visits");
     }
     
     //  Existing basic CRUD methods
     public List<User> GetAllUsers()
     {
-        return _db_collection.Find(_ => true).ToList();
+        return Users.Find(_ => true).ToList();
     }
     
     public void CreateUser(User user)
     {
-        _db_collection.InsertOne(user);
+        Users.InsertOne(user);
     }
     
     public User GetUserByName(string username)
     {
-        return _db_collection.Find(u => u.UserName == username).FirstOrDefault();
+        return Users.Find(u => u.UserName == username).FirstOrDefault();
     }
     
     public void UpdatePassword(string username, string newPassword)
     {
         var filter = Builders<User>.Filter.Eq(u => u.UserName, username);
         var update = Builders<User>.Update.Set(u => u.PasswordHash, BCrypt.Net.BCrypt.HashPassword(newPassword));
-        _db_collection.UpdateOne(filter, update);
+        Users.UpdateOne(filter, update);
     }
     
     public void DeleteUser(string username)
     {
-        _db_collection.DeleteOne(u => u.UserName == username);
+        Users.DeleteOne(u => u.UserName == username);
     }
 
     // //  Task 1: Get patient information by surname or medical record number
@@ -49,7 +49,7 @@ public class UserRepository
     //         Builders<User>.Filter.Eq(u => u.UserRole, Role.Patient),
     //         Builders<User>.Filter.Eq(u => u.MedicalRecordNumber, medicalRecordNumber)
     //     );
-    //     return _db_collection.Find(filter).FirstOrDefault();
+    //     return Users.Find(filter).FirstOrDefault();
     // }
 
     // public List<User> GetPatientsBySurname(string surname)
@@ -58,7 +58,7 @@ public class UserRepository
     //         Builders<User>.Filter.Eq(u => u.UserRole, Role.Patient),
     //         Builders<User>.Filter.Regex(u => u.FullName, new MongoDB.Bson.BsonRegularExpression(surname, "i"))
     //     );
-    //     return _db_collection.Find(filter).ToList();
+    //     return Users.Find(filter).ToList();
     // }
 
     // //  Task 5: Get list of patients by various criteria
@@ -82,13 +82,13 @@ public class UserRepository
     //     }
     //
     //     var filter = filterBuilder.And(filters);
-    //     var patients = _db_collection.Find(filter).ToList();
+    //     var patients = Users.Find(filter).ToList();
     //
     //     // Filter by specialist if provided
     //     if (!string.IsNullOrEmpty(specialistId))
     //     {
     //         var visitFilter = Builders<Visit>.Filter.Eq(v => v.SpecialistId, specialistId);
-    //         var patientRecords = _visits_collection.Find(visitFilter)
+    //         var patientRecords = Visits.Find(visitFilter)
     //             .ToList()
     //             .Select(v => v.PatientMedicalRecord)
     //             .Distinct()
@@ -108,7 +108,7 @@ public class UserRepository
     //         Builders<User>.Filter.Eq(u => u.UserRole, Role.Specialist),
     //         Builders<User>.Filter.Eq(u => u.Speciality, specialty)
     //     );
-    //     return _db_collection.Find(filter).ToList();
+    //     return Users.Find(filter).ToList();
     // }
 
     // public int GetDoctorsCountBySpecialty(string specialty)
@@ -117,13 +117,13 @@ public class UserRepository
     //         Builders<User>.Filter.Eq(u => u.UserRole, Role.Specialist),
     //         Builders<User>.Filter.Eq(u => u.Speciality, specialty)
     //     );
-    //     return (int)_db_collection.CountDocuments(filter);
+    //     return (int)Users.CountDocuments(filter);
     // }
 
     // public Dictionary<string, int> GetAllDoctorsGroupedBySpecialty()
     // {
     //     var filter = Builders<User>.Filter.Eq(u => u.UserRole, Role.Specialist);
-    //     var doctors = _db_collection.Find(filter).ToList();
+    //     var doctors = Users.Find(filter).ToList();
     //     
     //     return doctors
     //         .Where(d => !string.IsNullOrEmpty(d.Speciality))
@@ -134,7 +134,7 @@ public class UserRepository
     // public List<User> GetAllDoctors()
     // {
     //     var filter = Builders<User>.Filter.Eq(u => u.UserRole, Role.Specialist);
-    //     return _db_collection.Find(filter).ToList();
+    //     return Users.Find(filter).ToList();
     // }
     //
     // public User GetDoctorById(string doctorId)
@@ -143,6 +143,6 @@ public class UserRepository
     //         Builders<User>.Filter.Eq(u => u.Id, doctorId),
     //         Builders<User>.Filter.Eq(u => u.UserRole, Role.Specialist)
     //     );
-    //     return _db_collection.Find(filter).FirstOrDefault();
+    //     return Users.Find(filter).FirstOrDefault();
     // }
 }
