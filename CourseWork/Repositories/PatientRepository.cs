@@ -4,26 +4,14 @@ using Сoursework.Repositories;
 
 namespace CourseWork.Repositories;
 
-public class PatientRepository
+public class PatientRepository : UserRepository
 {
-    private readonly IMongoCollection<User> _users;
-    private readonly IMongoCollection<Visit> _visits;
-
-    public PatientRepository(MongoDBRepository db)
-    {
-        _users = db.GetCollection<User>("users");
-        _visits = db.GetCollection<Visit>("visits");
-    }
+    public PatientRepository(MongoDBRepository db) : base(db) {}
 
     public List<User> GetAllPatients()
     {
-        return _users.Find(u => u.UserRole == Role.Patient).ToList();
+        return Users.Find(u => u.UserRole == Role.Patient).ToList();
     }
-
-    // public User? GetByMedicalRecord(int record)
-    // {
-    //     return _users.Find(u => u.UserRole == Role.Patient && u.MedicalRecordNumber == record).FirstOrDefault();
-    // }
 
     public List<User> GetBySurname(string surname)
     {
@@ -31,7 +19,7 @@ public class PatientRepository
             Builders<User>.Filter.Eq(u => u.UserRole, Role.Patient),
             Builders<User>.Filter.Regex(u => u.FullName, new MongoDB.Bson.BsonRegularExpression(surname, "i"))
         );
-        return _users.Find(filter).ToList();
+        return Users.Find(filter).ToList();
     }
     
     //  Task 1: Get patient information by surname or medical record number
@@ -41,7 +29,7 @@ public class PatientRepository
             Builders<User>.Filter.Eq(u => u.UserRole, Role.Patient),
             Builders<User>.Filter.Eq(u => u.MedicalRecordNumber, medicalRecordNumber)
         );
-        return _users.Find(filter).FirstOrDefault();
+        return Users.Find(filter).FirstOrDefault();
     }
     
     //  Task 5: Get list of patients by various criteria
@@ -65,13 +53,13 @@ public class PatientRepository
         }
 
         var filter = filterBuilder.And(filters);
-        var patients = _users.Find(filter).ToList();
+        var patients = Users.Find(filter).ToList();
 
         // Filter by specialist if provided
         if (!string.IsNullOrEmpty(specialistId))
         {
             var visitFilter = Builders<Visit>.Filter.Eq(v => v.SpecialistId, specialistId);
-            var patientRecords = _visits.Find(visitFilter)
+            var patientRecords = Visits.Find(visitFilter)
                 .ToList()
                 .Select(v => v.PatientMedicalRecord)
                 .Distinct()
