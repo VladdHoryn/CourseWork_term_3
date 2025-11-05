@@ -1,4 +1,5 @@
 using System.Text;
+using CourseWork.Controllers.AuthController;
 using CourseWork.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -10,6 +11,7 @@ using Сoursework.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add Controllers + Views
+builder.Services.AddControllers();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
@@ -39,6 +41,7 @@ builder.Services.AddScoped<SpecialistService>();
 // builder.Services.AddScoped<OperatorService>();
 // builder.Services.AddScoped<AdministratorService>();
 builder.Services.AddScoped<RegistrationRequestService>();
+builder.Services.AddSingleton<TokenService>();
 
 // 4. JWT Authentication
 var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "SuperSecretKey123"); // fallback for dev
