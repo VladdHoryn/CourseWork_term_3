@@ -1,4 +1,5 @@
 using System.Text;
+using CourseWork.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Сoursework.Models;
@@ -7,7 +8,9 @@ using Сoursework.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add Controllers + Views
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
 
 // 1. Configure MongoDB
 var mongoDbSettings = builder.Configuration.GetSection("MongoDbSettings");
@@ -20,11 +23,21 @@ builder.Services.AddSingleton(new MongoDBRepository(connectionString, dbName));
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<VisitRepository>();
 builder.Services.AddScoped<PaymentRepository>();
+builder.Services.AddScoped<PatientRepository>();
+builder.Services.AddScoped<SpecialistRepository>();
+builder.Services.AddScoped<OperatorRepository>();
+builder.Services.AddScoped<AdministratorRepository>();
+builder.Services.AddScoped<RegistrationRequestRepository>();
 
 // 3. Services
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<VisitService>();
 builder.Services.AddScoped<PaymentService>();
+builder.Services.AddScoped<PatientService>();
+builder.Services.AddScoped<SpecialistService>();
+// builder.Services.AddScoped<OperatorService>();
+// builder.Services.AddScoped<AdministratorService>();
+builder.Services.AddScoped<RegistrationRequestService>();
 
 // 4. JWT Authentication
 var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "SuperSecretKey123"); // fallback for dev
@@ -56,8 +69,9 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("RequirePatient", policy => policy.RequireRole("Patient"));
 });
 
-builder.Services.AddRazorPages();
-
+// ========================
+// 6. Build App
+// ========================
 var app = builder.Build();
 
 // Middleware pipeline
@@ -76,6 +90,10 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+
+// ========================
+// 7. Routing
+// ========================
 app.MapControllers();
 app.MapRazorPages();
 
