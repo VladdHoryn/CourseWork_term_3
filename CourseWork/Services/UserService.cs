@@ -82,6 +82,27 @@ public class UserService
             return false;
         }
     }
+    
+    public bool UpdateUser(User updated)
+    {
+        try
+        {
+            var existing = _userRepo.GetUserByName(updated.UserName);
+            if (existing == null)
+                throw new KeyNotFoundException($"User '{updated.UserName}' not found.");
+
+            // Пароль при цьому НЕ міняємо
+            updated.PasswordHash = existing.PasswordHash;
+
+            _userRepo.UpdateUser(updated);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Error] Cannot update user '{updated.UserName}': {ex.Message}");
+            return false;
+        }
+    }
 
     public bool DeleteUser(string username)
     {
