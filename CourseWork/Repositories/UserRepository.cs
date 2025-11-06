@@ -25,9 +25,14 @@ public class UserRepository
         Users.InsertOne(user);
     }
     
-    public User GetUserByName(string username)
+    public User GetByName(string username)
     {
         return Users.Find(u => u.UserName == username).FirstOrDefault();
+    }
+    
+    public User GetById(string Id)
+    {
+        return Users.Find(u => u.Id == Id).FirstOrDefault();
     }
     
     public void UpdatePassword(string username, string newPassword)

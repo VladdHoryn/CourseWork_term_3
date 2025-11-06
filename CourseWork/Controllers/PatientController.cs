@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Сoursework.Services;
 
 namespace CourseWork.Controllers;
@@ -22,26 +24,29 @@ public class PatientController : Controller
 
     // -------------------- DASHBOARD --------------------
     [HttpGet("dashboard")]
+    [Authorize] // Переконайся що є
     public IActionResult Dashboard()
     {
-        var username = User.Identity?.Name;
-
-        var patient = _patientService.SearchBySurname(username).FirstOrDefault();
-        if (patient == null)
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null)
             return RedirectToAction("Login", "Auth");
 
-        return View(patient);
+        var patient = _patientService.GetById(userId);
+        if (patient is null)
+            return RedirectToAction("Login", "Auth");
+
+        return Ok(patient);
     }
 
     // -------------------- VISITS LIST --------------------
     [HttpGet("visits")]
     public IActionResult Visits()
     {
-        var username = User.Identity?.Name;
-        var patient = _patientService.SearchBySurname(username).FirstOrDefault();
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        if (patient == null || patient.MedicalRecordNumber == null)
-            return RedirectToAction("dashboard");
+        var patient = _patientService.GetById(userId);
+        if (patient == null)
+            return RedirectToAction("Login", "Auth");
 
         var visits = _visitService
             .GetAllVisits()
@@ -49,7 +54,7 @@ public class PatientController : Controller
             .OrderByDescending(v => v.VisitDate)
             .ToList();
 
-        return View(visits);
+        return Ok(visits);
     }
 
     // -------------------- PAYMENTS / BILLS --------------------
@@ -68,7 +73,7 @@ public class PatientController : Controller
             .OrderByDescending(p => p.IssuedDate)
             .ToList();
 
-        return View(payments);
+        return Ok(payments);
     }
 
     // -------------------- PAY BILL --------------------
@@ -100,7 +105,7 @@ public class PatientController : Controller
         if (patient == null)
             return RedirectToAction("dashboard");
 
-        return View(patient);
+        return Ok(patient);
     }
 
     // -------------------- UPDATE PROFILE --------------------

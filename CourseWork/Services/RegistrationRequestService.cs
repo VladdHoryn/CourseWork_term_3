@@ -19,7 +19,7 @@ public class RegistrationRequestService
     // Guest submits a registration request
     public bool SubmitRegistrationRequest(string username, string password, string? fullName, string? phone, string? address)
     {
-        if (_userRepo.GetUserByName(username) != null)
+        if (_userRepo.GetByName(username) != null)
         {
             Console.WriteLine($"[Warning] Username '{username}' already exists.");
             return false;
