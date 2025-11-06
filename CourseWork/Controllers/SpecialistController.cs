@@ -1,4 +1,6 @@
 ﻿using System.Security.Claims;
+using CourseWork.DTOs;
+using CourseWork.Mappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Сoursework.Models;
@@ -74,87 +76,44 @@ public class SpecialistController : Controller
 
     // -------------------- ADD VISIT --------------------
     [HttpPost("visits/add")]
-    public IActionResult AddVisit(
-        string patientId,
-        DateTime visitDate,
-        string status,
-        bool isFirstVisit,
-        string anamnesis,
-        string diagnosis,
-        string treatment,
-        string? recommendations,
-        decimal serviceCost,
-        decimal medicationCost)
+    public IActionResult AddVisit([FromBody] VisitRequestDto dto)
     {
+        
         var specialistId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (specialistId is null) return Unauthorized();
 
-        var patient = _patientService.GetById(patientId);
+        var patient = _patientService.GetById(dto.PatientId);
         if (patient?.MedicalRecordNumber is null)
-        {
-            TempData["Error"] = "Invalid patient medical record.";
-            return RedirectToAction("Visits");
-        }
+            return BadRequest("Invalid patient medical record.");
 
-        var visit = new Visit(
-            patient.MedicalRecordNumber.Value,
-            specialistId,
-            visitDate,
-            Enum.Parse<VisitStatus>(status),
-            isFirstVisit,
-            anamnesis,
-            diagnosis,
-            treatment,
-            recommendations,
-            serviceCost,
-            medicationCost
-        );
+        var visit = VisitMapper.ToVisit(dto, patient.MedicalRecordNumber.Value, specialistId);
 
         var success = _visitService.CreateVisit(visit);
         if (!success)
-            TempData["Error"] = "Failed to create visit.";
+            return BadRequest("Failed to create visit.");
 
-        return RedirectToAction("Visits");
+        return Ok(visit);
     }
 
     // -------------------- UPDATE VISIT --------------------
-    [HttpPost("visits/update/{id}")]
-    public IActionResult UpdateVisit(
-        string id,
-        string anamnesis,
-        string diagnosis,
-        string treatment,
-        string? recommendations,
-        decimal serviceCost,
-        decimal medicationCost,
-        string status)
+    [HttpPut("visits/update/{id}")]
+    public IActionResult UpdateVisit(string id, [FromBody] VisitUpdateDto dto)
     {
-        Visit? visit;
+        Visit visit;
 
-        try
-        {
-            visit = _visitService.GetVisitById(id);
-        }
-        catch
-        {
-            return NotFound("Visit not found.");
-        }
+        try { visit = _visitService.GetVisitById(id); }
+        catch { return NotFound("Visit not found."); }
 
         if (!visit.CanBeModified())
-        {
-            TempData["Error"] = "This visit cannot be modified.";
-            return RedirectToAction("Visits");
-        }
+            return BadRequest("This visit cannot be modified.");
 
-        visit.UpdateMedicalInfo(anamnesis, diagnosis, treatment, recommendations);
-        visit.SetCosts(serviceCost, medicationCost);
-        visit.SetStatus_string(status);
+        VisitMapper.ApplyUpdate(visit, dto);
 
         var success = _visitService.UpdateVisit(id, visit);
         if (!success)
-            TempData["Error"] = "Failed to update visit.";
+            return BadRequest("Failed to update visit.");
 
-        return RedirectToAction("Visits");
+        return Ok(visit);
     }
 
     // -------------------- DELETE VISIT --------------------
