@@ -1,4 +1,6 @@
-﻿namespace CourseWork.DTOs;
+﻿using Сoursework.Models;
+
+namespace CourseWork.DTOs;
 
 public class VisitDto
 {
@@ -12,4 +14,21 @@ public class VisitDto
     public decimal MedicationCost { get; set; }
     public decimal TotalCost { get; set; }
     public string Status { get; set; }
+    
+    public static VisitDto ToDto(Visit v, User specialist)
+    {
+        return new VisitDto
+        {
+            Id = v.Id.ToString(),
+            PatientMedicalRecord = v.PatientMedicalRecord,
+            SpecialistFullName = specialist?.FullName ?? "Unknown specialist",
+            VisitDate = v.VisitDate,
+            IsFirstVisit = v.IsFirstVisit,
+            Diagnosis = v.Diagnosis,
+            ServiceCost = v.ServiceCost,
+            MedicationCost = v.MedicationCost,
+            TotalCost = v.ServiceCost + v.MedicationCost,
+            Status = v.Status.ToString()
+        };
+    }
 }
