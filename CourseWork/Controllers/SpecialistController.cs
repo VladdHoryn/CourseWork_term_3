@@ -96,7 +96,7 @@ public class SpecialistController : Controller
     }
 
     // -------------------- UPDATE VISIT --------------------
-    [HttpPut("visits/update/{id}")]
+    [HttpPut("visits/update/{id}")] //Fix problem with Status!!!!!!
     public IActionResult UpdateVisit(string id, [FromBody] VisitUpdateDto dto)
     {
         Visit visit;
