@@ -88,7 +88,54 @@ public class OperatorController : ControllerBase
     {
         return Ok(_specialistService.GetAllDoctorsGroupedBySpecialty());
     }
+    
+    [HttpPost("specialists")]
+    public IActionResult CreateSpecialist([FromBody] CreateSpecialistDto dto)
+    {
+        var specialist = new User(dto.UserName, dto.FullName, Role.Specialist)
+        {
+            Phone = dto.Phone,
+            Address = dto.Address,
+            Speciality = dto.Specialty
+        };
 
+        return _operatorService.CreateUserByOperator(specialist, dto.Password)
+            ? Ok("Specialist created")
+            : BadRequest("Failed to create specialist");
+    }
+
+    [HttpPut("specialists/{id}")]
+    public IActionResult UpdateSpecialist(string id, [FromBody] UpdateSpecialistDto dto)
+    {
+        var specialist = _operatorService.GetById(id);
+
+        specialist.FullName = dto.FullName;
+        specialist.Speciality = dto.Specialty;
+        specialist.Phone = dto.Phone;
+        specialist.Address = dto.Address;
+
+        return _operatorService.UpdateUserByOperator(specialist)
+            ? Ok("Specialist updated")
+            : BadRequest("Update failed");
+    }
+
+    [HttpDelete("specialists/{id}")]
+    public IActionResult DeleteSpecialist(string id)
+    {
+        return _operatorService.DeleteUserByOperator(id)
+            ? Ok("Specialist deleted")
+            : BadRequest("Delete failed");
+    }
+
+    [HttpGet("specialists/{id}")]
+    public IActionResult GetSpecialistById(string id)
+    {
+        var specialist = _operatorService.GetById(id);
+
+        return specialist.UserRole == Role.Specialist
+            ? Ok(SpecialistMapper.ToDto(specialist))
+            : NotFound("Specialist not found");
+    }
     // -------------------- Visits --------------------
     [HttpGet("visits")]
     public IActionResult GetVisits()
