@@ -21,6 +21,25 @@ public class VisitMapper
             dto.MedicationCost
         );
     }
+    
+    public static VisitResponseDto ToResponse(Visit visit)
+    {
+        return new VisitResponseDto
+        {
+            Id = visit.Id.ToString(),
+            PatientMedicalRecord = visit.PatientMedicalRecord,
+            SpecialistId = visit.SpecialistId,
+            VisitDate = visit.VisitDate,
+            Status = visit.Status.ToString(),
+            IsFirstVisit = visit.IsFirstVisit,
+            Anamnesis = visit.Anamnesis,
+            Diagnosis = visit.Diagnosis,
+            Treatment = visit.Treatment,
+            Recommendations = visit.Recommendations,
+            ServiceCost = visit.ServiceCost,
+            MedicationCost = visit.MedicationCost
+        };
+    }
 
     public static void ApplyUpdate(Visit visit, VisitUpdateDto dto)
     {

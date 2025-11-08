@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using CourseWork.DTOs;
+using CourseWork.Mappers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Сoursework.Models;
 using Сoursework.Services;
@@ -7,106 +9,158 @@ namespace CourseWork.Controllers;
 
 [Authorize(Roles = "Operator")]
 [ApiController]
-[Route("api/operator")]
+[Route("operator")]
 public class OperatorController : ControllerBase
 {
-    private readonly OperatorService _service;
+    private readonly OperatorService _operatorService;
     private readonly SpecialistService _specialistService;
 
-    public OperatorController(OperatorService service, SpecialistService specialistService)
+    public OperatorController(OperatorService operatorService, SpecialistService specialistService)
     {
-        _service = service;
+        _operatorService = operatorService;
         _specialistService = specialistService;
     }
 
-    // ---------- Patients ----------
+    // -------------------- Dashboard --------------------
+    [HttpGet("dashboard")]
+    public IActionResult Dashboard()
+    {
+        return Ok(new
+        {
+            Message = "Operator dashboard is active",
+            Sections = new[] { "patients", "specialists", "visits", "payments", "queries" }
+        });
+    }
+
+    // -------------------- Patients --------------------
     [HttpGet("patients")]
     public IActionResult GetPatients()
     {
-        return Ok(_service.GetAllUsers());
+        var users = _operatorService.GetAllUsers();
+        var patients = users.Where(u => u.UserRole == Role.Patient)
+                            .Select(PatientMapper.ToDto)
+                            .ToList();
+
+        return Ok(patients);
     }
 
     [HttpPost("patients")]
-    public IActionResult CreatePatient([FromBody] User user, [FromQuery] string password)
+    public IActionResult CreatePatient([FromBody] CreateUserDto dto)
     {
-        _service.CreateUserByOperator(user, password);
-        return Ok();
+        var user = new User(dto.UserName, dto.FullName, Role.Patient);
+        var result = _operatorService.CreateUserByOperator(user, dto.Password);
+        return result ? Ok("Patient created") : BadRequest("Failed to create");
     }
 
     [HttpPut("patients/{id}")]
-    public IActionResult UpdatePatient([FromRoute] string id, [FromBody] User updated)
+    public IActionResult UpdatePatient(string id, [FromBody] UpdateUserDto dto)
     {
-        updated.Id = id;
-        _service.UpdateUserByOperator(updated);
-        return Ok();
+        var user = _operatorService.GetById(id);
+        user.FullName = dto.FullName;
+        user.Phone = dto.Phone;
+        user.Address = dto.Address;
+
+        return _operatorService.UpdateUserByOperator(user)
+            ? Ok("Patient updated")
+            : BadRequest("Update failed");
     }
 
     [HttpDelete("patients/{id}")]
     public IActionResult DeletePatient(string id)
     {
-        _service.DeleteUserByOperator(id);
-        return Ok();
+        return _operatorService.DeleteUserByOperator(id)
+            ? Ok("Patient deleted")
+            : BadRequest("Delete failed");
     }
 
-    // ---------- Specialists ----------
+    // -------------------- Specialists --------------------
     [HttpGet("specialists")]
     public IActionResult GetSpecialists()
     {
-        return Ok(_specialistService.GetAllSpecialists());
+        var specialists = _specialistService.GetAllSpecialists()
+                                            .Select(SpecialistMapper.ToDto)
+                                            .ToList();
+        return Ok(specialists);
     }
 
-    [HttpGet("specialists/count/{specialty}")]
-    public IActionResult GetSpecialistsCount(string specialty)
+    [HttpGet("specialists/group-by-specialty")]
+    public IActionResult CountBySpecialty()
     {
-        return Ok(_specialistService.CountBySpecialty(specialty));
+        return Ok(_specialistService.GetAllDoctorsGroupedBySpecialty());
     }
 
-    // ---------- Visits ----------
+    // -------------------- Visits --------------------
     [HttpGet("visits")]
     public IActionResult GetVisits()
     {
-        return Ok(_service.GetAllVisitsByOperator());
+        var visits = _operatorService.GetAllVisitsByOperator();
+        return Ok(visits.Select(VisitMapper.ToResponse));
     }
 
     [HttpPost("visits")]
-    public IActionResult CreateVisit([FromBody] Visit visit)
+    public IActionResult CreateVisit([FromBody] VisitRequestDto dto)
     {
-        _service.CreateVisitByOperator(visit);
-        return Ok();
+        var visit = VisitMapper.ToVisit(dto, dto.PatientMedicalRecord, dto.SpecialistId);
+
+        return _operatorService.CreateVisitByOperator(visit)
+            ? Ok("Visit created")
+            : BadRequest("Failed to create visit");
     }
 
     [HttpPut("visits/{id}")]
-    public IActionResult UpdateVisit(string id, [FromBody] Visit visit)
+    public IActionResult UpdateVisit(string id, [FromBody] VisitUpdateDto dto)
     {
-        _service.UpdateVisitByOperator(id, visit);
-        return Ok();
+        var visit = _operatorService.GetVisitByIdByOperator(id);
+        VisitMapper.ApplyUpdate(visit, dto);
+
+        return _operatorService.UpdateVisitByOperator(id, visit)
+            ? Ok("Visit updated")
+            : BadRequest("Update failed");
     }
 
     [HttpDelete("visits/{id}")]
     public IActionResult DeleteVisit(string id)
     {
-        _service.DeleteVisitByOperator(id);
-        return Ok();
+        return _operatorService.DeleteVisitByOperator(id)
+            ? Ok("Visit deleted")
+            : BadRequest("Delete failed");
     }
 
-    // ---------- Payments ----------
+    // -------------------- Payments --------------------
     [HttpGet("payments")]
     public IActionResult GetPayments()
     {
-        return Ok(_service.GetAllPaymentsByOperator());
+        var payments = _operatorService.GetAllPaymentsByOperator()
+                                       .Select(PaymentMapper.ToDto)
+                                       .ToList();
+        return Ok(payments);
+    }
+
+    [HttpPost("payments")]
+    public IActionResult CreatePayment([FromBody] PaymentDto dto)
+    {
+        var payment = new Payment(dto.VisitId, dto.PatientMedicalRecord, dto.TotalAmount, 0);
+        return _operatorService.CreatePaymentByOperator(payment)
+            ? Ok("Payment created")
+            : BadRequest("Failed to create payment");
     }
 
     [HttpDelete("payments/{id}")]
     public IActionResult DeletePayment(string id)
     {
-        _service.DeletePaymentByOperator(id);
-        return Ok();
+        return _operatorService.DeletePaymentByOperator(id)
+            ? Ok("Payment deleted")
+            : BadRequest("Delete failed");
     }
 
-    // ---------- Queries UI (поки без SQL) ----------
-    [HttpPost("queries/execute")]
-    public IActionResult ExecuteQuery([FromBody] string sql)
-    {
-        return BadRequest("Custom SQL execution disabled due to architecture rules.");
-    }
+    // -------------------- SQL Queries --------------------
+    // [HttpPost("queries/run")]
+    // public IActionResult RunRawQuery([FromBody] RawSqlRequestDto request)
+    // {
+    //     if (string.IsNullOrWhiteSpace(request.Sql))
+    //         return BadRequest("Query cannot be empty.");
+    //
+    //     var result = _operatorService.ExecuteRawSql(request.Sql);
+    //     return Ok(result);
+    // }
 }
