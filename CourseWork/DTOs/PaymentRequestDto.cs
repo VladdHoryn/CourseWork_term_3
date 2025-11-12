@@ -1,8 +1,7 @@
 ﻿namespace CourseWork.DTOs;
 
-public class PaymentDto
+public class PaymentRequestDto
 {
-    public string Id { get; set; }
     public string VisitId { get; set; }
     public int PatientMedicalRecord { get; set; }
     public decimal TotalAmount { get; set; }

@@ -129,7 +129,7 @@ public IActionResult GetPaymentById(string id)
 }
 
 [HttpPost("payments")]
-public IActionResult CreatePayment([FromBody] PaymentDto dto)
+public IActionResult CreatePayment([FromBody] PaymentDto dto)//Забрати ID з DTO
 {
     if (dto == null)
         return BadRequest("Payment data cannot be null.");
@@ -157,7 +157,7 @@ public IActionResult CreatePayment([FromBody] PaymentDto dto)
 }
 
 [HttpPut("payments/{id}")]
-public IActionResult UpdatePayment(string id, [FromBody] PaymentDto dto)
+public IActionResult UpdatePayment(string id, [FromBody] PaymentDto dto)//Забрати ID з DTO
 {
     var existing = _adminService.GetPaymentById(id);
     if (existing == null)
@@ -198,7 +198,7 @@ public IActionResult GetRevenueByPeriod([FromQuery] DateTime start, [FromQuery] 
     return Ok(new { StartDate = start, EndDate = end, TotalRevenue = revenue });
 }
 
-    // -------------------- Registration Requests --------------------
+    // -------------------- Registration Requests --------------------Затестити
     [HttpGet("pending")]
     [Authorize(Roles = "Administrator")]
     public IActionResult GetPending() => Ok(_adminService.GetPendingRequests());

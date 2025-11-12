@@ -48,7 +48,7 @@ builder.Services.AddScoped<PaymentService>();
 builder.Services.AddScoped<PatientService>();
 builder.Services.AddScoped<SpecialistService>();
 builder.Services.AddScoped<OperatorService>();
-// builder.Services.AddScoped<AdministratorService>();
+builder.Services.AddScoped<AdministratorService>();
 builder.Services.AddScoped<RegistrationRequestService>();
 builder.Services.AddSingleton<TokenService>();
 
