@@ -116,7 +116,7 @@ public class AdministratorController : ControllerBase
 public IActionResult GetPayments()
 {
     var payments = _adminService.GetAllPayments()
-        .Select(PaymentMapper.ToDto)
+        .Select(PaymentMapper.ToResponseDto)
         .ToList();
     return Ok(payments);
 }
@@ -125,19 +125,19 @@ public IActionResult GetPayments()
 public IActionResult GetPaymentById(string id)
 {
     var payment = _adminService.GetPaymentById(id);
-    return payment != null ? Ok(PaymentMapper.ToDto(payment)) : NotFound("Payment not found");
+    return payment != null
+        ? Ok(PaymentMapper.ToResponseDto(payment))
+        : NotFound("Payment not found");
 }
 
 [HttpPost("payments")]
-public IActionResult CreatePayment([FromBody] PaymentDto dto)//Забрати ID з DTO
+public IActionResult CreatePayment([FromBody] PaymentRequestDto dto)
 {
     if (dto == null)
         return BadRequest("Payment data cannot be null.");
     
     if (!Enum.TryParse<PaymentStatus>(dto.Status, true, out var status))
-    {
         status = PaymentStatus.Pending;
-    }
 
     var payment = new Payment(
         dto.VisitId,
@@ -148,7 +148,8 @@ public IActionResult CreatePayment([FromBody] PaymentDto dto)//Забрати ID
         RemainingAmount = dto.RemainingAmount,
         Status = status,
         IssuedDate = dto.IssuedDate,
-        DueDate = dto.DueDate
+        DueDate = dto.DueDate,
+        LastPaymentDate = dto.LastPaymentDate
     };
 
     return _adminService.CreatePayment(payment)
@@ -157,18 +158,15 @@ public IActionResult CreatePayment([FromBody] PaymentDto dto)//Забрати ID
 }
 
 [HttpPut("payments/{id}")]
-public IActionResult UpdatePayment(string id, [FromBody] PaymentDto dto)//Забрати ID з DTO
+public IActionResult UpdatePayment(string id, [FromBody] PaymentUpdateDto dto)
 {
     var existing = _adminService.GetPaymentById(id);
     if (existing == null)
         return NotFound("Payment not found");
     
     if (!Enum.TryParse<PaymentStatus>(dto.Status, true, out var status))
-    {
         status = PaymentStatus.Pending;
-    }
 
-    // Оновлюємо всі релевантні поля
     existing.VisitId = dto.VisitId;
     existing.PatientMedicalRecord = dto.PatientMedicalRecord;
     existing.TotalAmount = dto.TotalAmount;
@@ -177,6 +175,7 @@ public IActionResult UpdatePayment(string id, [FromBody] PaymentDto dto)//Заб
     existing.Status = status;
     existing.IssuedDate = dto.IssuedDate;
     existing.DueDate = dto.DueDate;
+    existing.LastPaymentDate = dto.LastPaymentDate;
 
     return _adminService.UpdatePayment(id, existing)
         ? Ok("Payment updated successfully")

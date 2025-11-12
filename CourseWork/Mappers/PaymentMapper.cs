@@ -17,4 +17,20 @@ public static class PaymentMapper
         IssuedDate = p.IssuedDate,
         DueDate = p.DueDate
     };
+    public static PaymentResponseDto ToResponseDto(Payment payment)
+    {
+        return new PaymentResponseDto
+        {
+            Id = payment.Id,
+            VisitId = payment.VisitId,
+            PatientMedicalRecord = payment.PatientMedicalRecord,
+            TotalAmount = payment.TotalAmount,
+            PaidAmount = payment.PaidAmount,
+            RemainingAmount = payment.RemainingAmount,
+            IssuedDate = payment.IssuedDate,
+            DueDate = payment.DueDate,
+            LastPaymentDate = payment.LastPaymentDate,
+            Status = payment.Status.ToString()
+        };
+    }
 }
