@@ -7,19 +7,22 @@ namespace Сoursework.Services;
 public class AdministratorService : UserService
 {
     private readonly AdministratorRepository _adminRepo;
-    private readonly VisitRepository _visitRepo;
-    private readonly PaymentRepository _paymentRepo;
+    private readonly VisitService _visitService;
+    private readonly PaymentService _paymentService;
+    private readonly RegistrationRequestService _requestService;
 
     public AdministratorService(
         AdministratorRepository adminRepo,
         UserRepository userRepo,
-        VisitRepository visitRepo,
-        PaymentRepository paymentRepo)
+        VisitService visitService,
+        PaymentService paymentService,
+        RegistrationRequestService requestService)
         : base(userRepo)
     {
-        _adminRepo = adminRepo;
-        _visitRepo = visitRepo;
-        _paymentRepo = paymentRepo;
+        _adminRepo = adminRepo ?? throw new ArgumentNullException(nameof(adminRepo));
+        _visitService = visitService ?? throw new ArgumentNullException(nameof(visitService));
+        _paymentService = paymentService ?? throw new ArgumentNullException(nameof(paymentService));
+        _requestService = requestService ?? throw new ArgumentNullException(nameof(requestService));
     }
 
     // -------------------- ADMINISTRATIVE USER MANAGEMENT --------------------
@@ -53,88 +56,59 @@ public class AdministratorService : UserService
 
     // -------------------- VISIT MANAGEMENT --------------------
 
-    public List<Visit> GetAllVisits()
-    {
-        try
-        {
-            return _visitRepo.GetAllVisits();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[Error] Failed to fetch visits: {ex.Message}");
-            return new List<Visit>();
-        }
-    }
+    public List<Visit> GetAllVisits() => _visitService.GetAllVisits();
 
-    public bool DeleteVisit(string id)
-    {
-        try
-        {
-            _visitRepo.DeleteVisit(id);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[Error] Cannot delete visit '{id}': {ex.Message}");
-            return false;
-        }
-    }
+    public Visit GetVisitById(string id) => _visitService.GetVisitById(id);
 
-    public decimal GetTotalVisitCostByYear(int recordNumber, int year)
-    {
-        try
-        {
-            return _visitRepo.GetPatientTotalCostByYear(recordNumber, year);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[Error] Failed to calculate total visit cost: {ex.Message}");
-            return 0;
-        }
-    }
+    public bool CreateVisit(Visit visit) => _visitService.CreateVisit(visit);
+
+    public bool UpdateVisit(string id, Visit updatedVisit) => _visitService.UpdateVisit(id, updatedVisit);
+
+    public bool DeleteVisit(string id) => _visitService.DeleteVisit(id);
+
+    public decimal GetTotalVisitCostByYear(int recordNumber, int year) =>
+        _visitService.GetPatientTotalCostByYear(recordNumber, year);
 
     // -------------------- PAYMENT MANAGEMENT --------------------
 
-    public List<Payment> GetAllPayments()
-    {
-        try
-        {
-            return _paymentRepo.GetAllPayments();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[Error] Failed to fetch payments: {ex.Message}");
-            return new List<Payment>();
-        }
-    }
+    public List<Payment> GetAllPayments() => _paymentService.GetAllPayments();
 
-    public bool DeletePayment(string id)
+    public Payment GetPaymentById(string id) => _paymentService.GetPaymentById(id);
+
+    public bool CreatePayment(Payment payment) => _paymentService.CreatePayment(payment);
+
+    public bool UpdatePayment(string id, Payment updated) => _paymentService.UpdatePayment(id, updated);
+
+    public bool DeletePayment(string id) => _paymentService.DeletePayment(id);
+
+    public decimal GetClinicRevenueByPeriod(DateTime start, DateTime end) =>
+        _paymentService.GetClinicRevenueByPeriod(start, end);
+    
+    // -------------------- REGISTRATION REQUESTS (Admin responsibilities) --------------------
+
+    public bool ApproveRegistration(string requestId, Role initialRole = Role.Patient)
     {
         try
         {
-            _paymentRepo.DeletePayment(id);
-            return true;
+            return _requestService.ApproveRequest(requestId, initialRole);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[Error] Cannot delete payment '{id}': {ex.Message}");
+            Console.WriteLine($"[Error] ApproveRegistration failed: {ex.Message}");
             return false;
         }
     }
 
-    public decimal GetClinicRevenueByPeriod(DateTime start, DateTime end)
+    public bool RejectRegistration(string requestId)
     {
         try
         {
-            if (end < start)
-                throw new ArgumentException("End date cannot be earlier than start date.");
-
-            return _paymentRepo.GetClinicRevenueByPeriod(start, end);
+            return _requestService.RejectRequest(requestId);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[Error] Failed to calculate revenue: {ex.Message}");
-            return 0;
+            Console.WriteLine($"[Error] RejectRegistration failed: {ex.Message}");
+            return false;
         }
     }
 
@@ -145,9 +119,9 @@ public class AdministratorService : UserService
         try
         {
             var totalUsers = base.GetAllUsers().Count;
-            var totalVisits = _visitRepo.GetAllVisits().Count;
-            var totalPayments = _paymentRepo.GetAllPayments().Count;
-            var totalRevenue = _paymentRepo.GetClinicRevenueByPeriod(start, end);
+            var totalVisits = _visitService.GetAllVisits().Count;
+            var totalPayments = _paymentService.GetAllPayments().Count;
+            var totalRevenue = _paymentService.GetClinicRevenueByPeriod(start, end);
 
             return (totalUsers, totalVisits, totalPayments, totalRevenue);
         }
