@@ -1,6 +1,8 @@
-﻿using CourseWork.Repositories;
+﻿using CourseWork.DTOs;
+using CourseWork.Repositories;
 using Сoursework.Models;
 using Сoursework.Repositories;
+using RegistrationRequest = CourseWork.Models.RegistrationRequest;
 
 namespace Сoursework.Services;
 
@@ -85,6 +87,10 @@ public class AdministratorService : UserService
         _paymentService.GetClinicRevenueByPeriod(start, end);
     
     // -------------------- REGISTRATION REQUESTS (Admin responsibilities) --------------------
+    public List<RegistrationRequest> GetPendingRequests()
+    {
+        return _requestService.GetPendingRequests();
+    }
 
     public bool ApproveRegistration(string requestId, Role initialRole = Role.Patient)
     {

@@ -199,6 +199,10 @@ public IActionResult GetRevenueByPeriod([FromQuery] DateTime start, [FromQuery] 
 }
 
     // -------------------- Registration Requests --------------------
+    [HttpGet("pending")]
+    [Authorize(Roles = "Administrator")]
+    public IActionResult GetPending() => Ok(_adminService.GetPendingRequests());
+    
     [HttpPost("requests/{id}/approve")]
     public IActionResult ApproveRegistration(string id, [FromQuery] Role role = Role.Patient)
     {
