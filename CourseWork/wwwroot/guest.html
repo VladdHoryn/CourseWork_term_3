@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Guest Dashboard</title>
+
+    <!-- ✅ Bootstrap CSS -->
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+    />
+
+    <!-- ✅ Bootstrap Icons (опційно) -->
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+            rel="stylesheet"
+    />
+</head>
+
+<body class="bg-light">
+
+<!-- ===== Header ===== -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary px-3">
+    <a class="navbar-brand" href="#">Guest Dashboard</a>
+    <div class="ms-auto">
+        <button id="login-btn" class="btn btn-outline-light">
+            <i class="bi bi-box-arrow-in-right"></i> Login
+        </button>
+    </div>
+</nav>
+
+<!-- ===== Main Layout ===== -->
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark text-white sidebar p-0 vh-100">
+            <div class="position-sticky">
+                <ul class="nav flex-column mt-3">
+                    <li class="nav-item">
+                        <button class="nav-link text-white active w-100 text-start" data-tab="welcome">
+                            <i class="bi bi-house-door"></i> Вітання
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link text-white w-100 text-start" data-tab="statistics">
+                            <i class="bi bi-bar-chart"></i> Статистика
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link text-white w-100 text-start" data-tab="register">
+                            <i class="bi bi-person-plus"></i> Реєстрація
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 bg-white">
+
+            <!-- Вітання -->
+            <section id="welcome" class="tab active">
+                <h2>👋 Вітаємо, гість!</h2>
+                <p id="welcome-message" class="text-secondary mt-3">Завантаження інформації...</p>
+            </section>
+
+            <!-- Статистика -->
+            <section id="statistics" class="tab d-none">
+                <h2 class="mb-3">📊 Статистика системи</h2>
+                <div class="row g-3 mb-3">
+                    <div class="col-auto">
+                        <label class="form-label">Початкова дата</label>
+                        <input type="date" id="start-date" class="form-control">
+                    </div>
+                    <div class="col-auto">
+                        <label class="form-label">Кінцева дата</label>
+                        <input type="date" id="end-date" class="form-control">
+                    </div>
+                    <div class="col-auto d-flex align-items-end">
+                        <button id="load-stats" class="btn btn-primary">
+                            <i class="bi bi-search"></i> Завантажити
+                        </button>
+                    </div>
+                </div>
+                <div id="stats-result" class="alert alert-info d-none"></div>
+            </section>
+
+            <!-- Реєстрація -->
+            <section id="register" class="tab d-none">
+                <h2>📝 Запит на реєстрацію</h2>
+                <form id="register-form" class="mt-3 w-50">
+                    <div class="mb-3">
+                        <label class="form-label">Логін</label>
+                        <input type="text" id="username" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Пароль</label>
+                        <input type="password" id="password" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">ПІБ</label>
+                        <input type="text" id="fullname" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Телефон</label>
+                        <input type="text" id="phone" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Адреса</label>
+                        <input type="text" id="address" class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="bi bi-send"></i> Відправити запит
+                    </button>
+                </form>
+                <div id="register-message" class="mt-3"></div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<!-- ✅ Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ✅ Custom Logic -->
+<script src="js/guest.js"></script>
+</body>
+</html>
