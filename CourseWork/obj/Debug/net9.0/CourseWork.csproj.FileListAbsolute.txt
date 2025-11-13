@@ -114,3 +114,5 @@ C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\bin\Debug\net9.0\Micros
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\bin\Debug\net9.0\Microsoft.IdentityModel.Tokens.dll
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\bin\Debug\net9.0\System.IdentityModel.Tokens.Jwt.dll
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.sourcelink.json
+C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\pr0ve9943t-g4x5d9445x.gz
+C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\rguqrk168c-gd0fa3u78l.gz
