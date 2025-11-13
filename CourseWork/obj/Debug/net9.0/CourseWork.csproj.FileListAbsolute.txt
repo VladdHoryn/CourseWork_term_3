@@ -113,3 +113,4 @@ C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\bin\Debug\net9.0\Micros
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\bin\Debug\net9.0\Microsoft.IdentityModel.Tokens.dll
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\bin\Debug\net9.0\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.sourcelink.json

@@ -1,6 +1,7 @@
 ﻿using System.Runtime.InteropServices.JavaScript;
 using System.Security.Policy;
 using BCrypt.Net;
+using Microsoft.AspNetCore.Identity;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -66,12 +67,19 @@ public class User
         Address = address;
     }
     
-    public void SetPasswordHash(string password)
+    // public void SetPasswordHash(string password)
+    // {
+    //     if (string.IsNullOrWhiteSpace(password))
+    //         throw new ArgumentException("Password hash cannot be null or empty", nameof(password));
+    //
+    //     PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
+    // }
+    public void SetPasswordHash(string password, IPasswordHasher<User> hasher)
     {
         if (string.IsNullOrWhiteSpace(password))
-            throw new ArgumentException("Password hash cannot be null or empty", nameof(password));
+            throw new ArgumentException("Password cannot be empty.", nameof(password));
 
-        PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
+        PasswordHash = hasher.HashPassword(this, password);
     }
 
     public void SetUserRole(Role role)

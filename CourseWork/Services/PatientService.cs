@@ -3,11 +3,11 @@ using Сoursework.Models;
 
 namespace Сoursework.Services;
 
-public class PatientService
+public class PatientService : UserService
 {
     private readonly PatientRepository _repo;
 
-    public PatientService(PatientRepository repo)
+    public PatientService(PatientRepository repo): base(repo)
     {
         _repo = repo;
     }
