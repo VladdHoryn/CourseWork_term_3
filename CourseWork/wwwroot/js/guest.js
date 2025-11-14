@@ -148,11 +148,6 @@
         loadSpecialists();
     });
 
-    // --- Login Button ---
-    document.getElementById("login-btn").addEventListener("click", () => {
-        window.location.href = "/Account/Login";
-    });
-
     document.getElementById("btn-open-register")
         .addEventListener("click", () => window.location.href = "register.html");
 
