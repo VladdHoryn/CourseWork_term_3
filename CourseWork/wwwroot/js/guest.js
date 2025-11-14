@@ -148,41 +148,13 @@
         loadSpecialists();
     });
 
-    // --- Запит на реєстрацію ---
-    document.getElementById("register-form").addEventListener("submit", e => {
-        e.preventDefault();
-        const messageDiv = document.getElementById("register-message");
-
-        const dto = {
-            username: document.getElementById("username").value,
-            password: document.getElementById("password").value,
-            fullName: document.getElementById("fullname").value,
-            phone: document.getElementById("phone").value,
-            address: document.getElementById("address").value
-        };
-
-        fetch("/guest/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(dto)
-        })
-            .then(async res => {
-                const text = await res.text();
-                messageDiv.innerHTML = `<div class="alert ${res.ok ? "alert-success" : "alert-danger"}">${text}</div>`;
-            })
-            .catch(() => {
-                messageDiv.innerHTML = `<div class="alert alert-danger">Помилка з’єднання.</div>`;
-            });
-    });
-
     // --- Login Button ---
     document.getElementById("login-btn").addEventListener("click", () => {
         window.location.href = "/Account/Login";
     });
 
-    function openRegister() {
-        window.location.href = "register.html";
-    }
+    document.getElementById("btn-open-register")
+        .addEventListener("click", () => window.location.href = "register.html");
 
     function openForgotPassword() {
         window.location.href = "forgot-password.html";
