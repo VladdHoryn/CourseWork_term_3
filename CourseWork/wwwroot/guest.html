@@ -4,14 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Guest Dashboard</title>
-
-    <!-- ✅ Bootstrap CSS -->
+    
     <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
             rel="stylesheet"
     />
-
-    <!-- ✅ Bootstrap Icons (опційно) -->
+    
     <link
             href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
             rel="stylesheet"
@@ -20,15 +18,6 @@
 
 <body class="bg-light">
 
-<!-- ===== Header ===== -->
-<!--<nav class="navbar navbar-expand-lg navbar-dark bg-primary px-3">-->
-<!--    <a class="navbar-brand" href="#">Guest Dashboard</a>-->
-<!--    <div class="ms-auto">-->
-<!--        <button id="login-btn" class="btn btn-outline-light">-->
-<!--            <i class="bi bi-box-arrow-in-right"></i> Login-->
-<!--        </button>-->
-<!--    </div>-->
-<!--</nav>-->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3">
     <a class="navbar-brand" href="#">Service Desk</a>
 
@@ -40,9 +29,6 @@
         <ul class="navbar-nav me-auto">
             <li class="nav-item">
                 <a class="nav-link" href="guest.html">Головна</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="info.html">Інформація</a>
             </li>
         </ul>
 
@@ -72,10 +58,15 @@
                         </button>
                     </li>
                     <li class="nav-item">
-                        <button class="nav-link text-white w-100 text-start" data-tab="register">
-                            <i class="bi bi-person-plus"></i> Реєстрація
+                        <button class="nav-link text-white w-100 text-start" data-tab="specialists">
+                            <i class="bi bi-bar-chart"></i> Наші спеціалісти
                         </button>
                     </li>
+<!--                    <li class="nav-item">-->
+<!--                        <button class="nav-link text-white w-100 text-start" data-tab="register">-->
+<!--                            <i class="bi bi-person-plus"></i> Реєстрація-->
+<!--                        </button>-->
+<!--                    </li>-->
                 </ul>
             </div>
         </nav>
@@ -110,35 +101,29 @@
                 <div id="stats-result" class="alert alert-info d-none"></div>
             </section>
 
-            <!-- Реєстрація -->
-            <section id="register" class="tab d-none">
-                <h2>📝 Запит на реєстрацію</h2>
-                <form id="register-form" class="mt-3 w-50">
-                    <div class="mb-3">
-                        <label class="form-label">Логін</label>
-                        <input type="text" id="username" class="form-control" required>
+            <!-- Наші спеціалісти -->
+            <section id="specialists" class="tab d-none">
+                <h2 class="mb-3">👨‍⚕️ Наші спеціалісти</h2>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <input type="text" id="spec-search" class="form-control" placeholder="Пошук за ім’ям або посадою...">
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Пароль</label>
-                        <input type="password" id="password" class="form-control" required>
+                    <div class="col-md-3">
+                        <select id="spec-filter" class="form-select">
+                            <option value="">Всі спеціальності</option>
+                        </select>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">ПІБ</label>
-                        <input type="text" id="fullname" class="form-control">
+                    <div class="col-md-2">
+                        <button id="spec-refresh" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-arrow-repeat"></i> Оновити
+                        </button>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Телефон</label>
-                        <input type="text" id="phone" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Адреса</label>
-                        <input type="text" id="address" class="form-control">
-                    </div>
-                    <button type="submit" class="btn btn-success w-100">
-                        <i class="bi bi-send"></i> Відправити запит
-                    </button>
-                </form>
-                <div id="register-message" class="mt-3"></div>
+                </div>
+
+                <div id="specialist-list" class="row g-4">
+                    <!-- Сюди JS вставить картки спеціалістів -->
+                </div>
             </section>
         </main>
     </div>

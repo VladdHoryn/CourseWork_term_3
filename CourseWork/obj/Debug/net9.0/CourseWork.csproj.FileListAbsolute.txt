@@ -17,9 +17,6 @@ C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\Course
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\scopedcss\bundle\CourseWork.styles.css
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\scopedcss\projectbundle\CourseWork.bundle.scp.css
-C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\j8doxhcc8c-b9sayid5wm.gz
-C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\e1ckrfks5d-61n19gt1b8.gz
-C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\8uhyjn2ndu-xtxxf3hu2r.gz
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\q6as2fmyeb-t1cqhe9u97.gz
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\dr0ssjbhzg-c2jlpeoesf.gz
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\gf7ib7hutm-sejl45xvog.gz
@@ -114,5 +111,6 @@ C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\bin\Debug\net9.0\Micros
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\bin\Debug\net9.0\Microsoft.IdentityModel.Tokens.dll
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\bin\Debug\net9.0\System.IdentityModel.Tokens.Jwt.dll
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.sourcelink.json
-C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\pr0ve9943t-2g8ko3p5i8.gz
-C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\rguqrk168c-9mw43vgp9c.gz
+C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\dfolihd8x3-41gk227yjz.gz
+C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\pr0ve9943t-dvkv5cnyj6.gz
+C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\rguqrk168c-mrvi2ro2qd.gz

@@ -59,6 +59,95 @@
             });
     });
 
+    // ==============================
+//     Load Specialists Tab
+// ==============================
+    function loadSpecialists() {
+        const list = document.getElementById("specialist-list");
+        const filter = document.getElementById("spec-filter");
+
+        fetch("/guest/specialists")
+            .then(res => res.json())
+            .then(data => {
+                // Зберігаємо для фільтрації та пошуку
+                window.allSpecialists = data;
+
+                // --- Формуємо список спеціальностей для селекту ---
+                const specialties = [...new Set(data.map(s => s.speciality).filter(Boolean))].sort();
+                filter.innerHTML = `<option value="">Всі спеціальності</option>` +
+                    specialties.map(s => `<option value="${s}">${s}</option>`).join("");
+
+                // Відображення всіх спеціалістів
+                renderSpecialists(data);
+            })
+            .catch(() => {
+                list.innerHTML = `<div class="alert alert-danger">Не вдалося завантажити спеціалістів</div>`;
+            });
+    }
+
+// ==============================
+//     Render Specialists
+// ==============================
+    function renderSpecialists(arr) {
+        const list = document.getElementById("specialist-list");
+
+        if (!arr.length) {
+            list.innerHTML = `<div class="alert alert-warning">Спеціалістів не знайдено.</div>`;
+            return;
+        }
+
+        list.innerHTML = arr.map(s => `
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">${s.fullName ?? "Не вказано"}</h5>
+                    <p class="card-text text-secondary m-0">
+                        <i class="bi bi-briefcase"></i> ${s.speciality ?? "Не вказано"}
+                    </p>
+                    ${s.dateOfBirth ? `<p class="card-text text-muted m-0">
+                        <i class="bi bi-calendar"></i> ${new Date(s.dateOfBirth).toLocaleDateString("uk-UA")}
+                    </p>` : ""}
+                    <p class="card-text text-muted m-0">
+                        <i class="bi bi-person-badge"></i> Роль: ${s.speciality}
+                    </p>
+                </div>
+            </div>
+        </div>
+    `).join("");
+    }
+
+// ==============================
+//     Search and Filter
+// ==============================
+    document.getElementById("spec-search").addEventListener("input", () => {
+        const query = document.getElementById("spec-search").value.toLowerCase();
+        const filtered = window.allSpecialists.filter(s =>
+            (s.fullName && s.fullName.toLowerCase().includes(query)) ||
+            (s.speciality && s.speciality.toLowerCase().includes(query))
+        );
+        renderSpecialists(filtered);
+    });
+
+    document.getElementById("spec-filter").addEventListener("change", () => {
+        const value = document.getElementById("spec-filter").value;
+        if (!value) return renderSpecialists(window.allSpecialists);
+
+        const filtered = window.allSpecialists.filter(s => s.speciality === value);
+        renderSpecialists(filtered);
+    });
+
+// ==============================
+//     Manual Refresh
+// ==============================
+    document.getElementById("spec-refresh").addEventListener("click", () => loadSpecialists());
+
+// ==============================
+//     Load Specialists on Tab Click
+// ==============================
+    document.querySelector("[data-tab='specialists']").addEventListener("click", () => {
+        loadSpecialists();
+    });
+
     // --- Запит на реєстрацію ---
     document.getElementById("register-form").addEventListener("submit", e => {
         e.preventDefault();
