@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>📝 Запит на реєстрацію</h2>
+<form id="register-form" class="mt-3 w-50">
+    <div class="mb-3">
+        <label class="form-label">Логін</label>
+        <input type="text" id="username" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Пароль</label>
+        <input type="password" id="password" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">ПІБ</label>
+        <input type="text" id="fullname" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Телефон</label>
+        <input type="text" id="phone" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Адреса</label>
+        <input type="text" id="address" class="form-control">
+    </div>
+    <button type="submit" class="btn btn-success w-100">
+        <i class="bi bi-send"></i> Відправити запит
+    </button>
+</form>
+<div id="register-message" class="mt-3"></div>
+</body>
+</html>

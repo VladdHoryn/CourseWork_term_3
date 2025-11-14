@@ -1,6 +1,8 @@
 ﻿using CourseWork.DTOs;
+using CourseWork.Mappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Сoursework.Models;
 using Сoursework.Services;
 
 namespace CourseWork.Controllers;
@@ -11,10 +13,12 @@ namespace CourseWork.Controllers;
 public class GuestController : ControllerBase
 {
     private readonly GuestService _guestService;
+    private readonly SpecialistService _specialistService;
 
-    public GuestController(GuestService guestService)
+    public GuestController(GuestService guestService, SpecialistService specialistService)
     {
         _guestService = guestService;
+        _specialistService = specialistService;
     }
 
     // -------------------- Dashboard --------------------
@@ -68,5 +72,21 @@ public class GuestController : ControllerBase
             return Ok($"Registration request for '{dto.Username}' has been sent successfully.");
 
         return BadRequest("Failed to send registration request. Possibly username already exists or invalid data provided.");
+    }
+    
+    // -------------------- Specialists --------------------
+    [HttpGet("specialists")]
+    public IActionResult GetSpecialists()
+    {
+        var specialists = _specialistService.GetAllSpecialists()
+                                            .Select(SpecialistMapper.ToDto)
+                                            .ToList();
+        return Ok(specialists);
+    }
+
+    [HttpGet("specialists/group-by-specialty")]
+    public IActionResult CountBySpecialty()
+    {
+        return Ok(_specialistService.GetAllDoctorsGroupedBySpecialty());
     }
 }

@@ -5,24 +5,12 @@
       "PackagePath": "staticwebassets\\CourseWork.whmnvjakgv.bundle.scp.css"
     },
     {
-      "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\css\\site.css",
-      "PackagePath": "staticwebassets\\css\\site.css"
-    },
-    {
-      "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\favicon.ico",
-      "PackagePath": "staticwebassets\\favicon.ico"
-    },
-    {
       "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\guest.html",
       "PackagePath": "staticwebassets\\guest.html"
     },
     {
       "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\guest.js",
       "PackagePath": "staticwebassets\\js\\guest.js"
-    },
-    {
-      "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\site.js",
-      "PackagePath": "staticwebassets\\js\\site.js"
     },
     {
       "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\lib\\bootstrap\\LICENSE",
@@ -263,6 +251,10 @@
     {
       "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\lib\\jquery\\dist\\jquery.slim.min.map",
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.slim.min.map"
+    },
+    {
+      "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\register.html",
+      "PackagePath": "staticwebassets\\register.html"
     },
     {
       "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.CourseWork.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
