@@ -98,6 +98,9 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// ✅ Це забезпечить доступ до файлів у wwwroot (включно з guest.html)
+app.UseDefaultFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
@@ -106,16 +109,19 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // ========================
-// Routing
+// Custom Route — відкриття guest.html при запуску
 // ========================
+app.MapGet("/", async context =>
+{
+    context.Response.Redirect("/guest.html");
+});
 
-// Важливо: Для атрибутних маршрутів
+// ========================
+// Routing для Controllers і Razor Pages
+// ========================
 app.MapControllers();
-
-// Якщо у тебе є Razor Pages (наприклад, /Account/Login)
 app.MapRazorPages();
 
-// Базовий маршрут для MVC Views
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

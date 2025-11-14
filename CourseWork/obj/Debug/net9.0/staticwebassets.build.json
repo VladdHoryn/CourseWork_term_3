@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "kjhrdmmuME/0IFCN4vfJuUk5w3qkLpIhDUw83tTAAPo=",
+  "Hash": "5ieDh3XrpC45y6NZ/EhQdtc+k87o6lNmYHF5N1AcL98=",
   "Source": "CourseWork",
   "BasePath": "_content/CourseWork",
   "Mode": "Default",
@@ -1025,6 +1025,27 @@
       "OriginalItemSpec": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js.map"
     },
     {
+      "Identity": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\pr0ve9943t-2g8ko3p5i8.gz",
+      "SourceId": "CourseWork",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\",
+      "BasePath": "_content/CourseWork",
+      "RelativePath": "guest#[.{fingerprint=2g8ko3p5i8}]?.html.gz",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\guest.html",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "Fingerprint": "fojsecnz2o",
+      "Integrity": "Yf+FwP3pNcSVR+KubGKAOLeBNhxv/CbkerLivsn1mbo=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\guest.html"
+    },
+    {
       "Identity": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\q6as2fmyeb-t1cqhe9u97.gz",
       "SourceId": "CourseWork",
       "SourceType": "Discovered",
@@ -1065,6 +1086,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css.map"
+    },
+    {
+      "Identity": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\rguqrk168c-9mw43vgp9c.gz",
+      "SourceId": "CourseWork",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\",
+      "BasePath": "_content/CourseWork",
+      "RelativePath": "js/guest#[.{fingerprint=9mw43vgp9c}]?.js.gz",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\guest.js",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "Fingerprint": "bmegv6j5x0",
+      "Integrity": "/Yoj1WUm2cPkyB5+FG5AmvRvLYpIliHambL2334BiDM=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\guest.js"
     },
     {
       "Identity": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\uchsegl6o8-9vr69e8ynj.gz",
@@ -1443,6 +1485,48 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\favicon.ico"
+    },
+    {
+      "Identity": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\guest.html",
+      "SourceId": "CourseWork",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\",
+      "BasePath": "_content/CourseWork",
+      "RelativePath": "guest#[.{fingerprint}]?.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "2g8ko3p5i8",
+      "Integrity": "PsQY7bgW3YaM1QsG7bx+A0TiC2y6450Fh3O+4BamwEw=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\guest.html"
+    },
+    {
+      "Identity": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\guest.js",
+      "SourceId": "CourseWork",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\",
+      "BasePath": "_content/CourseWork",
+      "RelativePath": "js/guest#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "9mw43vgp9c",
+      "Integrity": "34L3KdAWX/3SR3VbYJfF1CvuZ5aPs5Y5joB6dqfUtT8=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\guest.js"
     },
     {
       "Identity": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\site.js",
@@ -3916,6 +4000,602 @@
         {
           "Name": "integrity",
           "Value": "sha256-wfFuuYm+Lh6RbCeeiUqxw334b/hIOkp5j9eokGUM1Y0="
+        }
+      ]
+    },
+    {
+      "Route": "guest.2g8ko3p5i8.html",
+      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\pr0ve9943t-2g8ko3p5i8.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000492125984"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2031"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Yf+FwP3pNcSVR+KubGKAOLeBNhxv/CbkerLivsn1mbo=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 14 Nov 2025 09:19:43 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"PsQY7bgW3YaM1QsG7bx+A0TiC2y6450Fh3O+4BamwEw=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "2g8ko3p5i8"
+        },
+        {
+          "Name": "label",
+          "Value": "guest.html"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-PsQY7bgW3YaM1QsG7bx+A0TiC2y6450Fh3O+4BamwEw="
+        }
+      ]
+    },
+    {
+      "Route": "guest.2g8ko3p5i8.html",
+      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\guest.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "8187"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"PsQY7bgW3YaM1QsG7bx+A0TiC2y6450Fh3O+4BamwEw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 14 Nov 2025 09:19:43 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "2g8ko3p5i8"
+        },
+        {
+          "Name": "label",
+          "Value": "guest.html"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-PsQY7bgW3YaM1QsG7bx+A0TiC2y6450Fh3O+4BamwEw="
+        }
+      ]
+    },
+    {
+      "Route": "guest.2g8ko3p5i8.html.gz",
+      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\pr0ve9943t-2g8ko3p5i8.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2031"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Yf+FwP3pNcSVR+KubGKAOLeBNhxv/CbkerLivsn1mbo=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 14 Nov 2025 09:19:43 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "2g8ko3p5i8"
+        },
+        {
+          "Name": "label",
+          "Value": "guest.html.gz"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Yf+FwP3pNcSVR+KubGKAOLeBNhxv/CbkerLivsn1mbo="
+        }
+      ]
+    },
+    {
+      "Route": "guest.html",
+      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\pr0ve9943t-2g8ko3p5i8.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000492125984"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2031"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Yf+FwP3pNcSVR+KubGKAOLeBNhxv/CbkerLivsn1mbo=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 14 Nov 2025 09:19:43 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"PsQY7bgW3YaM1QsG7bx+A0TiC2y6450Fh3O+4BamwEw=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-PsQY7bgW3YaM1QsG7bx+A0TiC2y6450Fh3O+4BamwEw="
+        }
+      ]
+    },
+    {
+      "Route": "guest.html",
+      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\guest.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "8187"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"PsQY7bgW3YaM1QsG7bx+A0TiC2y6450Fh3O+4BamwEw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 14 Nov 2025 09:19:43 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-PsQY7bgW3YaM1QsG7bx+A0TiC2y6450Fh3O+4BamwEw="
+        }
+      ]
+    },
+    {
+      "Route": "guest.html.gz",
+      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\pr0ve9943t-2g8ko3p5i8.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2031"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Yf+FwP3pNcSVR+KubGKAOLeBNhxv/CbkerLivsn1mbo=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 14 Nov 2025 09:19:43 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Yf+FwP3pNcSVR+KubGKAOLeBNhxv/CbkerLivsn1mbo="
+        }
+      ]
+    },
+    {
+      "Route": "js/guest.9mw43vgp9c.js",
+      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\rguqrk168c-9mw43vgp9c.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000618811881"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1615"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"/Yoj1WUm2cPkyB5+FG5AmvRvLYpIliHambL2334BiDM=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 14 Nov 2025 09:20:58 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"34L3KdAWX/3SR3VbYJfF1CvuZ5aPs5Y5joB6dqfUtT8=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "9mw43vgp9c"
+        },
+        {
+          "Name": "label",
+          "Value": "js/guest.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-34L3KdAWX/3SR3VbYJfF1CvuZ5aPs5Y5joB6dqfUtT8="
+        }
+      ]
+    },
+    {
+      "Route": "js/guest.9mw43vgp9c.js",
+      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\guest.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "4945"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"34L3KdAWX/3SR3VbYJfF1CvuZ5aPs5Y5joB6dqfUtT8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 14 Nov 2025 09:20:58 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "9mw43vgp9c"
+        },
+        {
+          "Name": "label",
+          "Value": "js/guest.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-34L3KdAWX/3SR3VbYJfF1CvuZ5aPs5Y5joB6dqfUtT8="
+        }
+      ]
+    },
+    {
+      "Route": "js/guest.9mw43vgp9c.js.gz",
+      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\rguqrk168c-9mw43vgp9c.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1615"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"/Yoj1WUm2cPkyB5+FG5AmvRvLYpIliHambL2334BiDM=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 14 Nov 2025 09:20:58 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "9mw43vgp9c"
+        },
+        {
+          "Name": "label",
+          "Value": "js/guest.js.gz"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-/Yoj1WUm2cPkyB5+FG5AmvRvLYpIliHambL2334BiDM="
+        }
+      ]
+    },
+    {
+      "Route": "js/guest.js",
+      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\rguqrk168c-9mw43vgp9c.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000618811881"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1615"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"/Yoj1WUm2cPkyB5+FG5AmvRvLYpIliHambL2334BiDM=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 14 Nov 2025 09:20:58 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"34L3KdAWX/3SR3VbYJfF1CvuZ5aPs5Y5joB6dqfUtT8=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-34L3KdAWX/3SR3VbYJfF1CvuZ5aPs5Y5joB6dqfUtT8="
+        }
+      ]
+    },
+    {
+      "Route": "js/guest.js",
+      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\guest.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "4945"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"34L3KdAWX/3SR3VbYJfF1CvuZ5aPs5Y5joB6dqfUtT8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 14 Nov 2025 09:20:58 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-34L3KdAWX/3SR3VbYJfF1CvuZ5aPs5Y5joB6dqfUtT8="
+        }
+      ]
+    },
+    {
+      "Route": "js/guest.js.gz",
+      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\rguqrk168c-9mw43vgp9c.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1615"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"/Yoj1WUm2cPkyB5+FG5AmvRvLYpIliHambL2334BiDM=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 14 Nov 2025 09:20:58 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-/Yoj1WUm2cPkyB5+FG5AmvRvLYpIliHambL2334BiDM="
         }
       ]
     },
