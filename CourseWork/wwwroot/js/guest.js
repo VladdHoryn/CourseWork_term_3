@@ -90,4 +90,38 @@
     document.getElementById("login-btn").addEventListener("click", () => {
         window.location.href = "/Account/Login";
     });
+
+    function openRegister() {
+        window.location.href = "register.html";
+    }
+
+    function openForgotPassword() {
+        window.location.href = "forgot-password.html";
+    }
+
+// Приклад відправки запиту на API Login
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const username = document.getElementById("loginUsername").value;
+        const password = document.getElementById("loginPassword").value;
+
+        const response = await fetch("/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem("token", data.token);
+
+            alert("Успішний вхід!");
+            window.location.reload();
+        } else {
+            alert("Невірний логін або пароль");
+        }
+    });
 });
+
+

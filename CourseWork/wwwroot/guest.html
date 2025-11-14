@@ -21,11 +21,34 @@
 <body class="bg-light">
 
 <!-- ===== Header ===== -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary px-3">
-    <a class="navbar-brand" href="#">Guest Dashboard</a>
-    <div class="ms-auto">
-        <button id="login-btn" class="btn btn-outline-light">
-            <i class="bi bi-box-arrow-in-right"></i> Login
+<!--<nav class="navbar navbar-expand-lg navbar-dark bg-primary px-3">-->
+<!--    <a class="navbar-brand" href="#">Guest Dashboard</a>-->
+<!--    <div class="ms-auto">-->
+<!--        <button id="login-btn" class="btn btn-outline-light">-->
+<!--            <i class="bi bi-box-arrow-in-right"></i> Login-->
+<!--        </button>-->
+<!--    </div>-->
+<!--</nav>-->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3">
+    <a class="navbar-brand" href="#">Service Desk</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="guest.html">Головна</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="info.html">Інформація</a>
+            </li>
+        </ul>
+
+        <!-- Кнопка Login -->
+        <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#loginModal">
+            Увійти
         </button>
     </div>
 </nav>
@@ -118,6 +141,51 @@
                 <div id="register-message" class="mt-3"></div>
             </section>
         </main>
+    </div>
+</div>
+
+<!-- ===================== -->
+<!--      LOGIN MODAL      -->
+<!-- ===================== -->
+<div class="modal fade" id="loginModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-3">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Вхід до системи</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label class="form-label">Логін</label>
+                        <input type="text" class="form-control" id="loginUsername" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Пароль</label>
+                        <input type="password" class="form-control" id="loginPassword" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Увійти</button>
+                </form>
+
+                <hr>
+
+                <div class="d-flex justify-content-between">
+                    <button class="btn btn-link p-0" onclick="openRegister()">
+                        Зареєструватися
+                    </button>
+
+                    <button class="btn btn-link p-0" onclick="openForgotPassword()">
+                        Забув пароль?
+                    </button>
+                </div>
+
+            </div>
+        </div>
     </div>
 </div>
 
