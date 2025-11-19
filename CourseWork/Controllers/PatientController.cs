@@ -7,28 +7,30 @@ using Сoursework.Services;
 namespace CourseWork.Controllers;
 
 [Route("patient")]
-[Authorize(Roles = "Patient")] // 🔥 тільки пацієнти!
+[Authorize(Roles = "Patient")]
 public class PatientController : Controller
 {
     private readonly PatientService _patientService;
     private readonly VisitService _visitService;
     private readonly PaymentService _paymentService;
+    private readonly SpecialistService _specialistService;
 
     public PatientController(
         PatientService patientService,
         VisitService visitService,
-        PaymentService paymentService)
+        PaymentService paymentService,
+        SpecialistService specialistService)  // 🔥 додаємо
     {
         _patientService = patientService;
         _visitService = visitService;
         _paymentService = paymentService;
+        _specialistService = specialistService;
     }
 
     private User GetCurrentPatient()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId == null) return null;
-
         return _patientService.GetById(userId);
     }
 
@@ -82,7 +84,6 @@ public class PatientController : Controller
         return patient == null ? Unauthorized() : Ok(patient);
     }
 
-    // -------------------- UPDATE PROFILE --------------------
     [HttpPost("profile/update")]
     public IActionResult UpdateProfile(string fullName, string phone, string address)
     {
@@ -96,7 +97,6 @@ public class PatientController : Controller
         return Ok();
     }
 
-    // -------------------- CHANGE PASSWORD --------------------
     [HttpPost("profile/password")]
     public IActionResult UpdatePassword(string newPassword)
     {
@@ -105,5 +105,26 @@ public class PatientController : Controller
 
         _patientService.UpdatePassword(patient.UserName, newPassword);
         return Ok();
+    }
+
+    // -------------------- SPECIALISTS --------------------
+
+    // Отримати список всіх спеціалістів
+    [HttpGet("specialists")]
+    public IActionResult GetAllSpecialists()
+    {
+        var specialists = _specialistService.GetAllSpecialists();
+        return Ok(specialists);
+    }
+
+    // Отримати список спеціалістів за спеціальністю (опційно)
+    [HttpGet("specialists/by-specialty")]
+    public IActionResult GetSpecialistsBySpecialty([FromQuery] string specialty)
+    {
+        if (string.IsNullOrWhiteSpace(specialty))
+            return BadRequest("Specialty is required");
+
+        var specialists = _specialistService.GetBySpecialty(specialty);
+        return Ok(specialists);
     }
 }
