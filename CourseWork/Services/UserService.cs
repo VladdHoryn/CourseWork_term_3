@@ -92,7 +92,7 @@ public class UserService
             if (string.IsNullOrWhiteSpace(newPassword))
                 throw new ArgumentException("New password cannot be empty.");
 
-            _userRepo.UpdatePassword(username, newPassword);
+            _userRepo.UpdatePassword(username, newPassword, _hasher);
             return true;
         }
         catch (Exception ex)

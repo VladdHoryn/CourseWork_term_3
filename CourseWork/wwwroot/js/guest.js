@@ -151,9 +151,8 @@
     document.getElementById("btn-open-register")
         .addEventListener("click", () => window.location.href = "register.html");
 
-    function openForgotPassword() {
-        window.location.href = "forgot-password.html";
-    }
+    document.getElementById("btn-open-forgot-password")
+        .addEventListener("click", () => window.location.href = "forgot-password.html");
 
 // Приклад відправки запиту на API Login
     document.getElementById("loginForm").addEventListener("submit", async (e) => {
