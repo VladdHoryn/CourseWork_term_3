@@ -89,4 +89,19 @@ public class GuestController : ControllerBase
     {
         return Ok(_specialistService.GetAllDoctorsGroupedBySpecialty());
     }
+    
+    // -------------------- Update Password --------------------
+    [HttpPut("update-password")]
+    public IActionResult UpdatePassword([FromBody] UpdatePasswordDto dto)
+    {
+        if (dto == null || string.IsNullOrWhiteSpace(dto.Username) || string.IsNullOrWhiteSpace(dto.NewPassword))
+            return BadRequest("Username and new password are required.");
+
+        bool result = _guestService.UpdatePassword(dto.Username, dto.NewPassword);
+
+        if (result)
+            return Ok($"Password for user '{dto.Username}' has been successfully updated.");
+
+        return BadRequest($"Failed to update password for '{dto.Username}'. Make sure the user exists.");
+    }
 }
