@@ -1,11 +1,13 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Сoursework.Models;
 using Сoursework.Services;
 
 namespace CourseWork.Controllers;
 
 [Route("patient")]
+[Authorize(Roles = "Patient")] // 🔥 тільки пацієнти!
 public class PatientController : Controller
 {
     private readonly PatientService _patientService;
@@ -22,31 +24,29 @@ public class PatientController : Controller
         _paymentService = paymentService;
     }
 
-    // -------------------- DASHBOARD --------------------
-    [HttpGet("dashboard")]
-    [Authorize] // Переконайся що є
-    public IActionResult Dashboard()
+    private User GetCurrentPatient()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId is null)
-            return RedirectToAction("Login", "Auth");
+        if (userId == null) return null;
 
-        var patient = _patientService.GetById(userId);
-        if (patient is null)
-            return RedirectToAction("Login", "Auth");
-
-        return Ok(patient);
+        return _patientService.GetById(userId);
     }
 
-    // -------------------- VISITS LIST --------------------
+    // -------------------- DASHBOARD --------------------
+    [HttpGet("dashboard")]
+    public IActionResult Dashboard()
+    {
+        var patient = GetCurrentPatient();
+        return patient == null ? Unauthorized() : Ok(patient);
+    }
+
+    // -------------------- VISITS --------------------
     [HttpGet("visits")]
     public IActionResult Visits()
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        var patient = _patientService.GetById(userId);
-        if (patient == null)
-            return RedirectToAction("Login", "Auth");
+        var patient = GetCurrentPatient();
+        if (patient == null || patient.MedicalRecordNumber == null)
+            return Unauthorized();
 
         var visits = _visitService
             .GetAllVisits()
@@ -57,15 +57,13 @@ public class PatientController : Controller
         return Ok(visits);
     }
 
-    // -------------------- PAYMENTS / BILLS --------------------
+    // -------------------- BILLS --------------------
     [HttpGet("bills")]
     public IActionResult Bills()
     {
-        var username = User.Identity?.Name;
-        var patient = _patientService.SearchBySurname(username).FirstOrDefault();
-
+        var patient = GetCurrentPatient();
         if (patient == null || patient.MedicalRecordNumber == null)
-            return RedirectToAction("dashboard");
+            return Unauthorized();
 
         var payments = _paymentService
             .GetAllPayments()
@@ -76,62 +74,36 @@ public class PatientController : Controller
         return Ok(payments);
     }
 
-    // -------------------- PAY BILL --------------------
-    [HttpPost("bills/pay/{id}")]
-    public IActionResult PayBill(string id, decimal amount)
-    {
-        var payment = _paymentService.GetPaymentById(id);
-
-        try
-        {
-            payment.ProcessPayment(amount);
-            _paymentService.UpdatePayment(id, payment);
-        }
-        catch (Exception ex)
-        {
-            TempData["Error"] = ex.Message;
-        }
-
-        return RedirectToAction("Bills");
-    }
-
-    // -------------------- PROFILE VIEW --------------------
+    // -------------------- PROFILE --------------------
     [HttpGet("profile")]
     public IActionResult Profile()
     {
-        var username = User.Identity?.Name;
-        var patient = _patientService.SearchBySurname(username).FirstOrDefault();
-
-        if (patient == null)
-            return RedirectToAction("dashboard");
-
-        return Ok(patient);
+        var patient = GetCurrentPatient();
+        return patient == null ? Unauthorized() : Ok(patient);
     }
 
     // -------------------- UPDATE PROFILE --------------------
     [HttpPost("profile/update")]
     public IActionResult UpdateProfile(string fullName, string phone, string address)
     {
-        var username = User.Identity?.Name;
-        var patient = _patientService.SearchBySurname(username).FirstOrDefault();
+        var patient = GetCurrentPatient();
+        if (patient == null) return Unauthorized();
 
-        if (patient != null)
-        {
-            patient.SetFullName(fullName);
-            patient.SetContactInfo(phone, address);
-            _patientService.UpdateUser(patient);
-        }
+        patient.SetFullName(fullName);
+        patient.SetContactInfo(phone, address);
 
-        return RedirectToAction("Profile");
+        _patientService.UpdateUser(patient);
+        return Ok();
     }
 
     // -------------------- CHANGE PASSWORD --------------------
     [HttpPost("profile/password")]
     public IActionResult UpdatePassword(string newPassword)
     {
-        var username = User.Identity?.Name;
-        _patientService.UpdatePassword(username, newPassword);
+        var patient = GetCurrentPatient();
+        if (patient == null) return Unauthorized();
 
-        return RedirectToAction("Profile");
+        _patientService.UpdatePassword(patient.UserName, newPassword);
+        return Ok();
     }
 }
