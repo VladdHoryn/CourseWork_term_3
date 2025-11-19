@@ -153,28 +153,52 @@
 
     document.getElementById("btn-open-forgot-password")
         .addEventListener("click", () => window.location.href = "forgot-password.html");
-
-// Приклад відправки запиту на API Login
+    
     document.getElementById("loginForm").addEventListener("submit", async (e) => {
         e.preventDefault();
 
         const username = document.getElementById("loginUsername").value;
         const password = document.getElementById("loginPassword").value;
 
-        const response = await fetch("/auth/login", {
+        const response = await fetch("/api/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password })
         });
 
-        if (response.ok) {
-            const data = await response.json();
-            localStorage.setItem("token", data.token);
-
-            alert("Успішний вхід!");
-            window.location.reload();
-        } else {
+        if (!response.ok) {
             alert("Невірний логін або пароль");
+            return;
+        }
+
+        const data = await response.json();
+        const token = data.token;
+
+        localStorage.setItem("token", token);
+
+        // Декодуємо JWT
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        const role = payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+        
+        console.log("User role =", role);
+
+        // Перехід відповідно до ролі
+        switch (role) {
+            case "Patient":
+                window.location.href = "/patient.html";
+                break;
+            case "Specialist":
+                window.location.href = "/specialist.html";
+                break;
+            case "Operator":
+                window.location.href = "/operator.html";
+                break;
+            case "Administrator":
+                window.location.href = "/administrator.html";
+                break;
+            default:
+                alert("Невідома роль!");
+                break;
         }
     });
 });
