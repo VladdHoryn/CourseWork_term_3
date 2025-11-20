@@ -22,6 +22,23 @@ public class VisitMapper
         );
     }
     
+    public static Visit ToVisitFromCreateDto(VisitCreateDto dto, int patientMedicalRecord, string specialistId, bool isFirstVisit)
+    {
+        return new Visit(
+            patientMedicalRecord,
+            specialistId,
+            dto.VisitDate,
+            VisitStatus.Scheduled, // новий візит завжди Scheduled
+            isFirstVisit,          // автоматичне визначення
+            dto.Anamnesis,
+            dto.Diagnosis,
+            dto.Treatment,
+            dto.Recommendations,
+            dto.ServiceCost,
+            dto.MedicationCost
+        );
+    }
+
     public static VisitResponseDto ToResponse(Visit visit)
     {
         return new VisitResponseDto
@@ -37,7 +54,7 @@ public class VisitMapper
             Treatment = visit.Treatment,
             Recommendations = visit.Recommendations,
             ServiceCost = visit.ServiceCost,
-            MedicationCost = visit.MedicationCost
+            MedicationCost = visit.MedicationCost,
         };
     }
 
@@ -46,5 +63,18 @@ public class VisitMapper
         visit.UpdateMedicalInfo(dto.Anamnesis, dto.Diagnosis, dto.Treatment, dto.Recommendations);
         visit.SetCosts(dto.ServiceCost, dto.MedicationCost);
         visit.SetStatus_string(dto.Status);
+    }
+    
+    public static VisitDashboardDto ToDashboard(Visit visit, string patientName)
+    {
+        return new VisitDashboardDto
+        {
+            Id = visit.Id.ToString(),
+            PatientName = patientName,
+            VisitDate = visit.VisitDate,
+            Diagnosis = visit.Diagnosis,
+            Status = visit.Status.ToString(),
+            TotalCost = visit.ServiceCost + visit.MedicationCost
+        };
     }
 }
