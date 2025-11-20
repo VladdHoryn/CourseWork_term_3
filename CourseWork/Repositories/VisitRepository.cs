@@ -29,21 +29,18 @@ public class VisitRepository
     
     public Visit GetVisitById(string id)
     {
-        var objectId = ObjectId.Parse(id);
-        return _db_collection.Find(u => u.Id == objectId).FirstOrDefault();
+        return _db_collection.Find(u => u.Id == id).FirstOrDefault();
     }
     
     public void UpdateVisit(string id, Visit visit)
     {
-        var objectId = ObjectId.Parse(id);
-        var filter = Builders<Visit>.Filter.Eq(u => u.Id, objectId);
+        var filter = Builders<Visit>.Filter.Eq(u => u.Id, id);
         _db_collection.ReplaceOne(filter, visit);
     }
     
     public void DeleteVisit(string id)
     {
-        var objectId = ObjectId.Parse(id);
-        _db_collection.DeleteOne(u => u.Id == objectId);
+        _db_collection.DeleteOne(u => u.Id == id);
     }
 
     //  Task 2: Get total service cost for patient per year

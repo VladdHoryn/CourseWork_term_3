@@ -1,4 +1,5 @@
 ﻿using CourseWork.Repositories;
+using MongoDB.Bson;
 using Сoursework.Models;
 
 namespace Сoursework.Services;
@@ -162,8 +163,11 @@ public class SpecialistService : UserService
             .GetAllPayments()
             .Where(p =>
             {
+                if (!ObjectId.TryParse(p.VisitId, out _))
+                    return false;
+
                 var visit = _visitService.GetVisitById(p.VisitId);
-                return visit.SpecialistId == specialistId;
+                return visit != null && visit.SpecialistId == specialistId;
             })
             .ToList();
     }
