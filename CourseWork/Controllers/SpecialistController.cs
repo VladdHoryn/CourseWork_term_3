@@ -283,4 +283,66 @@ public class SpecialistController : Controller
             return NotFound("Payment not found.");
         }
     }
+    
+    // =====================================================================
+// ============================== PATIENTS ===============================
+// =====================================================================
+
+    [HttpGet("patients")]
+    public IActionResult GetAllPatients()
+    {
+        var specialistId = GetCurrentSpecialistId();
+        if (specialistId is null)
+            return Unauthorized();
+
+        return Ok(_specialistService.GetAllPatients());
+    }
+
+    [HttpGet("patients/{medicalRecord}")]
+    public IActionResult GetPatientByMedicalRecord(int medicalRecord)
+    {
+        var specialistId = GetCurrentSpecialistId();
+        if (specialistId is null)
+            return Unauthorized();
+
+        var patient = _specialistService.GetPatientByMedicalRecord(medicalRecord);
+        if (patient is null)
+            return NotFound("Patient not found.");
+
+        return Ok(patient);
+    }
+
+    [HttpGet("patients/search")]
+    public IActionResult SearchPatientsBySurname([FromQuery] string surname)
+    {
+        var specialistId = GetCurrentSpecialistId();
+        if (specialistId is null)
+            return Unauthorized();
+
+        try
+        {
+            var result = _specialistService.SearchPatientsBySurname(surname);
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpGet("patients/filter")]
+    public IActionResult GetPatientsByFilters(
+        [FromQuery] DateTime? birthFrom,
+        [FromQuery] DateTime? birthTo,
+        [FromQuery] string? healthStatus)
+    {
+        var specialistId = GetCurrentSpecialistId();
+        if (specialistId is null)
+            return Unauthorized();
+
+        var patients = _specialistService.GetPatientsByFilters(
+            birthFrom, birthTo, specialistId, healthStatus);
+
+        return Ok(patients);
+    }
 }

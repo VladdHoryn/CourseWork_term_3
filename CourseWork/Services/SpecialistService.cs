@@ -9,16 +9,19 @@ public class SpecialistService : UserService
     private readonly SpecialistRepository _specialistRepository;
     private readonly PaymentService _paymentService;
     private readonly VisitService _visitService;
+    private readonly PatientRepository _patientRepository;
 
     public SpecialistService(
         SpecialistRepository repo,
         PaymentService paymentService,
-        VisitService visitService)
+        VisitService visitService,
+        PatientRepository patientRepository)
         : base(repo)
     {
         _specialistRepository = repo;
         _paymentService = paymentService;
         _visitService = visitService;
+        _patientRepository = patientRepository;
     }
 
     // =====================================================================
@@ -225,5 +228,48 @@ public class SpecialistService : UserService
             Console.WriteLine($"[SpecialistService] CancelPayment failed: {ex.Message}");
             return false;
         }
+    }
+    
+    // =====================================================================
+// ======================= PATIENT MANAGEMENT ===========================
+// =====================================================================
+
+    public List<User> GetAllPatients()
+    {
+        var patients = _patientRepository.GetAllPatients();
+        return patients.OrderBy(p => p.FullName).ToList();
+    }
+
+    public User? GetPatientByMedicalRecord(int medicalRecordNumber)
+    {
+        var patient = _patientRepository.GetPatientByMedicalRecord(medicalRecordNumber);
+
+        if (patient == null)
+            Console.WriteLine($"Patient with record {medicalRecordNumber} not found.");
+
+        return patient;
+    }
+
+    public List<User> SearchPatientsBySurname(string surname)
+    {
+        if (string.IsNullOrWhiteSpace(surname))
+            throw new ArgumentException("Surname cannot be empty.");
+
+        return _patientRepository.GetBySurname(surname);
+    }
+
+    public List<User> GetPatientsByFilters(
+        DateTime? birthDateFrom = null,
+        DateTime? birthDateTo = null,
+        string? specialistId = null,
+        string? healthStatus = null)
+    {
+        var result = _patientRepository.GetPatientsByFilters(
+            birthDateFrom, birthDateTo, specialistId, healthStatus);
+
+        if (result.Count == 0)
+            Console.WriteLine("No patients found matching the filters.");
+
+        return result;
     }
 }
