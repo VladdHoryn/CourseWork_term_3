@@ -332,4 +332,9 @@ public class VisitRepository
         var filter = Builders<Visit>.Filter.Eq(v => v.SpecialistId, doctorId);
         return _db_collection.Find(filter).ToList();
     }
+
+    public List<Visit> GetVisitsByPatientRecord(int record)
+    {
+        return _db_collection.Find(v => v.PatientMedicalRecord == record).ToList();
+    }
 }
