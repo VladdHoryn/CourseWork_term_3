@@ -1,14 +1,7 @@
-﻿// ========= AUTH FETCH ==========
-async function authFetch(url, options = {}) {
-    const token = localStorage.getItem("token");
-    if (!token) return null;
+﻿// ========= IMPORT AUTH ==========
+// Якщо файл через <script type="module">:
+import { authFetch } from "./auth.js";
 
-    const headers = options.headers || {};
-    headers["Authorization"] = `Bearer ${token}`;
-    headers["Content-Type"] = "application/json";
-
-    return fetch(url, { ...options, headers });
-}
 
 // ========= TAB SWITCHING ==========
 document.querySelectorAll("[data-tab]").forEach(btn => {
@@ -28,6 +21,7 @@ document.querySelectorAll("[data-tab]").forEach(btn => {
     });
 });
 
+
 // ========= DASHBOARD ==========
 async function loadDashboard() {
     const container = document.getElementById("dashboard-content");
@@ -37,17 +31,19 @@ async function loadDashboard() {
     if (!res || !res.ok) { container.innerHTML = "Error loading dashboard."; return; }
 
     const data = await res.json();
-    const todayVisits = data.Today.length;
-    const weekVisits = data.Week.length;
 
     container.innerHTML = `
-        <p><b>Today's Visits:</b> ${todayVisits}</p>
-        <p><b>Week Visits:</b> ${weekVisits}</p>
-        <p><b>Next Visit:</b> ${data.Week.length ? new Date(data.Week[0].VisitDate).toLocaleString() : 'None'}</p>
+        <p><b>Today's Visits:</b> ${data.Today?.length ?? 0}</p>
+        <p><b>Week Visits:</b> ${data.Week?.length ?? 0}</p>
+        <p><b>Next Visit:</b> ${
+        data.Week?.length ? new Date(data.Week[0].VisitDate).toLocaleString() : 'None'
+    }</p>
     `;
 }
 
-// ========= VISITS ==========
+
+
+// ========= VISITS LIST ==========
 async function loadVisits(filters = {}) {
     const container = document.getElementById("visits-list");
     container.innerHTML = "Loading...";
@@ -57,7 +53,10 @@ async function loadVisits(filters = {}) {
     if (!res || !res.ok) { container.innerHTML = "Error loading visits."; return; }
 
     const visits = await res.json();
-    if(!visits.length) { container.innerHTML = "<p class='text-secondary'>No visits found.</p>"; return; }
+    if(!visits.length) {
+        container.innerHTML = "<p class='text-secondary'>No visits found.</p>";
+        return;
+    }
 
     const table = document.createElement("table");
     table.className = "table table-striped";
@@ -66,9 +65,13 @@ async function loadVisits(filters = {}) {
             <tr>
                 <th>Date</th>
                 <th>Patient</th>
+                <th>Anamnesis</th>
                 <th>Diagnosis</th>
+                <th>Treatment</th>
+                <th>Service Cost</th>
+                <th>Medications</th>
+                <th>Total</th>
                 <th>Status</th>
-                <th>Cost</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -76,10 +79,14 @@ async function loadVisits(filters = {}) {
             ${visits.map(v => `
                 <tr>
                     <td>${new Date(v.VisitDate).toLocaleString()}</td>
-                    <td>${v.PatientName}</td>
+                    <td>${v.PatientName ?? v.PatientId}</td>
+                    <td>${v.Anamnesis ?? ""}</td>
                     <td>${v.Diagnosis ?? ""}</td>
+                    <td>${v.Treatment ?? ""}</td>
+                    <td>${v.ServiceCost ?? 0} грн</td>
+                    <td>${v.MedicationCost ?? 0} грн</td>
+                    <td>${(v.ServiceCost + v.MedicationCost).toFixed(2)} грн</td>
                     <td>${v.Status}</td>
-                    <td>${v.TotalCost}</td>
                     <td>
                         <button class="btn btn-sm btn-primary btn-edit" data-id="${v.Id}">Edit</button>
                         <button class="btn btn-sm btn-danger btn-delete" data-id="${v.Id}">Delete</button>
@@ -87,10 +94,13 @@ async function loadVisits(filters = {}) {
                 </tr>`).join('')}
         </tbody>
     `;
+
     container.innerHTML = "";
     container.appendChild(table);
 }
 
+
+// ========= VISIT FILTERS ==========
 document.getElementById("apply-visit-filters").addEventListener("click", () => {
     const patientSearch = document.getElementById("visit-patient-filter").value;
     const dateFrom = document.getElementById("visit-date-from").value;
@@ -98,16 +108,24 @@ document.getElementById("apply-visit-filters").addEventListener("click", () => {
     loadVisits({ patientSearch, dateFrom, dateTo });
 });
 
+
+
 // ========= PAYMENTS ==========
 async function loadPayments() {
     const container = document.getElementById("payments-list");
     container.innerHTML = "Loading...";
 
     const res = await authFetch("/specialist/payments");
-    if (!res || !res.ok) { container.innerHTML = "Error loading payments."; return; }
+    if (!res || !res.ok) {
+        container.innerHTML = "Error loading payments.";
+        return;
+    }
 
     const payments = await res.json();
-    if(!payments.length) { container.innerHTML = "<p class='text-secondary'>No payments found.</p>"; return; }
+    if(!payments.length) {
+        container.innerHTML = "<p class='text-secondary'>No payments found.</p>";
+        return;
+    }
 
     const table = document.createElement("table");
     table.className = "table table-striped";
@@ -127,9 +145,9 @@ async function loadPayments() {
             ${payments.map(p => `
                 <tr>
                     <td>${p.PatientMedicalRecord}</td>
-                    <td>${p.TotalAmount}</td>
-                    <td>${p.PaidAmount}</td>
-                    <td>${p.RemainingAmount}</td>
+                    <td>${p.TotalAmount} грн</td>
+                    <td>${p.PaidAmount} грн</td>
+                    <td>${p.RemainingAmount} грн</td>
                     <td>${new Date(p.IssuedDate).toLocaleDateString()}</td>
                     <td>${p.Status}</td>
                     <td>
@@ -139,9 +157,12 @@ async function loadPayments() {
                 </tr>`).join('')}
         </tbody>
     `;
+
     container.innerHTML = "";
     container.appendChild(table);
 }
+
+
 
 // ========= STATISTICS ==========
 async function loadStatistics() {
@@ -149,20 +170,27 @@ async function loadStatistics() {
     container.innerHTML = "Loading...";
 
     const res = await authFetch("/specialist/statistics");
-    if(!res || !res.ok) { container.innerHTML = "Error loading statistics."; return; }
+    if(!res || !res.ok) {
+        container.innerHTML = "Error loading statistics.";
+        return;
+    }
 
     const stats = await res.json();
+
     container.innerHTML = `
         <p><b>Average Patients per Day:</b> ${stats.AvgPatientsPerDay}</p>
         <p><b>Total Revenue:</b> ${stats.Revenue} грн</p>
     `;
 }
 
+
+
 // ========= LOGOUT ==========
 document.getElementById("btn-logout").addEventListener("click", () => {
     localStorage.removeItem("token");
     window.location.href = "/guest.html";
 });
+
 
 // AUTOLOAD DASHBOARD
 loadDashboard();
