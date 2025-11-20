@@ -225,13 +225,6 @@ async function loadPatients(){
 document.getElementById("apply-visit-filters").onclick = loadVisits;
 document.getElementById("apply-patient-filters").onclick = loadPatients;
 
-// ================= STATISTICS =================
-async function loadStatistics(){
-    const container = document.getElementById("statistics-content");
-    container.innerHTML = "Loading...";
-    container.innerHTML = "<p>Statistics coming soon...</p>";
-}
-
 // ================= LOGOUT ====================
 document.getElementById("btn-logout").onclick = ()=>{
     localStorage.removeItem("token");
