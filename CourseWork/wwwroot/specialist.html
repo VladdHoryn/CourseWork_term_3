@@ -269,35 +269,23 @@
                 <!-- ================= FILTERS ================= -->
                 <div class="card p-3 mb-3">
                     <div class="row g-2">
-
-                        <!-- Patient MR -->
                         <div class="col-md-3">
                             <input id="payment-patient-filter" class="form-control" placeholder="Search by Patient MR">
                         </div>
-
-                        <!-- Total Min -->
                         <div class="col-md-2">
                             <input id="payment-total-min" type="number" class="form-control" placeholder="Total min">
                         </div>
-
-                        <!-- Total Max -->
                         <div class="col-md-2">
                             <input id="payment-total-max" type="number" class="form-control" placeholder="Total max">
                         </div>
-
-                        <!-- Issued Date From -->
                         <div class="col-md-2">
                             <label class="form-label small mb-0">Issued From</label>
                             <input id="payment-issued-from" type="date" class="form-control">
                         </div>
-
-                        <!-- Issued Date To -->
                         <div class="col-md-2">
                             <label class="form-label small mb-0">Issued To</label>
                             <input id="payment-issued-to" type="date" class="form-control">
                         </div>
-
-                        <!-- Status -->
                         <div class="col-md-3 mt-2">
                             <select id="payment-status-filter" class="form-select">
                                 <option value="">Status: Any</option>
@@ -308,12 +296,9 @@
                                 <option value="4">Cancelled</option>
                             </select>
                         </div>
-
-                        <!-- Apply Filters -->
                         <div class="col-md-2 mt-2">
                             <button id="apply-payment-filters" class="btn btn-primary w-100">Apply</button>
                         </div>
-
                     </div>
                 </div>
 
@@ -322,6 +307,57 @@
 
                 <!-- ================= TABLE ================= -->
                 <div id="payments-table-container"></div>
+
+                <!-- ADD PAYMENT MODAL -->
+                <div class="modal fade" id="addPaymentModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add Payment</h5>
+                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="add-payment-form">
+                                    <div class="mb-3">
+                                        <label class="form-label">Select Visit</label>
+                                        <select id="add-payment-visit" class="form-select" required>
+                                            <option value="">Select visit</option>
+                                            <!-- варіанти підвантажуються через JS -->
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Total Amount</label>
+                                        <input id="add-payment-total" type="number" class="form-control" required>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button id="save-new-payment" class="btn btn-success">Add Payment</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CANCEL PAYMENT MODAL -->
+                <div class="modal fade" id="cancelPaymentModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title">Cancel Payment</h5>
+                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you want to cancel this payment?
+                                <input type="hidden" id="cancel-payment-id">
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                                <button id="confirm-cancel-payment" class="btn btn-danger">Yes, cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <!-- PATIENTS -->

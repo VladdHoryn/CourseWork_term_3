@@ -419,9 +419,9 @@ document.addEventListener("DOMContentLoaded", () => {
         addVisitModal.show();
     });
 
-    // ===== PAYMENTS =====
     let paymentsData = [];
 
+// ---------------- Load Payments ----------------
     async function loadPayments() {
         const res = await authFetch("/specialist/payments");
         if (!res || !res.ok) return;
@@ -437,83 +437,161 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
         let html = `<table class="table table-bordered table-hover">
-            <thead><tr>
-            <th>Patient MR</th><th>Total</th><th>Paid</th><th>Remaining</th><th>Issued Date</th>
-            <th>Due Date</th><th>Last PaymentDate</th><th>Status</th><th>Actions</th>
-            
-            </tr></thead><tbody>`;
+        <thead><tr>
+        <th>Patient MR</th><th>Total</th><th>Paid</th><th>Remaining</th>
+        <th>Issued Date</th><th>Due Date</th><th>Status</th><th>Actions</th>
+        </tr></thead><tbody>`;
+
         data.forEach(p => {
             const remaining = (p.totalAmount || p.amount) - (p.paidAmount || 0);
             html += `<tr>
-                <td>${p.patientMedicalRecord}</td>
-                <td>${p.totalAmount || p.amount}</td>
-                <td>${p.paidAmount || 0}</td>
-                <td>${remaining}</td>
-                <td>${p.issuedDate}</td>
-                <td>${p.issuedDate}</td>
-                <td>${p.lastPaymentDate}</td>
-                <td>${PaymentStatusMap[p.status] ?? "Unknown"}</td>
-                <td>
-                    <button class="btn btn-sm btn-primary btn-edit-payment" data-id="${p.id}">Edit</button>
-                    <button class="btn btn-sm btn-danger btn-cancel-payment" data-id="${p.id}">Cancel</button>
-                </td>
-            </tr>`;
+            <td>${p.patientMedicalRecord}</td>
+            <td>${p.totalAmount || p.amount}</td>
+            <td>${p.paidAmount || 0}</td>
+            <td>${remaining}</td>
+            <td>${p.issuedDate}</td>
+            <td>${p.dueDate || p.issuedDate}</td>
+            <td>${PaymentStatusMap[p.status] ?? "Unknown"}</td>
+            <td>
+                <button class="btn btn-sm btn-danger btn-cancel-payment" data-id="${p.id}">Cancel</button>
+            </td>
+        </tr>`;
         });
+
         html += "</tbody></table>";
         container.innerHTML = html;
     }
 
-    document.getElementById("apply-payment-filters").addEventListener("click", applyPaymentFilters);
-
-    function applyPaymentFilters() {
+// ---------------- Apply Filters ----------------
+    document.getElementById("apply-payment-filters")?.addEventListener("click", () => {
         let filtered = [...paymentsData];
-
-        const patientSearch = (document.getElementById("payment-patient-filter").value || "")
-            .toLowerCase();
-
-        const dateFrom = document.getElementById("payment-issued-from").value;
-        const dateTo = document.getElementById("payment-issued-to").value;
-
+        const patientSearch = (document.getElementById("payment-patient-filter").value || "").toLowerCase();
         const totalMin = parseFloat(document.getElementById("payment-total-min")?.value || "");
         const totalMax = parseFloat(document.getElementById("payment-total-max")?.value || "");
-
+        const dateFrom = document.getElementById("payment-issued-from").value;
+        const dateTo = document.getElementById("payment-issued-to").value;
         const status = document.getElementById("payment-status-filter")?.value || "";
 
-        // ---------- Patient MR search ----------
-        if (patientSearch) {
-            filtered = filtered.filter(p =>
-                String(p.patientMedicalRecord || "").toLowerCase().includes(patientSearch)
-            );
-        }
-
-        // ---------- Issued Date ----------
-        if (dateFrom) {
-            const from = new Date(dateFrom);
-            filtered = filtered.filter(v => new Date(v.p.issuedDate) >= from);
-            // filtered = filtered.filter(p => p.issuedDate >= dateFrom);
-        }
+        if (patientSearch) filtered = filtered.filter(p => String(p.patientMedicalRecord).toLowerCase().includes(patientSearch));
+        if (!isNaN(totalMin)) filtered = filtered.filter(p => (p.totalAmount || p.amount || 0) >= totalMin);
+        if (!isNaN(totalMax)) filtered = filtered.filter(p => (p.totalAmount || p.amount || 0) <= totalMax);
+        if (dateFrom) filtered = filtered.filter(p => new Date(p.issuedDate) >= new Date(dateFrom));
         if (dateTo) {
             const to = new Date(dateTo);
             to.setHours(23, 59, 59);
-            filtered = filtered.filter(v => new Date(v.visitDate) <= to);
-            // filtered = filtered.filter(p => p.issuedDate <= dateTo);
+            filtered = filtered.filter(p => new Date(p.issuedDate) <= to);
         }
-
-        // ---------- Total Amount Min/Max ----------
-        if (!isNaN(totalMin)) {
-            filtered = filtered.filter(p => (p.totalAmount || p.amount || 0) >= totalMin);
-        }
-        if (!isNaN(totalMax)) {
-            filtered = filtered.filter(p => (p.totalAmount || p.amount || 0) <= totalMax);
-        }
-
-        // ---------- Status ----------
-        if (status !== "") {
-            filtered = filtered.filter(p => String(p.status) === status);
-        }
+        if (status !== "") filtered = filtered.filter(p => String(p.status) === status);
 
         renderPaymentsTable(filtered);
+    });
+
+// ---------------- Load Patients for Dropdown ----------------
+    async function loadPatientsForPaymentDropdown() {
+        const res = await authFetch("/specialist/patients");
+        if (!res.ok) return;
+        patientsList = await res.json();
     }
+
+    let visitsList = [];
+
+// ---------------- Load Visits for Add Payment ----------------
+    async function loadVisitsForPaymentDropdown() {
+        const res = await authFetch("/specialist/visits");
+        if (!res.ok) return;
+        visitsList = await res.json();
+
+        const visitSelect = document.getElementById("add-payment-visit");
+        visitSelect.innerHTML = '<option value="">Select visit</option>';
+
+        visitsList.forEach(v => {
+            visitSelect.innerHTML += `<option value="${v.id}">
+            MR: ${v.patientMedicalRecord} | ${new Date(v.visitDate).toLocaleString()}
+        </option>`;
+        });
+    }
+
+// ---------------- Add Payment ----------------
+    document.getElementById("btn-add-payment")?.addEventListener("click", async () => {
+        await loadVisitsForPaymentDropdown();
+        document.getElementById("add-payment-form").reset();
+
+        const addPaymentModal = new bootstrap.Modal(document.getElementById("addPaymentModal"), { backdrop: 'static' });
+        addPaymentModal.show();
+    });
+
+// ---------------- On Visit Selection, Auto-fill Patient MR ----------------
+    document.getElementById("add-payment-visit")?.addEventListener("change", (e) => {
+        const visitId = e.target.value;
+        const visit = visitsList.find(v => v.id === visitId);
+        if (visit) {
+            document.getElementById("add-payment-patient-mr").value = visit.patientMedicalRecord;
+        }
+    });
+
+// ---------------- Save New Payment ----------------
+    document.getElementById("save-new-payment")?.addEventListener("click", async () => {
+        const visitId = document.getElementById("add-payment-visit").value;
+        if (!visitId) {
+            alert("Please select a visit!");
+            return;
+        }
+
+        // підтягуємо Patient MR з вибраного Visit
+        const selectedVisit = visitsList.find(v => v.id === visitId);
+        if (!selectedVisit) {
+            alert("Selected visit not found!");
+            return;
+        }
+
+        const dto = {
+            VisitId: visitId,
+            PatientMedicalRecord: selectedVisit.patientMedicalRecord,
+            Amount: Number(document.getElementById("add-payment-total").value),
+        };
+
+        try {
+            const res = await authFetch("/specialist/payments", {
+                method: "POST",
+                body: JSON.stringify(dto)
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                alert("Add payment failed: " + text);
+                return;
+            }
+
+            bootstrap.Modal.getInstance(document.getElementById("addPaymentModal")).hide();
+            await loadPayments();
+        } catch (err) {
+            alert("Error: " + err.message);
+        }
+    });
+
+
+// ---------------- Cancel Payment ----------------
+    document.addEventListener("click", e => {
+        if (e.target.classList.contains("btn-cancel-payment")) {
+            document.getElementById("cancel-payment-id").value = e.target.dataset.id;
+            new bootstrap.Modal(document.getElementById("cancelPaymentModal"), { backdrop: 'static' }).show();
+        }
+    });
+
+    document.getElementById("confirm-cancel-payment")?.addEventListener("click", async () => {
+        const id = document.getElementById("cancel-payment-id").value;
+        try {
+            const res = await authFetch(`/specialist/payments/${id}/cancel`, { method: "PATCH" });
+            if (!res.ok) {
+                alert("Cancel payment failed");
+                return;
+            }
+            bootstrap.Modal.getInstance(document.getElementById("cancelPaymentModal")).hide();
+            await loadPayments();
+        } catch (err) {
+            alert("Error: " + err.message);
+        }
+    });
 
     // ===== PATIENTS =====
     let patientsData = [];
