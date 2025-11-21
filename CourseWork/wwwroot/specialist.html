@@ -1,109 +1,161 @@
 ﻿<!DOCTYPE html>
 <html lang="uk">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Specialist Panel</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Specialist Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3">
+    <a class="navbar-brand" href="#">Specialist Portal</a>
+    <div class="ms-auto text-white d-flex align-items-center gap-3">
+        <div><i class="bi bi-person-circle"></i> Спеціаліст</div>
+        <button id="btn-logout" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right"></i> Logout</button>
+    </div>
+</nav>
+
 <div class="container-fluid">
     <div class="row">
+
         <!-- SIDEBAR -->
-        <div class="col-2 bg-light border-end vh-100 p-0">
-            <ul class="nav flex-column nav-pills p-3">
-                <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#dashboard">Dashboard</a>
+        <nav class="col-md-3 col-lg-2 d-md-block bg-dark text-white sidebar vh-100 p-0">
+            <ul class="nav flex-column mt-3">
+                <li class="nav-item">
+                    <button class="nav-link text-white active w-100 text-start" data-tab="dashboard"><i class="bi bi-speedometer2"></i> Dashboard</button>
                 </li>
-                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#visits">Visits</a></li>
-                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#payments">Payments</a></li>
-                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#patients">Patients</a></li>
+                <li class="nav-item">
+                    <button class="nav-link text-white w-100 text-start" data-tab="visits"><i class="bi bi-calendar-check"></i> Visits</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link text-white w-100 text-start" data-tab="payments"><i class="bi bi-receipt"></i> Payments</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link text-white w-100 text-start" data-tab="patients"><i class="bi bi-people"></i> Patients</button>
+                </li>
             </ul>
-        </div>
+        </nav>
 
+        <!-- MAIN CONTENT -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 bg-white">
 
-        <!-- CONTENT -->
-        <div class="col-10 p-4">
-            <div class="tab-content">
-                <!-- Dashboard -->
-                <div class="tab-pane fade show active" id="dashboard">
-                    <h2>Dashboard</h2>
-                    <div id="dashboardContent"></div>
+            <!-- DASHBOARD -->
+            <section id="dashboard" class="tab active">
+                <h2>📌 Dashboard</h2>
+                <div id="dashboard-today" class="mt-3"></div>
+                <div id="dashboard-week" class="mt-3"></div>
+                <div id="dashboard-stats" class="mt-3"></div>
+                <div id="next-visit-timer" class="mt-3"></div>
+            </section>
+
+            <!-- VISITS -->
+            <section id="visits" class="tab d-none">
+                <h2>🗓 Visits</h2>
+                <div class="mb-3 row">
+                    <div class="col-md-4"><input id="visit-patient-filter" class="form-control" placeholder="Patient surname"></div>
+                    <div class="col-md-3"><input id="visit-date-from" type="date" class="form-control"></div>
+                    <div class="col-md-3"><input id="visit-date-to" type="date" class="form-control"></div>
+                    <div class="col-md-2"><button id="apply-visit-filters" class="btn btn-primary w-100">Apply</button></div>
                 </div>
+                <button id="btn-add-visit" class="btn btn-success mb-2">Add Visit</button>
+                <div id="visits-table-container"></div>
+            </section>
 
-
-                <!-- Visits -->
-                <div class="tab-pane fade" id="visits">
-                    <div class="d-flex justify-content-between mb-3">
-                        <h2>Visits</h2>
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCreateVisit">Create
-                            Visit
-                        </button>
-                    </div>
-                    <input id="visitSearch" type="text" class="form-control mb-2" placeholder="Search visits..."/>
-                    <table class="table table-bordered" id="visitsTable"></table>
+            <!-- PAYMENTS -->
+            <section id="payments" class="tab d-none">
+                <h2>💳 Payments</h2>
+                <div class="mb-3 row">
+                    <div class="col-md-4"><input id="payment-patient-filter" class="form-control" placeholder="Patient surname"></div>
+                    <div class="col-md-3"><input id="payment-date-from" type="date" class="form-control"></div>
+                    <div class="col-md-3"><input id="payment-date-to" type="date" class="form-control"></div>
+                    <div class="col-md-2"><button id="apply-payment-filters" class="btn btn-primary w-100">Apply</button></div>
                 </div>
+                <button id="btn-add-payment" class="btn btn-success mb-2">Add Payment</button>
+                <div id="payments-table-container"></div>
+            </section>
 
-
-                <!-- Payments -->
-                <div class="tab-pane fade" id="payments">
-                    <div class="d-flex justify-content-between mb-3">
-                        <h2>Payments</h2>
-                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalCreatePayment">
-                            Create Payment
-                        </button>
-                    </div>
-                    <input id="paymentSearch" type="text" class="form-control mb-2" placeholder="Search payments..."/>
-                    <table class="table table-bordered" id="paymentsTable"></table>
+            <!-- PATIENTS -->
+            <section id="patients" class="tab d-none">
+                <h2>🧑‍⚕️ Patients</h2>
+                <div class="mb-3 row">
+                    <div class="col-md-4"><input id="patient-surname-filter" class="form-control" placeholder="Surname"></div>
+                    <div class="col-md-3"><input id="patient-birth-from" type="date" class="form-control"></div>
+                    <div class="col-md-3"><input id="patient-birth-to" type="date" class="form-control"></div>
+                    <div class="col-md-2"><button id="apply-patient-filters" class="btn btn-primary w-100">Apply</button></div>
                 </div>
+                <div id="patients-table-container"></div>
+            </section>
 
-
-                <!-- Patients -->
-                <div class="tab-pane fade" id="patients">
-                    <h2>Patients</h2>
-                    <input id="patientSearch" type="text" class="form-control mb-2" placeholder="Search patients..."/>
-                    <table class="table table-bordered" id="patientsTable"></table>
-                </div>
-            </div>
-        </div>
+        </main>
     </div>
 </div>
-
 
 <!-- MODALS -->
-
-
-<!-- Create Visit -->
-<div class="modal fade" id="modalCreateVisit" tabindex="-1">
-    <div class="modal-dialog">
+<div class="modal fade" id="modal-visit" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title">Create Visit</h5></div>
+            <div class="modal-header"><h5 class="modal-title">Visit</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
             <div class="modal-body">
-                <input class="form-control mb-2" id="cvPatient" placeholder="Patient ID"/>
-                <input class="form-control mb-2" id="cvDate" type="datetime-local"/>
-                <textarea class="form-control" id="cvNotes" placeholder="Notes"></textarea>
+                <form id="visit-form">
+                    <input type="hidden" id="visit-id">
+                    <div class="mb-3"><label>Date</label><input type="datetime-local" id="visit-date" class="form-control"></div>
+                    <div class="mb-3"><label>Patient MR</label><input type="text" id="visit-patient-mr" class="form-control"></div>
+                    <div class="mb-3"><label>Diagnosis</label><input type="text" id="visit-diagnosis" class="form-control"></div>
+                    <div class="mb-3"><label>Status</label>
+                        <select id="visit-status" class="form-select">
+                            <option>Pending</option>
+                            <option>Completed</option>
+                            <option>Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="mb-3"><label>Cost</label><input type="number" id="visit-cost" class="form-control"></div>
+                </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" onclick="createVisit()">Create</button>
+                <button id="save-visit-btn" class="btn btn-primary">Save</button>
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
 </div>
 
-
-<!-- Update Visit -->
-<div class="modal fade" id="modalUpdateVisit" tabindex="-1">
-    <div class="modal-dialog">
+<div class="modal fade" id="modal-payment" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title">Update Visit</h5></div>
+            <div class="modal-header"><h5 class="modal-title">Payment</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
             <div class="modal-body">
-                <input class="form-control mb-2" id="uvDate" type="datetime-local"/>
-                <textarea class="form-control" id="uvNotes" placeholder="Notes"></textarea>
+                <form id="payment-form">
+                    <input type="hidden" id="payment-id">
+                    <div class="mb-3"><label>Patient MR</label><input type="text" id="payment-patient-mr" class="form-control"></div>
+                    <div class="mb-3"><label>Total Amount</label><input type="number" id="payment-total" class="form-control"></div>
+                    <div class="mb-3"><label>Paid Amount</label><input type="number" id="payment-paid" class="form-control"></div>
+                    <div class="mb-3"><label>Remaining Amount</label><input type="number" id="payment-remaining" class="form-control" readonly></div>
+                    <div class="mb-3"><label>Issued Date</label><input type="date" id="payment-issued" class="form-control"></div>
+                    <div class="mb-3"><label>Due Date</label><input type="date" id="payment-due" class="form-control"></div>
+                    <div class="mb-3"><label>Status</label>
+                        <select id="payment-status" class="form-select">
+                            <option>Pending</option>
+                            <option>Paid</option>
+                            <option>PartiallyPaid</option>
+                            <option>Overdue</option>
+                            <option>Cancelled</option>
+                        </select>
+                    </div>
+                </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-warning" onclick="updateVisit()">Save</button>
+                <button id="save-payment-btn" class="btn btn-primary">Save</button>
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module" src="js/specialist.js"></script>
+<script type="module" src="js/auth.js"></script>
 </body>
 </html>
