@@ -59,11 +59,31 @@
             <!-- VISITS -->
             <section id="visits" class="tab d-none">
                 <h2>🗓 Visits</h2>
-                <div class="mb-3 row">
-                    <div class="col-md-4"><input id="visit-patient-filter" class="form-control" placeholder="Patient surname"></div>
-                    <div class="col-md-3"><input id="visit-date-from" type="date" class="form-control"></div>
-                    <div class="col-md-3"><input id="visit-date-to" type="date" class="form-control"></div>
-                    <div class="col-md-2"><button id="apply-visit-filters" class="btn btn-primary w-100">Apply</button></div>
+                <div class="col-md-3">
+                    <input id="visit-patient-filter" class="form-control" placeholder="Patient MR">
+                </div>
+
+                <div class="col-md-2">
+                    <input id="visit-date-from" type="date" class="form-control">
+                </div>
+
+                <div class="col-md-2">
+                    <input id="visit-date-to" type="date" class="form-control">
+                </div>
+
+                <div class="col-md-3">
+                    <select id="visit-status-filter" class="form-select">
+                        <option value="">All statuses</option>
+                        <option value="0">Scheduled</option>
+                        <option value="1">InProgress</option>
+                        <option value="2">Completed</option>
+                        <option value="3">Cancelled</option>
+                        <option value="4">NoShow</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <button id="apply-visit-filters" class="btn btn-primary w-100">Apply</button>
                 </div>
                 <button id="btn-add-visit" class="btn btn-success mb-2">Add Visit</button>
                 <div id="visits-table-container"></div>

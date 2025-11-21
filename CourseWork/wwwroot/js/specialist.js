@@ -186,6 +186,45 @@ document.addEventListener("DOMContentLoaded", () => {
         container.innerHTML = html;
     }
 
+    document.getElementById("apply-visit-filters")
+        ?.addEventListener("click", applyVisitFilters);
+
+    function applyVisitFilters() {
+        let filtered = [...visitsData];
+
+        const mr = document.getElementById("visit-patient-filter").value.trim().toLowerCase();
+        const dateFrom = document.getElementById("visit-date-from").value;
+        const dateTo = document.getElementById("visit-date-to").value;
+        const status = document.getElementById("visit-status-filter").value;
+
+        // ==== FILTER BY PATIENT MR ====
+        if (mr) {
+            filtered = filtered.filter(v =>
+                v.patientMedicalRecord?.toLowerCase().includes(mr)
+            );
+        }
+
+        // ==== FILTER BY DATE FROM ====
+        if (dateFrom) {
+            const from = new Date(dateFrom);
+            filtered = filtered.filter(v => new Date(v.visitDate) >= from);
+        }
+
+        // ==== FILTER BY DATE TO ====
+        if (dateTo) {
+            const to = new Date(dateTo);
+            to.setHours(23, 59, 59);
+            filtered = filtered.filter(v => new Date(v.visitDate) <= to);
+        }
+
+        // ==== FILTER BY STATUS ====
+        if (status !== "") {
+            filtered = filtered.filter(v => v.status == status);
+        }
+
+        renderVisitsTable(filtered);
+    }
+
     // ===== PAYMENTS =====
     let paymentsData = [];
 
