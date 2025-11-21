@@ -387,12 +387,49 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${p.address}</td>
                 <td>${p.dateOfBirth}</td>
                 <td>${p.medicalRecordNumber}</td>
-                <td><button class="btn btn-sm btn-primary btn-add-visit-patient" data-mr="${p.medicalRecord}">Add Visit</button></td>
+                <td><button class="btn btn-sm btn-primary btn-add-visit-patient" data-mr="${p.medicalRecordNumber}">
+                    Add Visit
+                </button></td>
             </tr>`;
         });
         html += "</tbody></table>";
         container.innerHTML = html;
     }
+
+    document.getElementById("apply-patient-filters")
+        ?.addEventListener("click", applyPatientFilters);
+
+    function applyPatientFilters() {
+        let filtered = [...patientsData];
+
+        const surname = document.getElementById("patient-surname-filter").value.trim().toLowerCase();
+
+        const birthFrom = document.getElementById("patient-birth-from").value;
+        const birthTo = document.getElementById("patient-birth-to").value;
+
+        // ==== FILTER BY SURNAME ====
+        if (surname) {
+            filtered = filtered.filter(p =>
+                p.fullName?.toLowerCase().split(" ")[0]?.includes(surname)
+            );
+        }
+
+        // ==== BIRTH DATE FROM ====
+        if (birthFrom) {
+            const from = new Date(birthFrom);
+            filtered = filtered.filter(p => new Date(p.dateOfBirth) >= from);
+        }
+
+        // ==== BIRTH DATE TO ====
+        if (birthTo) {
+            const to = new Date(birthTo);
+            to.setHours(23, 59, 59);
+            filtered = filtered.filter(p => new Date(p.dateOfBirth) <= to);
+        }
+
+        renderPatientsTable(filtered);
+    }
+
 
     // ===== LOGOUT =====
     document.getElementById("btn-logout")?.addEventListener("click", () => {

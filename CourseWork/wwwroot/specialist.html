@@ -173,15 +173,37 @@
             <!-- PATIENTS -->
             <section id="patients" class="tab d-none">
                 <h2>🧑‍⚕️ Patients</h2>
-                <div class="mb-3 row">
-                    <div class="col-md-4"><input id="patient-surname-filter" class="form-control" placeholder="Surname"></div>
-                    <div class="col-md-3"><input id="patient-birth-from" type="date" class="form-control"></div>
-                    <div class="col-md-3"><input id="patient-birth-to" type="date" class="form-control"></div>
-                    <div class="col-md-2"><button id="apply-patient-filters" class="btn btn-primary w-100">Apply</button></div>
+
+                <div class="card p-3 mb-3">
+                    <div class="row g-2">
+
+                        <!-- Surname -->
+                        <div class="col-md-3">
+                            <input id="patient-surname-filter" class="form-control" placeholder="Search by surname">
+                        </div>
+
+                        <!-- Birth Date From -->
+                        <div class="col-md-3">
+                            <label class="form-label small mb-0">Birth date from</label>
+                            <input id="patient-birth-from" type="date" class="form-control">
+                        </div>
+
+                        <!-- Birth Date To -->
+                        <div class="col-md-3">
+                            <label class="form-label small mb-0">Birth date to</label>
+                            <input id="patient-birth-to" type="date" class="form-control">
+                        </div>
+
+                        <!-- Apply -->
+                        <div class="col-md-3 mt-2">
+                            <button id="apply-patient-filters" class="btn btn-primary w-100">Apply</button>
+                        </div>
+
+                    </div>
                 </div>
+
                 <div id="patients-table-container"></div>
             </section>
-
         </main>
     </div>
 </div>
