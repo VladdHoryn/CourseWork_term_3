@@ -7,6 +7,13 @@ const VisitStatusMap = {
     3: "Cancelled",
     4: "NoShow"
 };
+const PaymentStatusMap = {
+    0: "Pending",
+    1: "Paid",
+    2: "PartiallyPaid",
+    3: "Overdue",
+    4: "Cancelled"
+};
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -189,35 +196,66 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("apply-visit-filters")
         ?.addEventListener("click", applyVisitFilters);
 
+    function renderVisitsTable(data) {
+        const container = document.getElementById("visits-table-container");
+        if (!container) return;
+        if (data.length === 0) {
+            container.innerHTML = "<p>No visits found</p>";
+            return;
+        }
+        let html = `<table class="table table-bordered table-hover">
+            <thead><tr>
+            <th>Date</th><th>Patient MR</th><th>Diagnosis</th><th>Status</th><th>Cost</th><th>Actions</th>
+            </tr></thead><tbody>`;
+        data.forEach(v => {
+            html += `<tr>
+                <td>${new Date(v.visitDate).toLocaleString()}</td>
+                <td>${v.patientMedicalRecord}</td>
+                <td>${v.diagnosis}</td>
+                <td>${VisitStatusMap[v.status] ?? "Unknown"}</td>
+                <td>${v.serviceCost + v.medicationCost}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary btn-edit-visit" data-id="${v.id}">Edit</button>
+                    <button class="btn btn-sm btn-danger btn-cancel-visit" data-id="${v.id}">Cancel</button>
+                </td>
+            </tr>`;
+        });
+        html += "</tbody></table>";
+        container.innerHTML = html;
+    }
+
+    document.getElementById("apply-visit-filters")
+        ?.addEventListener("click", applyVisitFilters);
+
     function applyVisitFilters() {
         let filtered = [...visitsData];
 
-        const mr = document.getElementById("visit-patient-filter").value.trim().toLowerCase();
+        const search = document.getElementById("visit-patient-search").value.trim().toLowerCase();
         const dateFrom = document.getElementById("visit-date-from").value;
         const dateTo = document.getElementById("visit-date-to").value;
         const status = document.getElementById("visit-status-filter").value;
 
-        // ==== FILTER BY PATIENT MR ====
-        if (mr) {
+        // ==== SEARCH BY MR ====
+        if (search) {
             filtered = filtered.filter(v =>
-                v.patientMedicalRecord?.toLowerCase().includes(mr)
+                (String(v.patientMedicalRecord || "")).toLowerCase().includes(search)
             );
         }
 
-        // ==== FILTER BY DATE FROM ====
+        // ==== DATE FROM ====
         if (dateFrom) {
             const from = new Date(dateFrom);
             filtered = filtered.filter(v => new Date(v.visitDate) >= from);
         }
 
-        // ==== FILTER BY DATE TO ====
+        // ==== DATE TO ====
         if (dateTo) {
             const to = new Date(dateTo);
             to.setHours(23, 59, 59);
             filtered = filtered.filter(v => new Date(v.visitDate) <= to);
         }
 
-        // ==== FILTER BY STATUS ====
+        // ==== STATUS ====
         if (status !== "") {
             filtered = filtered.filter(v => v.status == status);
         }
@@ -244,7 +282,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         let html = `<table class="table table-bordered table-hover">
             <thead><tr>
-            <th>Patient MR</th><th>Total</th><th>Paid</th><th>Remaining</th><th>Actions</th>
+            <th>Patient MR</th><th>Total</th><th>Paid</th><th>Remaining</th><th>Issued Date</th>
+            <th>Due Date</th><th>Last PaymentDate</th><th>Status</th><th>Actions</th>
+            
             </tr></thead><tbody>`;
         data.forEach(p => {
             const remaining = (p.totalAmount || p.amount) - (p.paidAmount || 0);
@@ -253,6 +293,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${p.totalAmount || p.amount}</td>
                 <td>${p.paidAmount || 0}</td>
                 <td>${remaining}</td>
+                <td>${p.issuedDate}</td>
+                <td>${p.issuedDate}</td>
+                <td>${p.lastPaymentDate}</td>
+                <td>${PaymentStatusMap[p.status] ?? "Unknown"}</td>
                 <td>
                     <button class="btn btn-sm btn-primary btn-edit-payment" data-id="${p.id}">Edit</button>
                     <button class="btn btn-sm btn-danger btn-cancel-payment" data-id="${p.id}">Cancel</button>
@@ -261,6 +305,58 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         html += "</tbody></table>";
         container.innerHTML = html;
+    }
+
+    document.getElementById("apply-payment-filters").addEventListener("click", applyPaymentFilters);
+
+    function applyPaymentFilters() {
+        let filtered = [...paymentsData];
+
+        const patientSearch = (document.getElementById("payment-patient-filter").value || "")
+            .toLowerCase();
+
+        const dateFrom = document.getElementById("payment-issued-from").value;
+        const dateTo = document.getElementById("payment-issued-to").value;
+
+        const totalMin = parseFloat(document.getElementById("payment-total-min")?.value || "");
+        const totalMax = parseFloat(document.getElementById("payment-total-max")?.value || "");
+
+        const status = document.getElementById("payment-status-filter")?.value || "";
+
+        // ---------- Patient MR search ----------
+        if (patientSearch) {
+            filtered = filtered.filter(p =>
+                String(p.patientMedicalRecord || "").toLowerCase().includes(patientSearch)
+            );
+        }
+
+        // ---------- Issued Date ----------
+        if (dateFrom) {
+            const from = new Date(dateFrom);
+            filtered = filtered.filter(v => new Date(v.p.issuedDate) >= from);
+            // filtered = filtered.filter(p => p.issuedDate >= dateFrom);
+        }
+        if (dateTo) {
+            const to = new Date(dateTo);
+            to.setHours(23, 59, 59);
+            filtered = filtered.filter(v => new Date(v.visitDate) <= to);
+            // filtered = filtered.filter(p => p.issuedDate <= dateTo);
+        }
+
+        // ---------- Total Amount Min/Max ----------
+        if (!isNaN(totalMin)) {
+            filtered = filtered.filter(p => (p.totalAmount || p.amount || 0) >= totalMin);
+        }
+        if (!isNaN(totalMax)) {
+            filtered = filtered.filter(p => (p.totalAmount || p.amount || 0) <= totalMax);
+        }
+
+        // ---------- Status ----------
+        if (status !== "") {
+            filtered = filtered.filter(p => String(p.status) === status);
+        }
+
+        renderPaymentsTable(filtered);
     }
 
     // ===== PATIENTS =====

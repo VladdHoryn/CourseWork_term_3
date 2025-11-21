@@ -59,46 +59,114 @@
             <!-- VISITS -->
             <section id="visits" class="tab d-none">
                 <h2>🗓 Visits</h2>
-                <div class="col-md-3">
-                    <input id="visit-patient-filter" class="form-control" placeholder="Patient MR">
+
+                <!-- FILTER BAR -->
+                <div class="card p-3 mb-3 shadow-sm">
+                    <div class="row g-3">
+
+                        <!-- SEARCH BY MR -->
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Search by Patient MR</label>
+                            <input id="visit-patient-search" class="form-control" placeholder="Enter Medical Record">
+                        </div>
+
+                        <!-- DATE FROM -->
+                        <div class="col-md-2">
+                            <label class="form-label fw-bold">Date From</label>
+                            <input id="visit-date-from" type="date" class="form-control">
+                        </div>
+
+                        <!-- DATE TO -->
+                        <div class="col-md-2">
+                            <label class="form-label fw-bold">Date To</label>
+                            <input id="visit-date-to" type="date" class="form-control">
+                        </div>
+
+                        <!-- STATUS SELECT -->
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Status</label>
+                            <select id="visit-status-filter" class="form-select">
+                                <option value="">All statuses</option>
+                                <option value="0">Scheduled</option>
+                                <option value="1">InProgress</option>
+                                <option value="2">Completed</option>
+                                <option value="3">Cancelled</option>
+                                <option value="4">NoShow</option>
+                            </select>
+                        </div>
+
+                        <!-- APPLY BUTTON -->
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button id="apply-visit-filters" class="btn btn-primary w-100">Apply</button>
+                        </div>
+
+                    </div>
                 </div>
 
-                <div class="col-md-2">
-                    <input id="visit-date-from" type="date" class="form-control">
-                </div>
+                <button id="btn-add-visit" class="btn btn-success mb-3">Add Visit</button>
 
-                <div class="col-md-2">
-                    <input id="visit-date-to" type="date" class="form-control">
-                </div>
-
-                <div class="col-md-3">
-                    <select id="visit-status-filter" class="form-select">
-                        <option value="">All statuses</option>
-                        <option value="0">Scheduled</option>
-                        <option value="1">InProgress</option>
-                        <option value="2">Completed</option>
-                        <option value="3">Cancelled</option>
-                        <option value="4">NoShow</option>
-                    </select>
-                </div>
-
-                <div class="col-md-2">
-                    <button id="apply-visit-filters" class="btn btn-primary w-100">Apply</button>
-                </div>
-                <button id="btn-add-visit" class="btn btn-success mb-2">Add Visit</button>
                 <div id="visits-table-container"></div>
             </section>
 
             <!-- PAYMENTS -->
             <section id="payments" class="tab d-none">
                 <h2>💳 Payments</h2>
-                <div class="mb-3 row">
-                    <div class="col-md-4"><input id="payment-patient-filter" class="form-control" placeholder="Patient surname"></div>
-                    <div class="col-md-3"><input id="payment-date-from" type="date" class="form-control"></div>
-                    <div class="col-md-3"><input id="payment-date-to" type="date" class="form-control"></div>
-                    <div class="col-md-2"><button id="apply-payment-filters" class="btn btn-primary w-100">Apply</button></div>
+
+                <!-- ================= FILTERS ================= -->
+                <div class="card p-3 mb-3">
+                    <div class="row g-2">
+
+                        <!-- Patient MR -->
+                        <div class="col-md-3">
+                            <input id="payment-patient-filter" class="form-control" placeholder="Search by Patient MR">
+                        </div>
+
+                        <!-- Total Min -->
+                        <div class="col-md-2">
+                            <input id="payment-total-min" type="number" class="form-control" placeholder="Total min">
+                        </div>
+
+                        <!-- Total Max -->
+                        <div class="col-md-2">
+                            <input id="payment-total-max" type="number" class="form-control" placeholder="Total max">
+                        </div>
+
+                        <!-- Issued Date From -->
+                        <div class="col-md-2">
+                            <label class="form-label small mb-0">Issued From</label>
+                            <input id="payment-issued-from" type="date" class="form-control">
+                        </div>
+
+                        <!-- Issued Date To -->
+                        <div class="col-md-2">
+                            <label class="form-label small mb-0">Issued To</label>
+                            <input id="payment-issued-to" type="date" class="form-control">
+                        </div>
+
+                        <!-- Status -->
+                        <div class="col-md-3 mt-2">
+                            <select id="payment-status-filter" class="form-select">
+                                <option value="">Status: Any</option>
+                                <option value="0">Pending</option>
+                                <option value="1">Paid</option>
+                                <option value="2">PartiallyPaid</option>
+                                <option value="3">Overdue</option>
+                                <option value="4">Cancelled</option>
+                            </select>
+                        </div>
+
+                        <!-- Apply Filters -->
+                        <div class="col-md-2 mt-2">
+                            <button id="apply-payment-filters" class="btn btn-primary w-100">Apply</button>
+                        </div>
+
+                    </div>
                 </div>
+
+                <!-- ================= BUTTON ================= -->
                 <button id="btn-add-payment" class="btn btn-success mb-2">Add Payment</button>
+
+                <!-- ================= TABLE ================= -->
                 <div id="payments-table-container"></div>
             </section>
 
