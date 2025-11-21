@@ -263,6 +263,99 @@ document.addEventListener("DOMContentLoaded", () => {
         renderVisitsTable(filtered);
     }
 
+    document.addEventListener("click", async (e) => {
+        if (e.target.classList.contains("btn-edit-visit")) {
+            const id = e.target.dataset.id;
+
+            const res = await authFetch(`/specialist/visits/${id}`);
+            if (!res.ok) return alert("Error loading visit");
+
+            const v = await res.json();
+
+            document.getElementById("edit-visit-id").value = v.id;
+            document.getElementById("edit-diagnosis").value = v.diagnosis || "";
+            document.getElementById("edit-service-cost").value = v.serviceCost;
+            document.getElementById("edit-medication-cost").value = v.medicationCost;
+
+            document.getElementById("edit-status").value = v.status;
+
+            // convert date to datetime-local format
+            let dt = new Date(v.visitDate);
+            document.getElementById("edit-visit-date").value =
+                dt.toISOString().slice(0, 16);
+
+            new bootstrap.Modal(document.getElementById("editVisitModal")).show();
+        }
+    });
+
+    document.getElementById("save-visit-changes")
+        .addEventListener("click", async () => {
+            const id = document.getElementById("edit-visit-id").value;
+
+            const dto = {
+                Anamnesis: "", // якщо в тебе немає поля, залиш пустим
+                Diagnosis: document.getElementById("edit-diagnosis").value,
+                Treatment: "", // якщо немає поля в формі
+                Recommendations: "", // якщо немає поля в формі
+                ServiceCost: Number(document.getElementById("edit-service-cost").value) || 0,
+                MedicationCost: Number(document.getElementById("edit-medication-cost").value) || 0,
+                Status: document.getElementById("edit-status").value
+            };
+
+            try {
+                const res = await authFetch(`/specialist/visits/${id}`, {
+                    method: "PUT",
+                    body: JSON.stringify(dto)
+                });
+
+                if (!res.ok) {
+                    const text = await res.text();
+                    alert("Update failed: " + text);
+                    return;
+                }
+
+                bootstrap.Modal.getInstance(
+                    document.getElementById("editVisitModal")
+                ).hide();
+
+                await loadVisits();
+
+            } catch (err) {
+                alert("Error: " + err.message);
+            }
+        });
+
+
+    document.addEventListener("click", (e) => {
+        if (e.target.classList.contains("btn-cancel-visit")) {
+            document.getElementById("cancel-visit-id").value = e.target.dataset.id;
+            new bootstrap.Modal(document.getElementById("cancelVisitModal")).show();
+        }
+    });
+
+    document.getElementById("confirm-cancel-visit")
+        .addEventListener("click", async () => {
+
+            const id = document.getElementById("cancel-visit-id").value;
+
+            const res = await authFetch(`/specialist/visits/${id}/status`, {
+                method: "PATCH",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({status: 3}) // 3 = Cancelled
+            });
+
+            if (!res.ok) {
+                alert("Cancel failed");
+                return;
+            }
+
+            bootstrap.Modal.getInstance(
+                document.getElementById("cancelVisitModal")
+            ).hide();
+
+            await loadVisits();
+        });
+
     // ===== PAYMENTS =====
     let paymentsData = [];
 
