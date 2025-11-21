@@ -13,7 +13,6 @@
         .sidebar { height: 100vh; position: sticky; top: 0; }
         .tab { display: none; }
         .tab.active { display: block; }
-        .badge-status { font-size: 0.9em; }
     </style>
 </head>
 <body class="bg-light">
@@ -29,7 +28,6 @@
     </div>
 </nav>
 
-<!-- MAIN LAYOUT -->
 <div class="container-fluid">
     <div class="row">
 
@@ -73,36 +71,30 @@
             </section>
 
             <!-- VISITS -->
-            <section id="visits" class="tab d-none">
+            <section id="visits" class="tab">
                 <h2>🗓 Visits</h2>
 
-                <!-- Filters -->
                 <div class="mb-3 row">
-                    <div class="col-md-6">
-                        <input id="visit-patient-filter" type="text" class="form-control" placeholder="Patient surname">
-                    </div>
-                    <div class="col-md-3">
-                        <input id="visit-date-from" type="date" class="form-control">
-                    </div>
-                    <div class="col-md-3">
-                        <input id="visit-date-to" type="date" class="form-control">
-                    </div>
+                    <div class="col-md-6"><input id="visit-patient-filter" type="text" class="form-control" placeholder="Patient surname"></div>
+                    <div class="col-md-3"><input id="visit-date-from" type="date" class="form-control"></div>
+                    <div class="col-md-3"><input id="visit-date-to" type="date" class="form-control"></div>
                 </div>
+
                 <button id="apply-visit-filters" class="btn btn-primary mb-3">Apply Filters</button>
+
                 <div id="visits-list"></div>
             </section>
 
             <!-- PAYMENTS -->
-            <section id="payments" class="tab d-none">
+            <section id="payments" class="tab">
                 <h2>💳 Payments</h2>
                 <div id="payments-list"></div>
             </section>
 
             <!-- PATIENTS -->
-            <section id="patients" class="tab d-none">
+            <section id="patients" class="tab">
                 <h2>🧑‍⚕️ Patients</h2>
 
-                <!-- Filters -->
                 <div class="mb-3 row">
                     <div class="col-md-4">
                         <input id="patient-surname-filter" type="text" class="form-control" placeholder="Surname">
@@ -122,9 +114,9 @@
                         </select>
                     </div>
                 </div>
+
                 <button id="apply-patient-filters" class="btn btn-primary mb-3">Apply Filters / Sort</button>
 
-                <!-- Patients Table -->
                 <div class="table-responsive">
                     <table class="table table-striped table-hover">
                         <thead class="table-dark">
@@ -136,9 +128,7 @@
                             <th>Actions</th>
                         </tr>
                         </thead>
-                        <tbody id="patients-list">
-                        <!-- JS will fill this -->
-                        </tbody>
+                        <tbody id="patients-list"></tbody>
                     </table>
                 </div>
             </section>
@@ -147,10 +137,9 @@
     </div>
 </div>
 
-<!-- Bootstrap JS -->
+<!-- Bootstrap Bundle (NO other JS scripts!) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Specialist JS -->
 <script type="module" src="js/specialist.js"></script>
 </body>
 </html>
