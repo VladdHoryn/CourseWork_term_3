@@ -355,19 +355,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             await loadVisits();
         });
-
-    // Відкриття модалки Add Visit
-    document.getElementById("btn-add-visit")?.addEventListener("click", () => {
-        // очищаємо форму
-        document.getElementById("add-visit-form").reset();
-        new bootstrap.Modal(document.getElementById("addVisitModal")).show();
-    });
-
-// Збереження нового візиту
+    
     document.getElementById("save-new-visit")?.addEventListener("click", async () => {
 
         const dto = {
-            PatientId: "", // якщо потрібен, можна залишити пустим
+            PatientId: "",
             PatientMedicalRecord: Number(document.getElementById("add-patient-mr").value),
             VisitDate: new Date(document.getElementById("add-visit-date").value).toISOString(),
             Anamnesis: document.getElementById("add-anamnesis").value || "",
@@ -399,6 +391,32 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (err) {
             alert("Error: " + err.message);
         }
+    });
+
+    let patientsList = [];
+
+    async function loadPatientsForDropdown() {
+        const res = await authFetch("/specialist/patients");
+        if (!res.ok) return;
+        patientsList = await res.json();
+    }
+
+    document.getElementById("btn-add-visit")?.addEventListener("click", async () => {
+        await loadPatientsForDropdown();
+
+        const select = document.getElementById("add-patient-mr");
+        select.innerHTML = '<option value="">Select patient</option>';
+
+        patientsList.forEach(p => {
+            select.innerHTML += `<option value="${p.medicalRecordNumber}">
+            ${p.fullName} (MR: ${p.medicalRecordNumber})
+        </option>`;
+        });
+
+        document.getElementById("add-visit-form").reset();
+
+        const addVisitModal = new bootstrap.Modal(document.getElementById("addVisitModal"));
+        addVisitModal.show();
     });
 
     // ===== PAYMENTS =====
