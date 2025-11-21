@@ -27,29 +27,19 @@ document.addEventListener("DOMContentLoaded", ()=>{
         if(!res || !res.ok) return;
 
         const data = await res.json();
+        const todayVisits = Array.isArray(data.Today)?data.Today:[];
+        const weekVisits = Array.isArray(data.Week)?data.Week:[];
 
-        // Безпечне отримання Today та Week
-        const todayVisits = Array.isArray(data.Today) ? data.Today : [];
-        const weekVisits = Array.isArray(data.Week) ? data.Week : [];
-
-        const todayDiv = document.getElementById("dashboard-today");
-        todayDiv.innerHTML = `<h5>Today's Visits</h5>${
-            todayVisits.length ? todayVisits.map(v=>`<p>${v.PatientName} - ${new Date(v.VisitDate).toLocaleString()}</p>`).join("")
-                : "<p>No visits today</p>"
+        document.getElementById("dashboard-today").innerHTML = `<h5>Today's Visits</h5>${
+            todayVisits.length ? todayVisits.map(v=>`<p>${v.PatientName} - ${new Date(v.VisitDate).toLocaleString()}</p>`).join("") : "<p>No visits today</p>"
         }`;
-
-        const weekDiv = document.getElementById("dashboard-week");
-        weekDiv.innerHTML = `<h5>Week Visits</h5>${
-            weekVisits.length ? weekVisits.map(v=>`<p>${v.PatientName} - ${new Date(v.VisitDate).toLocaleString()}</p>`).join("")
-                : "<p>No visits this week</p>"
+        document.getElementById("dashboard-week").innerHTML = `<h5>Week Visits</h5>${
+            weekVisits.length ? weekVisits.map(v=>`<p>${v.PatientName} - ${new Date(v.VisitDate).toLocaleString()}</p>`).join("") : "<p>No visits this week</p>"
         }`;
-
-        const statsDiv = document.getElementById("dashboard-stats");
-        statsDiv.innerHTML = `<h5>Quick Stats</h5>
-        <p>Total visits: ${weekVisits.length}</p>
-        <p>Completed: ${weekVisits.filter(v=>v.Status==='Completed').length}</p>
-        <p>Patients: ${[...new Set(weekVisits.map(v=>v.PatientMedicalRecord))].length}</p>`;
-
+        document.getElementById("dashboard-stats").innerHTML = `<h5>Quick Stats</h5>
+            <p>Total visits: ${weekVisits.length}</p>
+            <p>Completed: ${weekVisits.filter(v=>v.Status==='Completed').length}</p>
+            <p>Patients: ${[...new Set(weekVisits.map(v=>v.PatientMedicalRecord))].length}</p>`;
         startNextVisitTimer(weekVisits);
     }
 
@@ -58,14 +48,11 @@ document.addEventListener("DOMContentLoaded", ()=>{
         if(!nextDiv) return;
         const futureVisits = visits.filter(v=>new Date(v.VisitDate)>new Date());
         if(futureVisits.length===0){ nextDiv.innerHTML="No upcoming visits"; return; }
-
         const nextVisit = new Date(futureVisits.sort((a,b)=>new Date(a.VisitDate)-new Date(b.VisitDate))[0].VisitDate);
         function updateTimer(){
             const diff = nextVisit - new Date();
             if(diff<=0){ nextDiv.innerHTML="Next visit now!"; clearInterval(interval); return;}
-            const h = Math.floor(diff/3600000);
-            const m = Math.floor((diff%3600000)/60000);
-            const s = Math.floor((diff%60000)/1000);
+            const h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
             nextDiv.innerHTML = `Next visit in: ${h}h ${m}m ${s}s`;
         }
         updateTimer();
@@ -104,9 +91,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
         });
         html+="</tbody></table>";
         container.innerHTML = html;
-
-        document.querySelectorAll(".btn-edit-visit").forEach(btn=>btn.addEventListener("click",()=>editVisit(btn.dataset.id)));
-        document.querySelectorAll(".btn-cancel-visit").forEach(btn=>btn.addEventListener("click",()=>cancelVisit(btn.dataset.id)));
     }
 
     // ===== PAYMENTS =====
@@ -171,25 +155,15 @@ document.addEventListener("DOMContentLoaded", ()=>{
         });
         html+="</tbody></table>";
         container.innerHTML = html;
-
-        document.querySelectorAll(".btn-add-visit-patient").forEach(btn=>{
-            btn.addEventListener("click", ()=>{
-                const modalEl = document.getElementById("modal-visit");
-                if(modalEl){
-                    document.getElementById("visit-patient-mr").value = btn.dataset.mr;
-                    new bootstrap.Modal(modalEl).show();
-                }
-            });
-        });
     }
 
     // ===== LOGOUT =====
-    const logoutBtn = document.getElementById("btn-logout");
-    if(logoutBtn) logoutBtn.addEventListener("click",()=>{
+    document.getElementById("btn-logout")?.addEventListener("click",()=>{
         localStorage.removeItem("token");
         window.location.href="/guest.html";
     });
 
     // AUTOLOAD DASHBOARD
     loadDashboard();
+
 });
