@@ -1,5 +1,13 @@
 ﻿import {authFetch} from "./auth.js";
 
+const VisitStatusMap = {
+    0: "Scheduled",
+    1: "InProgress",
+    2: "Completed",
+    3: "Cancelled",
+    4: "NoShow"
+};
+
 document.addEventListener("DOMContentLoaded", () => {
 
     // ===== TAB SWITCH =====
@@ -35,34 +43,83 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!res || !res.ok) return;
 
         const data = await res.json();
+
         const todayVisits = Array.isArray(data.today) ? data.today : [];
         const weekVisits = Array.isArray(data.week) ? data.week : [];
 
-        const container = document.getElementById("visits-table-container");
+        renderDashboardTable("dashboard-today-container", todayVisits);
+        renderDashboardTable("dashboard-week-container", weekVisits);
+
+        // ==== STATS CARDS ====
+        document.getElementById("dashboard-stats").innerHTML = `
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="card shadow-sm border-primary">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">Total Week Visits</h5>
+                        <p class="fs-4 fw-bold">${weekVisits.length}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card shadow-sm border-success">
+                    <div class="card-body">
+                        <h5 class="card-title text-success">Completed</h5>
+                        <p class="fs-4 fw-bold">${weekVisits.filter(v => v.status === 2).length}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow-sm border-info">
+                    <div class="card-body">
+                        <h5 class="card-title text-info">Unique Patients</h5>
+                        <p class="fs-4 fw-bold">
+                            ${new Set(weekVisits.map(v => v.patientMedicalRecord)).size}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+        startNextVisitTimer(weekVisits);
+    }
+
+    function renderDashboardTable(containerId, visits) {
+        const container = document.getElementById(containerId);
         if (!container) return;
-        let html = `<table class="table table-bordered table-hover">
-            <thead><tr>
-            <th>Patient MR</th><th>Date</th>
-            </tr></thead><tbody>`;
-        todayVisits.forEach(v => {
-            html += `<tr>
+
+        if (!visits.length) {
+            container.innerHTML = `<p class="text-muted">No visits</p>`;
+            return;
+        }
+
+        let html = `
+        <table class="table table-bordered table-hover mt-2">
+            <thead class="table-light">
+                <tr>
+                    <th>Patient MR</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+        visits.forEach(v => {
+            html += `
+            <tr>
                 <td>${v.patientMedicalRecord}</td>
                 <td>${new Date(v.visitDate).toLocaleString()}</td>
-            </tr>`;
+                <td>${VisitStatusMap[v.status] ?? "Unknown"}</td>
+            </tr>
+        `;
         });
+
         html += "</tbody></table>";
         container.innerHTML = html;
-        // document.getElementById("dashboard-today").innerHTML = `<h5>Today's Visits</h5>${
-        //     todayVisits.length ? todayVisits.map(v=>`<p>${v.patientMedicalRecord} - ${new Date(v.visitDate).toLocaleString()}</p>`).join("") : "<p>No visits today</p>"
-        // }`;
-        document.getElementById("dashboard-week").innerHTML = `<h5>Week Visits</h5>${
-            weekVisits.length ? weekVisits.map(v => `<p>${v.patientMedicalRecord} - ${new Date(v.visitDate).toLocaleString()}</p>`).join("") : "<p>No visits this week</p>"
-        }`;
-        document.getElementById("dashboard-stats").innerHTML = `<h5>Quick Stats</h5>
-            <p>Total visits: ${weekVisits.length}</p>
-            <p>Completed: ${weekVisits.filter(v => v.status === 'Completed').length}</p>
-            <p>Patients: ${[...new Set(weekVisits.map(v => v.patientMedicalRecord))].length}</p>`;
-        startNextVisitTimer(weekVisits);
     }
 
     function startNextVisitTimer(visits) {
@@ -117,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${new Date(v.visitDate).toLocaleString()}</td>
                 <td>${v.patientMedicalRecord}</td>
                 <td>${v.diagnosis}</td>
-                <td><span class="badge ${v.status === 'Completed' ? 'bg-success' : v.status === 'Scheduled' ? 'bg-warning' : 'bg-secondary'}">${v.status}</span></td>
+                <td>${VisitStatusMap[v.status] ?? "Unknown"}</td>
                 <td>${v.serviceCost + v.medicationCost}</td>
                 <td>
                     <button class="btn btn-sm btn-primary btn-edit-visit" data-id="${v.id}">Edit</button>
