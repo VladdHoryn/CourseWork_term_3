@@ -356,6 +356,51 @@ document.addEventListener("DOMContentLoaded", () => {
             await loadVisits();
         });
 
+    // Відкриття модалки Add Visit
+    document.getElementById("btn-add-visit")?.addEventListener("click", () => {
+        // очищаємо форму
+        document.getElementById("add-visit-form").reset();
+        new bootstrap.Modal(document.getElementById("addVisitModal")).show();
+    });
+
+// Збереження нового візиту
+    document.getElementById("save-new-visit")?.addEventListener("click", async () => {
+
+        const dto = {
+            PatientId: "", // якщо потрібен, можна залишити пустим
+            PatientMedicalRecord: Number(document.getElementById("add-patient-mr").value),
+            VisitDate: new Date(document.getElementById("add-visit-date").value).toISOString(),
+            Anamnesis: document.getElementById("add-anamnesis").value || "",
+            Diagnosis: document.getElementById("add-diagnosis").value || "",
+            Treatment: document.getElementById("add-treatment").value || "",
+            Recommendations: document.getElementById("add-recommendations").value || "",
+            ServiceCost: Number(document.getElementById("add-service-cost").value) || 0,
+            MedicationCost: Number(document.getElementById("add-medication-cost").value) || 0
+        };
+
+        try {
+            const res = await authFetch("/specialist/visits", {
+                method: "POST",
+                body: JSON.stringify(dto)
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                alert("Add visit failed: " + text);
+                return;
+            }
+
+            bootstrap.Modal.getInstance(
+                document.getElementById("addVisitModal")
+            ).hide();
+
+            await loadVisits();
+
+        } catch (err) {
+            alert("Error: " + err.message);
+        }
+    });
+
     // ===== PAYMENTS =====
     let paymentsData = [];
 

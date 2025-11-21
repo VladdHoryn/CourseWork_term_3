@@ -191,6 +191,72 @@
                     </div>
                 </div>
 
+                <!-- ADD VISIT MODAL -->
+                <div class="modal fade" id="addVisitModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add Visit</h5>
+                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                <form id="add-visit-form">
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Patient MR</label>
+                                        <input id="add-patient-mr" type="number" class="form-control" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Visit Date</label>
+                                        <input id="add-visit-date" type="datetime-local" class="form-control" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Diagnosis</label>
+                                        <input id="add-diagnosis" class="form-control">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Anamnesis</label>
+                                        <input id="add-anamnesis" class="form-control">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Treatment</label>
+                                        <input id="add-treatment" class="form-control">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Recommendations</label>
+                                        <input id="add-recommendations" class="form-control">
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Service Cost</label>
+                                            <input id="add-service-cost" type="number" class="form-control">
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label">Medication Cost</label>
+                                            <input id="add-medication-cost" type="number" class="form-control">
+                                        </div>
+                                    </div>
+
+                                </form>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button id="save-new-visit" class="btn btn-success">Add Visit</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <!-- PAYMENTS -->
