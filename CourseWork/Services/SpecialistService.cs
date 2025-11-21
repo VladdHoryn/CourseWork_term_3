@@ -220,8 +220,9 @@ public class SpecialistService : UserService
                 throw new UnauthorizedAccessException("You can cancel only payments for your own visits.");
 
             payment.Status = PaymentStatus.Cancelled;
-
+            
             return _paymentService.UpdatePayment(paymentId, payment);
+            
         }
         catch (Exception ex)
         {

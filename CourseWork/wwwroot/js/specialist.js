@@ -569,29 +569,44 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-
-// ---------------- Cancel Payment ----------------
     document.addEventListener("click", e => {
         if (e.target.classList.contains("btn-cancel-payment")) {
-            document.getElementById("cancel-payment-id").value = e.target.dataset.id;
-            new bootstrap.Modal(document.getElementById("cancelPaymentModal"), { backdrop: 'static' }).show();
+            const paymentId = e.target.dataset.id;
+            document.getElementById("cancel-payment-id").value = paymentId;
+
+            const cancelModalEl = document.getElementById("cancelPaymentModal");
+            const cancelModal = new bootstrap.Modal(cancelModalEl, { backdrop: 'static' });
+            cancelModal.show();
         }
     });
 
     document.getElementById("confirm-cancel-payment")?.addEventListener("click", async () => {
         const id = document.getElementById("cancel-payment-id").value;
+        if (!id) return;
+
         try {
-            const res = await authFetch(`/specialist/payments/${id}/cancel`, { method: "PATCH" });
+            const res = await authFetch(`/specialist/payments/${id}/cancel`, {
+                method: "PATCH",
+            });
+
+            const text = await res.text(); // Завжди читаємо текст
             if (!res.ok) {
-                alert("Cancel payment failed");
+                console.warn("Cancel payment failed:", text);
+                alert("Cancel payment failed: " + text);
                 return;
             }
-            bootstrap.Modal.getInstance(document.getElementById("cancelPaymentModal")).hide();
+
+            // Закриваємо модалку
+            const cancelModalEl = document.getElementById("cancelPaymentModal");
+            const cancelModal = bootstrap.Modal.getInstance(cancelModalEl);
+            cancelModal?.hide();
+
             await loadPayments();
         } catch (err) {
             alert("Error: " + err.message);
         }
     });
+
 
     // ===== PATIENTS =====
     let patientsData = [];

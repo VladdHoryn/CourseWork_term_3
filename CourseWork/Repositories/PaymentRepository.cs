@@ -30,8 +30,7 @@ public class PaymentRepository
     public void UpdatePayment(string id, Payment payment)
     {
         var filter = Builders<Payment>.Filter.Eq(u => u.Id, id);
-        var update = Builders<Payment>.Update.Set(u => u, payment);
-        _db_collection.UpdateOne(filter, update);
+        _db_collection.ReplaceOne(filter, payment); // <--- повна заміна документа
     }
     
     public void DeletePayment(string id)
