@@ -200,9 +200,10 @@ public class OperatorController : ControllerBase
     }
 
     [HttpPost("payments")]
-    public IActionResult CreatePayment([FromBody] PaymentDto dto)
+    public IActionResult CreatePayment([FromBody] PaymentCreateDto dto)
     {
-        var payment = new Payment(dto.VisitId, dto.PatientMedicalRecord, dto.TotalAmount, 0);
+        // var payment = new Payment(dto.VisitId, dto.PatientMedicalRecord, dto.TotalAmount, 0);
+        var payment = PaymentMapper.ToPayment(dto, dto.PatientMedicalRecord);
         return _operatorService.CreatePaymentByOperator(payment)
             ? Ok("Payment created")
             : BadRequest("Failed to create payment");

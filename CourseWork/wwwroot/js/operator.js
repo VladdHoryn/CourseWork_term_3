@@ -784,28 +784,72 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 // -------------------- Add Payment --------------------
+    // -------------------- Init dropdowns when modal opens --------------------
+    document.getElementById("modalAddPayment")
+        .addEventListener("show.bs.modal", loadAddPaymentDropdowns);
+
+// -------------------- Form submit --------------------
     document.getElementById("formAddPayment").addEventListener("submit", async (e) => {
         e.preventDefault();
-        const form = e.target;
 
         const dto = {
-            visitId: form.visitId.value,
-            patientMedicalRecord: Number(form.patientMedicalRecord.value),
-            totalAmount: Number(form.totalAmount.value)
+            visitId: document.getElementById("addPaymentVisitSelect").value,
+            patientMedicalRecord: Number(document.getElementById("addPaymentPatientSelect").value),
+            amount: Number(e.target.totalAmount.value)
         };
 
-        const res = await authFetch("/operator/payments", {
-            method: "POST",
-            body: JSON.stringify(dto)
-        });
+        try {
+            const res = await authFetch("/operator/payments", {
+                method: "POST",
+                body: JSON.stringify(dto)
+            });
 
-        if (res.ok) {
-            bootstrap.Modal.getInstance(document.getElementById("modalAddPayment")).hide();
-            loadPayments();
-        } else {
-            alert("Failed to create payment");
+            if (res.ok) {
+                bootstrap.Modal.getInstance(document.getElementById("modalAddPayment")).hide();
+                loadPayments();
+            } else {
+                const t = await res.text();
+                alert("Failed to create payment: " + t);
+            }
+        } catch (err) {
+            alert("Error: " + err.message);
         }
     });
+
+// -------------------- Load visits and set Patient MR --------------------
+    async function loadAddPaymentDropdowns() {
+        const visitSelect = document.getElementById("addPaymentVisitSelect");
+        const patientInput = document.getElementById("addPaymentPatientSelect");
+
+        visitSelect.innerHTML = "<option disabled selected>Loading visits...</option>";
+        patientInput.value = "";
+
+        try {
+            const visitsRes = await authFetch("/operator/visits");
+            const visits = await visitsRes.json();
+
+            visitSelect.innerHTML = "<option disabled selected>Select Visit</option>";
+            visits.forEach(v => {
+                const op = document.createElement("option");
+                op.value = v.id;
+                op.textContent = `${v.visitDate} — VisitID: ${v.id}`;
+                op.dataset.patient = v.patientMedicalRecord;
+                visitSelect.appendChild(op);
+            });
+
+            // коли змінюється вибір візиту
+            visitSelect.addEventListener("change", () => {
+                const selectedOption = visitSelect.selectedOptions[0];
+                patientInput.value = selectedOption ? selectedOption.dataset.patient : "";
+            });
+
+        } catch (err) {
+            console.error("Failed to load visits:", err);
+            visitSelect.innerHTML = "<option>Error loading visits</option>";
+            patientInput.value = "";
+        }
+    }
+
 
 // -------------------- Edit Payment --------------------
     document.getElementById("formEditPayment").addEventListener("submit", async (e) => {
