@@ -29,9 +29,9 @@ public class OperatorService : UserService
             return UpdateUser(updated);
         }
 
-        public bool DeleteUserByOperator(string username)
+        public bool DeleteUserByOperator(string id)
         {
-            return DeleteUser(username);
+            return DeleteUser(id);
         }
 
         public List<User> SearchUsers(Func<User, bool> predicate)

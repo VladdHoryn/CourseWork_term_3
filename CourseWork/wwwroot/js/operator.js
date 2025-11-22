@@ -109,40 +109,40 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         let html = `
-        <table class="table table-hover table-bordered">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>UserName</th>
-                    <th>Full Name</th>
-                    <th>Phone</th>
-                    <th>Address</th>
-                    <th>Medical Record #</th>
-                    <th>Date of Birth</th>
-                    <th>Created At</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
+    <table class="table table-hover table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>UserName</th>
+                <th>Full Name</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Medical Record #</th>
+                <th>Date of Birth</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
     `;
 
         patients.forEach(p => {
             html += `
-            <tr>
-                <td>${p.id}</td>
-                <td>${p.userName}</td>
-                <td>${p.fullName}</td>
-                <td>${p.phone ?? "-"}</td>
-                <td>${p.address ?? "-"}</td>
-                <td>${p.medicalRecordNumber ?? "-"}</td>
-                <td>${p.dateOfBirth ?? "-"}</td>
-                <td>${p.createdAt ?? "-"}</td>
-                <td>
-                    <button class="btn btn-sm btn-warning btn-edit-patient" data-id="${p.id}">Edit</button>
-                    <button class="btn btn-sm btn-danger btn-delete-patient" data-id="${p.id}">Delete</button>
-                </td>
-            </tr>
-        `;
+        <tr>
+            <td>${p.id}</td>
+            <td>${p.userName}</td>
+            <td>${p.fullName}</td>
+            <td>${p.phone ?? "-"}</td>
+            <td>${p.address ?? "-"}</td>
+            <td>${p.medicalRecordNumber ?? "-"}</td>
+            <td>${p.dateOfBirth ?? "-"}</td>
+            <td>${p.createdAt ?? "-"}</td>
+            <td>
+                <button class="btn btn-sm btn-warning btn-edit-patient" data-id="${p.id}">Edit</button>
+                <button class="btn btn-sm btn-danger btn-delete-patient" data-id="${p.id}">Delete</button>
+            </td>
+        </tr>
+    `;
         });
 
         html += `</tbody></table>`;
@@ -168,9 +168,8 @@ document.addEventListener("DOMContentLoaded", () => {
             dateOfBirth: form.dateOfBirth.value || null
         };
 
-        const res = await fetch("/operator/patients", {
+        const res = await authFetch("/operator/patients", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dto)
         });
 
@@ -217,9 +216,8 @@ document.addEventListener("DOMContentLoaded", () => {
             dateOfBirth: form.dateOfBirth.value || null
         };
 
-        const res = await fetch(`/operator/patients/${id}`, {
+        const res = await authFetch(`/operator/patients/${id}`, {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dto)
         });
 
@@ -247,16 +245,27 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("btnConfirmDeletePatient").addEventListener("click", async () => {
         if (!deletePatientId) return;
 
-        const res = await fetch(`/operator/patients/${deletePatientId}`, {
-            method: "DELETE"
+        const res = await authFetch(`/operator/patients/${deletePatientId}`, {
+            method: "DELETE",
+            // Видаляємо Content-Type, щоб ASP.NET не "підозрював" тіло
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("token")}`
+            }
         });
 
         if (res.ok) {
             bootstrap.Modal.getInstance(document.getElementById("modalDeletePatient")).hide();
             loadPatients();
         } else {
-            alert("Delete failed");
+            const errorText = await res.text();
+            alert("Delete failed: " + errorText);
         }
+    });
+
+
+// ====================== INIT ======================
+    document.addEventListener("DOMContentLoaded", () => {
+        loadPatients();
     });
 
 

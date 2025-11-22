@@ -123,20 +123,20 @@ public class UserService
         }
     }
 
-    public bool DeleteUser(string username)
+    public bool DeleteUser(string id)
     {
         try
         {
-            var existing = _userRepo.GetByName(username);
+            var existing = _userRepo.GetById(id);
             if (existing == null)
-                throw new KeyNotFoundException($"User '{username}' not found.");
+                throw new KeyNotFoundException($"Id '{id}' not found.");
 
-            _userRepo.DeleteUser(username);
+            _userRepo.DeleteUser(id);
             return true;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[Error] Cannot delete user '{username}': {ex.Message}");
+            Console.WriteLine($"[Error] Cannot delete user '{id}': {ex.Message}");
             return false;
         }
     }
