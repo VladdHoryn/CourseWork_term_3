@@ -393,6 +393,59 @@
                 </div>
 
                 <div id="patients-table-container"></div>
+
+                <!-- ADD VISIT MODAL -->
+                <div class="modal fade" id="patientAddVisitModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+
+                            <div class="modal-header bg-primary text-white">
+                                <h5 class="modal-title">Add Visit</h5>
+                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                <form id="patient-add-visit-form">
+                                    <input type="hidden" id="patient-visit-mr">
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Visit Date</label>
+                                        <input id="patient-visit-date" type="datetime-local" class="form-control" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Anamnesis</label>
+                                        <textarea id="patient-visit-anamnesis" class="form-control" rows="2" required></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Diagnosis</label>
+                                        <textarea id="patient-visit-diagnosis" class="form-control" rows="2" required></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Treatment</label>
+                                        <textarea id="patient-visit-treatment" class="form-control" rows="2" required></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Recommendations</label>
+                                        <textarea id="patient-visit-recommendations" class="form-control" rows="2"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Service Cost</label>
+                                        <input id="patient-visit-service-cost" type="number" class="form-control" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Medication Cost</label>
+                                        <input id="patient-visit-medication-cost" type="number" class="form-control" required>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button id="patient-save-new-visit" class="btn btn-success">Add Visit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
         </main>
     </div>

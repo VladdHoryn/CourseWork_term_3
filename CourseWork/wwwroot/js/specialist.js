@@ -679,6 +679,55 @@ document.addEventListener("DOMContentLoaded", () => {
         renderPatientsTable(filtered);
     }
 
+    // ---------------- Add Visit Modal for Patients ----------------
+    document.addEventListener("click", e => {
+        if (e.target.classList.contains("btn-add-visit-patient")) {
+            const mr = e.target.dataset.mr;
+            document.getElementById("patient-visit-mr").value = mr;
+
+            // Очистка форми
+            document.getElementById("patient-add-visit-form").reset();
+
+            const addVisitModal = new bootstrap.Modal(document.getElementById("patientAddVisitModal"), { backdrop: 'static' });
+            addVisitModal.show();
+        }
+    });
+
+// ---------------- Save New Visit for Patients ----------------
+    document.getElementById("patient-save-new-visit")?.addEventListener("click", async () => {
+        const dto = {
+            PatientMedicalRecord: Number(document.getElementById("patient-visit-mr").value),
+            VisitDate: document.getElementById("patient-visit-date").value,
+            Anamnesis: document.getElementById("patient-visit-anamnesis").value.trim(),
+            Diagnosis: document.getElementById("patient-visit-diagnosis").value.trim(),
+            Treatment: document.getElementById("patient-visit-treatment").value.trim(),
+            Recommendations: document.getElementById("patient-visit-recommendations").value.trim(),
+            ServiceCost: Number(document.getElementById("patient-visit-service-cost").value),
+            MedicationCost: Number(document.getElementById("patient-visit-medication-cost").value)
+        };
+
+        try {
+            const res = await authFetch("/specialist/visits", {
+                method: "POST",
+                body: JSON.stringify(dto)
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                alert("Add visit failed: " + text);
+                return;
+            }
+
+            bootstrap.Modal.getInstance(document.getElementById("patientAddVisitModal")).hide();
+            alert("Visit added successfully!");
+            
+            // await loadPatients();
+        } catch (err) {
+            alert("Error: " + err.message);
+        }
+    });
+
+
 
     // ===== LOGOUT =====
     document.getElementById("btn-logout")?.addEventListener("click", () => {
