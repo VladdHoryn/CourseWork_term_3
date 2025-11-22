@@ -48,17 +48,33 @@ public class OperatorController : ControllerBase
     public IActionResult CreatePatient([FromBody] CreateUserDto dto)
     {
         var user = new User(dto.UserName, dto.FullName, Role.Patient);
+
+        user.Phone = dto.Phone;
+        user.Address = dto.Address;
+        user.MedicalRecordNumber = dto.MedicalRecordNumber;
+
+        if (dto.DateOfBirth.HasValue)
+            user.DateOfBirth = dto.DateOfBirth;
+
         var result = _operatorService.CreateUserByOperator(user, dto.Password);
         return result ? Ok("Patient created") : BadRequest("Failed to create");
     }
+
 
     [HttpPut("patients/{id}")]
     public IActionResult UpdatePatient(string id, [FromBody] UpdateUserDto dto)
     {
         var user = _operatorService.GetById(id);
+
         user.FullName = dto.FullName;
         user.Phone = dto.Phone;
         user.Address = dto.Address;
+
+        if (dto.MedicalRecordNumber.HasValue)
+            user.MedicalRecordNumber = dto.MedicalRecordNumber;
+
+        if (dto.DateOfBirth.HasValue)
+            user.DateOfBirth = dto.DateOfBirth;
 
         return _operatorService.UpdateUserByOperator(user)
             ? Ok("Patient updated")
