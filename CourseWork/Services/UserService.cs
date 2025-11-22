@@ -109,8 +109,7 @@ public class UserService
             var existing = _userRepo.GetByName(updated.UserName);
             if (existing == null)
                 throw new KeyNotFoundException($"User '{updated.UserName}' not found.");
-
-            // Пароль при цьому НЕ міняємо
+            
             updated.PasswordHash = existing.PasswordHash;
 
             _userRepo.UpdateUser(updated);

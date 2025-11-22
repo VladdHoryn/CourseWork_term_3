@@ -246,4 +246,141 @@ document.addEventListener("DOMContentLoaded", () => {
     // 4) FILTER CHANGE
     // -------------------------
     document.getElementById("filter-role")?.addEventListener("change", loadUsers);
+
+    // =====================================================================
+//                            USERS CRUD
+// =====================================================================
+
+    let users = [];
+
+    async function loadUsers() {
+        try {
+            const res = await authFetch("/administrator/users");
+            users = res.ok ? await res.json() : [];
+            renderUsersTable();
+        } catch (err) {
+            console.error(err);
+            alert("Помилка при завантаженні користувачів.");
+        }
+    }
+
+    function renderUsersTable() {
+        const container = document.getElementById("users-table-container");
+
+        if (!users.length) {
+            container.innerHTML = "<p class='text-muted'>No users found</p>";
+            return;
+        }
+
+        let html = `
+        <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#modalAddUser">Add User</button>
+        <table class="table table-hover table-bordered">
+        <thead>
+            <tr><th>ID</th><th>Username</th><th>Full Name</th><th>Role</th><th>Actions</th></tr>
+        </thead><tbody>`;
+
+        users.forEach(u => {
+            html += `<tr>
+            <td>${u.id}</td>
+            <td>${u.userName}</td>
+            <td>${u.fullName}</td>
+            <td>${u.role}</td>
+            <td>
+                <button class="btn btn-sm btn-warning btn-edit-user" data-id="${u.id}">Edit</button>
+                <button class="btn btn-sm btn-danger btn-delete-user" data-id="${u.id}">Delete</button>
+            </td>
+        </tr>`;
+        });
+
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+
+        bindEditUserButtons();
+        bindDeleteUserButtons();
+    }
+
+// ---------------- CREATE USER ----------------
+    document.getElementById("formAddUser").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const dto = {
+            userName: form.userName.value,
+            fullName: form.fullName.value,
+            password: form.password.value,
+            role: form.role.value
+        };
+
+        const res = await authFetch("/administrator/users", {
+            method: "POST",
+            body: JSON.stringify(dto)
+        });
+
+        if (res.ok) {
+            bootstrap.Modal.getInstance(document.getElementById("modalAddUser")).hide();
+            loadUsers();
+        } else alert("Failed to create user");
+    });
+
+// ---------------- EDIT USER ----------------
+    function bindEditUserButtons() {
+        document.querySelectorAll(".btn-edit-user").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const id = btn.dataset.id;
+                const user = users.find(u => u.id == id);
+                if (!user) return;
+
+                const form = document.getElementById("formEditUser");
+                form.id.value = user.id;
+                form.fullName.value = user.fullName;
+                form.role.value = user.role;
+
+                const modal = new bootstrap.Modal(document.getElementById("modalEditUser"));
+                modal.show();
+            });
+        });
+    }
+
+    document.getElementById("formEditUser").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const dto = {
+            fullName: form.fullName.value,
+            role: form.role.value
+        };
+
+        const res = await authFetch(`/administrator/users/${form.id.value}`, {
+            method: "PUT",
+            body: JSON.stringify(dto)
+        });
+
+        if (res.ok) {
+            bootstrap.Modal.getInstance(document.getElementById("modalEditUser")).hide();
+            loadUsers();
+        } else alert("Failed to update user");
+    });
+
+// ---------------- DELETE USER ----------------
+    let deleteUserId = null;
+    function bindDeleteUserButtons() {
+        document.querySelectorAll(".btn-delete-user").forEach(btn => {
+            btn.addEventListener("click", () => {
+                deleteUserId = btn.dataset.id;
+                const modal = new bootstrap.Modal(document.getElementById("modalConfirmUser"));
+                modal.show();
+            });
+        });
+    }
+
+    document.getElementById("confirm-yes-user").addEventListener("click", async () => {
+        if (!deleteUserId) return;
+
+        const res = await authFetch(`/administrator/users/${deleteUserId}`, {
+            method: "DELETE"
+        });
+
+        if (res.ok) {
+            bootstrap.Modal.getInstance(document.getElementById("modalConfirmUser")).hide();
+            loadUsers();
+        } else alert("Failed to delete user");
+    });
 });

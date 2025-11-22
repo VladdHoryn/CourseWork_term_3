@@ -169,7 +169,97 @@
     </div>
 </div>
 
-<!-- ========== MODALS (Visits / Payments / Confirmations) ========== -->
+<!-- =================================================== -->
+<!-- =================== MODALS ======================== -->
+<!-- =================================================== -->
+<!-- Add User -->
+<div class="modal fade" id="modalAddUser" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formAddUser">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Username</label>
+                            <input name="userName" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Full Name</label>
+                            <input name="fullName" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Password</label>
+                            <input name="password" class="form-control" type="password" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Role</label>
+                            <select name="role" class="form-control" required>
+                                <option value="Administrator">Administrator</option>
+                                <option value="Operator">Operator</option>
+                                <option value="Specialist">Specialist</option>
+                                <option value="Patient">Patient</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary w-100 mt-3" type="submit">Create User</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User -->
+<div class="modal fade" id="modalEditUser" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditUser">
+                    <input type="hidden" name="id">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Full Name</label>
+                            <input name="fullName" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Role</label>
+                            <select name="role" class="form-control" required>
+                                <option value="Administrator">Administrator</option>
+                                <option value="Operator">Operator</option>
+                                <option value="Specialist">Specialist</option>
+                                <option value="Patient">Patient</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary w-100 mt-3" type="submit">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Delete -->
+<div class="modal fade" id="modalConfirmUser" tabindex="-1">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <p id="confirm-user-text">Are you sure?</p>
+                <div class="d-flex gap-2">
+                    <button id="confirm-yes-user" class="btn btn-danger w-100">Yes</button>
+                    <button class="btn btn-secondary w-100" data-bs-dismiss="modal">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- Add Visit -->
 <div class="modal fade" id="modalAddVisit" tabindex="-1">

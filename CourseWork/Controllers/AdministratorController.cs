@@ -1,6 +1,7 @@
 ﻿using CourseWork.DTOs;
 using CourseWork.Mappers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Сoursework.Models;
 using Сoursework.Services;
@@ -13,6 +14,7 @@ namespace CourseWork.Controllers;
 public class AdministratorController : ControllerBase
 {
     private readonly AdministratorService _adminService;
+    private readonly PasswordHasher<User> _hasher = new();
 
     public AdministratorController(AdministratorService adminService)
     {
@@ -55,6 +57,76 @@ public class AdministratorController : ControllerBase
         return _adminService.DeleteUserById(id)
             ? Ok("User deleted successfully")
             : BadRequest("Failed to delete user");
+    }
+    
+    // -------------------- CREATE USER --------------------
+    [HttpPost("users")]
+    public IActionResult CreateUser([FromBody] User dto)
+    {
+        if (dto == null || string.IsNullOrWhiteSpace(dto.PasswordHash) || string.IsNullOrWhiteSpace(dto.UserName))
+            return BadRequest("Invalid user data");
+
+        var user = new User();
+        user = new User(dto.UserName, string.Empty, dto.UserRole)
+        {
+            FullName = dto.FullName,
+            Phone = dto.Phone,
+            Address = dto.Address
+        };
+
+        // Set role-specific info
+        switch (dto.UserRole)
+        {
+            case Role.Patient:
+                if (!dto.MedicalRecordNumber.HasValue)
+                    return BadRequest("MedicalRecordNumber is required for Patient");
+                user.SetPatientInfo(dto.MedicalRecordNumber.Value, dto.DateOfBirth);
+                break;
+            case Role.Specialist:
+                if (string.IsNullOrWhiteSpace(dto.Speciality))
+                    return BadRequest("Speciality is required for Specialist");
+                user.SetSpecialistInfo(dto.Speciality, dto.DateOfBirth);
+                break;
+        }
+
+        user.SetPasswordHash(dto.PasswordHash, _hasher);
+
+        var result = _adminService.CreateUser(user, dto.PasswordHash);
+        return result ? Ok(UserMapper.ToDto(user)) : BadRequest("Failed to create user");
+    }
+
+    // -------------------- UPDATE USER --------------------
+    [HttpPut("users/{id}")]
+    public IActionResult UpdateUser(string id, [FromBody] User dto)
+    {
+        var user = _adminService.GetById(id);
+        if (user == null) return NotFound("User not found");
+
+        // Update basic info
+        if (!string.IsNullOrWhiteSpace(dto.FullName))
+            user.SetFullName(dto.FullName);
+        if (!string.IsNullOrWhiteSpace(dto.Phone) || !string.IsNullOrWhiteSpace(dto.Address))
+            user.SetContactInfo(dto.Phone, dto.Address);
+
+        // Update role-specific info
+        switch (user.UserRole)
+        {
+            case Role.Patient:
+                if (dto.MedicalRecordNumber.HasValue)
+                    user.SetPatientInfo(dto.MedicalRecordNumber.Value, dto.DateOfBirth);
+                break;
+            case Role.Specialist:
+                if (!string.IsNullOrWhiteSpace(dto.Speciality))
+                    user.SetSpecialistInfo(dto.Speciality, dto.DateOfBirth);
+                break;
+        }
+
+        // Update password if provided
+        if (!string.IsNullOrWhiteSpace(dto.PasswordHash))
+            user.SetPasswordHash(dto.PasswordHash, _hasher);
+
+        var result = _adminService.UpdateUser(user);
+        return result ? Ok(UserMapper.ToDto(user)) : BadRequest("Failed to update user");
     }
 
     // -------------------- Visits Management --------------------
