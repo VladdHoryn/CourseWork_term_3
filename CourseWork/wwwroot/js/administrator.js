@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // =====================================================================
     document.getElementById("btn-logout").addEventListener("click", () => {
         localStorage.removeItem("token");
-        window.location.href = "/login.html";
+        window.location.href = "/guest.html";
     });
 
     // =====================================================================
@@ -92,38 +92,6 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (err) {
             console.error(err);
             alert("Помилка при завантаженні Dashboard.");
-        }
-    }
-
-    async function loadUsers() {
-        try {
-            const roleFilter = document.getElementById("filter-role")?.value || "";
-            const res = await authFetch("/administrator/users");
-            if (!res.ok) throw new Error("Failed to load users");
-            let users = await res.json();
-
-            if (roleFilter) users = users.filter(u => u.role === roleFilter);
-
-            const container = document.getElementById("users-table-container");
-            let html = `<table class="table table-bordered table-striped">
-                <thead>
-                    <tr><th>ID</th><th>UserName</th><th>Full Name</th><th>Role</th></tr>
-                </thead><tbody>`;
-
-            users.forEach(u => {
-                html += `<tr>
-                    <td>${u.id}</td>
-                    <td>${u.userName}</td>
-                    <td>${u.fullName}</td>
-                    <td>${u.role}</td>
-                </tr>`;
-            });
-
-            html += `</tbody></table>`;
-            container.innerHTML = html;
-        } catch (err) {
-            console.error(err);
-            alert("Помилка при завантаженні користувачів.");
         }
     }
 
@@ -271,23 +239,51 @@ document.addEventListener("DOMContentLoaded", () => {
             container.innerHTML = "<p class='text-muted'>No users found</p>";
             return;
         }
+        
+        const columns = new Set();
+        users.forEach(u => Object.keys(u).forEach(k => columns.add(k)));
+        
+        columns.delete("passwordHash");
+
+        const colArray = Array.from(columns);
 
         let html = `
-        <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#modalAddUser">Add User</button>
-        <table class="table table-hover table-bordered">
-        <thead>
-            <tr><th>ID</th><th>Username</th><th>Full Name</th><th>Role</th><th>Actions</th></tr>
-        </thead><tbody>`;
+        <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#modalAddUser">
+            Add User
+        </button>
 
-        users.forEach(u => {
-            html += `<tr>
-            <td>${u.id}</td>
-            <td>${u.userName}</td>
-            <td>${u.fullName}</td>
-            <td>${u.role}</td>
+        <table class="table table-hover table-bordered">
+            <thead>
+                <tr>
+    `;
+
+        colArray.forEach(c => {
+            html += `<th>${c}</th>`;
+        });
+
+        html += `<th>Actions</th></tr></thead><tbody>`;
+
+        users.forEach(user => {
+            html += `<tr>`;
+
+            colArray.forEach(c => {
+                let val = user[c];
+
+                // Форматування дат
+                if (c.toLowerCase().includes("date") && val)
+                    val = new Date(val).toISOString().split("T")[0];
+
+                html += `<td>${val ?? "-"}</td>`;
+            });
+
+            html += `
             <td>
-                <button class="btn btn-sm btn-warning btn-edit-user" data-id="${u.id}">Edit</button>
-                <button class="btn btn-sm btn-danger btn-delete-user" data-id="${u.id}">Delete</button>
+                <button class="btn btn-sm btn-warning btn-edit-user" data-id="${user.id}">
+                    Edit
+                </button>
+                <button class="btn btn-sm btn-danger btn-delete-user" data-id="${user.id}">
+                    Delete
+                </button>
             </td>
         </tr>`;
         });

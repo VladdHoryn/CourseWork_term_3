@@ -46,7 +46,6 @@ public class AdministratorController : ControllerBase
     public IActionResult GetUsers()
     {
         var users = _adminService.GetAllUsers()
-            .Select(UserMapper.ToDto)
             .ToList();
         return Ok(users);
     }
