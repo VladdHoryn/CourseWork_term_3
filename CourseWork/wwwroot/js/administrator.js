@@ -1,4 +1,4 @@
-﻿import { authFetch, getToken, getUserRole } from "./auth.js";
+﻿import {authFetch, getToken, getUserRole} from "./auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -300,26 +300,83 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 // ---------------- CREATE USER ----------------
+    const roleMap = {
+        "Patient": 1,
+        "Specialist": 2,
+        "Operator": 3,
+        "Administrator": 4
+    };
+    
+    const roleSelect = document.getElementById("addUserRole");
+    const roleFieldsContainer = document.getElementById("roleSpecificFields");
+
+    roleSelect.addEventListener("change", () => {
+        const role = roleSelect.value;
+        roleFieldsContainer.innerHTML = ""; // очищаємо попередні поля
+
+        if (role === "Patient") {
+            roleFieldsContainer.innerHTML = `
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label>Medical Record Number</label>
+                    <input name="medicalRecordNumber" class="form-control" type="number" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label>Date of Birth</label>
+                    <input name="dateOfBirth" class="form-control" type="date">
+                </div>
+            </div>
+        `;
+        } else if (role === "Specialist") {
+            roleFieldsContainer.innerHTML = `
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label>Speciality</label>
+                    <input name="speciality" class="form-control" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label>Date of Birth</label>
+                    <input name="dateOfBirth" class="form-control" type="date">
+                </div>
+            </div>
+        `;
+        }
+    });
+
     document.getElementById("formAddUser").addEventListener("submit", async (e) => {
         e.preventDefault();
         const form = e.target;
+
         const dto = {
             userName: form.userName.value,
             fullName: form.fullName.value,
-            password: form.password.value,
-            role: form.role.value
+            passwordHash: form.password.value,
+            userRole: roleMap[form.role.value]  // <-- перетворюємо на число
         };
 
-        const res = await authFetch("/administrator/users", {
-            method: "POST",
-            body: JSON.stringify(dto)
-        });
+        if (form.medicalRecordNumber) dto.medicalRecordNumber = parseInt(form.medicalRecordNumber.value);
+        if (form.speciality) dto.speciality = form.speciality.value;
+        if (form.dateOfBirth) dto.dateOfBirth = form.dateOfBirth.value || null;
 
-        if (res.ok) {
-            bootstrap.Modal.getInstance(document.getElementById("modalAddUser")).hide();
-            loadUsers();
-        } else alert("Failed to create user");
+        try {
+            const res = await authFetch("/administrator/users", {
+                method: "POST",
+                body: JSON.stringify(dto)
+            });
+
+            if (res.ok) {
+                bootstrap.Modal.getInstance(document.getElementById("modalAddUser")).hide();
+                loadUsers();
+            } else {
+                const errorText = await res.text();
+                alert("Failed to create user: " + errorText);
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Помилка при створенні користувача");
+        }
     });
+
 
 // ---------------- EDIT USER ----------------
     function bindEditUserButtons() {
@@ -331,8 +388,52 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const form = document.getElementById("formEditUser");
                 form.id.value = user.id;
-                form.fullName.value = user.fullName;
-                form.role.value = user.role;
+                form.userName.value = user.userName;
+
+                form.role.value = Object.keys(roleMap).find(k => roleMap[k] === user.userRole);
+
+                const roleFieldsContainer = document.getElementById("editRoleSpecificFields");
+                roleFieldsContainer.innerHTML = "";
+
+                // Додаємо fullName тільки для Patient та Specialist
+                if (user.userRole === 1 || user.userRole === 2) {
+                    roleFieldsContainer.innerHTML += `
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label>Full Name</label>
+                            <input name="fullName" class="form-control" value="${user.fullName ?? ''}" required>
+                        </div>
+                    </div>
+                `;
+                }
+
+                if (user.userRole === 1) { // Patient
+                    roleFieldsContainer.innerHTML += `
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Medical Record Number</label>
+                            <input name="medicalRecordNumber" class="form-control" type="number" value="${user.medicalRecordNumber ?? ''}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Date of Birth</label>
+                            <input name="dateOfBirth" class="form-control" type="date" value="${user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : ''}">
+                        </div>
+                    </div>
+                `;
+                } else if (user.userRole === 2) { // Specialist
+                    roleFieldsContainer.innerHTML += `
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Speciality</label>
+                            <input name="speciality" class="form-control" value="${user.speciality ?? ''}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Date of Birth</label>
+                            <input name="dateOfBirth" class="form-control" type="date" value="${user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : ''}">
+                        </div>
+                    </div>
+                `;
+                }
 
                 const modal = new bootstrap.Modal(document.getElementById("modalEditUser"));
                 modal.show();
@@ -340,13 +441,68 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+// Зміна ролі в формі Edit
+    document.getElementById("formEditUser").role.addEventListener("change", (e) => {
+        const role = e.target.value;
+        const roleFieldsContainer = document.getElementById("editRoleSpecificFields");
+        roleFieldsContainer.innerHTML = "";
+
+        if (role === "Patient" || role === "Specialist") {
+            roleFieldsContainer.innerHTML += `
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label>Full Name</label>
+                    <input name="fullName" class="form-control" required>
+                </div>
+            </div>
+        `;
+        }
+
+        if (role === "Patient") {
+            roleFieldsContainer.innerHTML += `
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label>Medical Record Number</label>
+                    <input name="medicalRecordNumber" class="form-control" type="number">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label>Date of Birth</label>
+                    <input name="dateOfBirth" class="form-control" type="date">
+                </div>
+            </div>
+        `;
+        } else if (role === "Specialist") {
+            roleFieldsContainer.innerHTML += `
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label>Speciality</label>
+                    <input name="speciality" class="form-control">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label>Date of Birth</label>
+                    <input name="dateOfBirth" class="form-control" type="date">
+                </div>
+            </div>
+        `;
+        }
+    });
+
     document.getElementById("formEditUser").addEventListener("submit", async (e) => {
         e.preventDefault();
         const form = e.target;
+        const user = users.find(u => u.id == form.id.value);
+        if (!user) return alert("User not found");
+
         const dto = {
-            fullName: form.fullName.value,
-            role: form.role.value
+            userName: form.userName.value,
+            fullName: form.fullName ? form.fullName.value : null,
+            userRole: roleMap[form.role.value],
+            PasswordHash: user.passwordHash // додаємо існуючий хеш пароля
         };
+
+        if (form.medicalRecordNumber) dto.medicalRecordNumber = parseInt(form.medicalRecordNumber.value);
+        if (form.speciality) dto.speciality = form.speciality.value;
+        if (form.dateOfBirth) dto.dateOfBirth = form.dateOfBirth.value || null;
 
         const res = await authFetch(`/administrator/users/${form.id.value}`, {
             method: "PUT",
@@ -356,11 +512,15 @@ document.addEventListener("DOMContentLoaded", () => {
         if (res.ok) {
             bootstrap.Modal.getInstance(document.getElementById("modalEditUser")).hide();
             loadUsers();
-        } else alert("Failed to update user");
+        } else {
+            const text = await res.text();
+            alert("Failed to update user: " + text);
+        }
     });
 
 // ---------------- DELETE USER ----------------
     let deleteUserId = null;
+
     function bindDeleteUserButtons() {
         document.querySelectorAll(".btn-delete-user").forEach(btn => {
             btn.addEventListener("click", () => {

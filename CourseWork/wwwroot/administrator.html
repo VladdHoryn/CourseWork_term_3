@@ -183,21 +183,28 @@
             <div class="modal-body">
                 <form id="formAddUser">
                     <div class="row">
+                        <!-- Username -->
                         <div class="col-md-6 mb-3">
                             <label>Username</label>
                             <input name="userName" class="form-control" required>
                         </div>
+
+                        <!-- Full Name -->
                         <div class="col-md-6 mb-3">
                             <label>Full Name</label>
                             <input name="fullName" class="form-control" required>
                         </div>
+
+                        <!-- Password -->
                         <div class="col-md-6 mb-3">
                             <label>Password</label>
                             <input name="password" class="form-control" type="password" required>
                         </div>
+
+                        <!-- Role -->
                         <div class="col-md-6 mb-3">
                             <label>Role</label>
-                            <select name="role" class="form-control" required>
+                            <select name="role" class="form-control" required id="addUserRole">
                                 <option value="Administrator">Administrator</option>
                                 <option value="Operator">Operator</option>
                                 <option value="Specialist">Specialist</option>
@@ -205,6 +212,11 @@
                             </select>
                         </div>
                     </div>
+
+                    <!-- Role-specific fields will appear here -->
+                    <div id="roleSpecificFields" class="mt-3"></div>
+
+                    <!-- Submit button -->
                     <button class="btn btn-primary w-100 mt-3" type="submit">Create User</button>
                 </form>
             </div>
@@ -223,11 +235,13 @@
             <div class="modal-body">
                 <form id="formEditUser">
                     <input type="hidden" name="id">
+
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label>Full Name</label>
-                            <input name="fullName" class="form-control" required>
+                            <label>Username</label>
+                            <input name="userName" class="form-control" required>
                         </div>
+
                         <div class="col-md-6 mb-3">
                             <label>Role</label>
                             <select name="role" class="form-control" required>
@@ -238,6 +252,10 @@
                             </select>
                         </div>
                     </div>
+
+                    <!-- Контейнер для fullName, Medical Record, Speciality тощо -->
+                    <div id="editRoleSpecificFields"></div>
+
                     <button class="btn btn-primary w-100 mt-3" type="submit">Save Changes</button>
                 </form>
             </div>

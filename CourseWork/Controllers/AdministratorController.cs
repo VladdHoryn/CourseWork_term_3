@@ -94,41 +94,61 @@ public class AdministratorController : ControllerBase
         var result = _adminService.CreateUser(user, dto.PasswordHash);
         return result ? Ok(UserMapper.ToDto(user)) : BadRequest("Failed to create user");
     }
-
-    // -------------------- UPDATE USER --------------------
+    
+    /// -------------------- UPDATE USER --------------------
     [HttpPut("users/{id}")]
-    public IActionResult UpdateUser(string id, [FromBody] User dto)
+    public IActionResult UpdateUser(string id, [FromBody] UpdateUserDtoAdmin dto)
     {
         var user = _adminService.GetById(id);
         if (user == null) return NotFound("User not found");
 
-        // Update basic info
+        if (!string.IsNullOrWhiteSpace(dto.UserName))
+            user.UserName = dto.UserName;
+
+        // ===================== BASIC FIELDS =====================
         if (!string.IsNullOrWhiteSpace(dto.FullName))
             user.SetFullName(dto.FullName);
-        if (!string.IsNullOrWhiteSpace(dto.Phone) || !string.IsNullOrWhiteSpace(dto.Address))
-            user.SetContactInfo(dto.Phone, dto.Address);
 
-        // Update role-specific info
+        if (!string.IsNullOrWhiteSpace(dto.Phone) || !string.IsNullOrWhiteSpace(dto.Address))
+        {
+            string phone = string.IsNullOrWhiteSpace(dto.Phone) ? user.Phone : dto.Phone;
+            string address = string.IsNullOrWhiteSpace(dto.Address) ? user.Address : dto.Address;
+            user.SetContactInfo(phone, address);
+        }
+
+        // ===================== ROLE =====================
+        if (dto.UserRole != user.UserRole)
+            user.SetUserRole(dto.UserRole);
+
+        // ===================== ROLE-SPECIFIC FIELDS =====================
         switch (user.UserRole)
         {
             case Role.Patient:
                 if (dto.MedicalRecordNumber.HasValue)
-                    user.SetPatientInfo(dto.MedicalRecordNumber.Value, dto.DateOfBirth);
+                {
+                    DateTime? dob = dto.DateOfBirth ?? user.DateOfBirth;
+                    user.SetPatientInfo(dto.MedicalRecordNumber.Value, dob);
+                }
                 break;
+
             case Role.Specialist:
                 if (!string.IsNullOrWhiteSpace(dto.Speciality))
-                    user.SetSpecialistInfo(dto.Speciality, dto.DateOfBirth);
+                {
+                    DateTime? dob = dto.DateOfBirth ?? user.DateOfBirth;
+                    user.SetSpecialistInfo(dto.Speciality, dob);
+                }
                 break;
         }
 
-        // Update password if provided
+        // ===================== PASSWORD =====================
         if (!string.IsNullOrWhiteSpace(dto.PasswordHash))
             user.SetPasswordHash(dto.PasswordHash, _hasher);
-
+        
         var result = _adminService.UpdateUser(user);
         return result ? Ok(UserMapper.ToDto(user)) : BadRequest("Failed to update user");
     }
 
+    
     // -------------------- Visits Management --------------------
     [HttpGet("visits")]
     public IActionResult GetVisits()

@@ -1,6 +1,4 @@
-﻿
-
-using CourseWork.DTOs;
+﻿using CourseWork.DTOs;
 using Microsoft.AspNetCore.Identity;
 using Сoursework.Models;
 using Сoursework.Repositories;
@@ -46,7 +44,7 @@ public class UserService
             throw;
         }
     }
-    
+
     public User GetById(string Id)
     {
         try
@@ -101,18 +99,62 @@ public class UserService
             return false;
         }
     }
-    
+
     public bool UpdateUser(User updated)
     {
         try
         {
-            var existing = _userRepo.GetByName(updated.UserName);
+            var existing = _userRepo.GetById(updated.Id);
             if (existing == null)
-                throw new KeyNotFoundException($"User '{updated.UserName}' not found.");
-            
-            updated.PasswordHash = existing.PasswordHash;
+                throw new KeyNotFoundException($"User Id '{updated.Id}' not found.");
 
-            _userRepo.UpdateUser(updated);
+            // ------------------------ BASIC FIELDS ------------------------
+            if (!string.IsNullOrWhiteSpace(updated.UserName))
+                existing.UserName = updated.UserName;
+
+            if (!string.IsNullOrWhiteSpace(updated.FullName))
+                existing.FullName = updated.FullName;
+
+            if (!string.IsNullOrWhiteSpace(updated.Phone))
+                existing.Phone = updated.Phone;
+
+            if (!string.IsNullOrWhiteSpace(updated.Address))
+                existing.Address = updated.Address;
+
+            // ------------------------ ROLE ------------------------
+            // Якщо роль змінилася — дозволяємо оновлення
+            if (updated.UserRole != existing.UserRole)
+                existing.UserRole = updated.UserRole;
+
+            // ------------------------ PASSWORD ------------------------
+            if (!string.IsNullOrWhiteSpace(updated.PasswordHash))
+            {
+                existing.PasswordHash = updated.PasswordHash;
+            }
+
+            // ------------------------ ROLE SPECIFIC ------------------------
+            switch (existing.UserRole)
+            {
+                case Role.Patient:
+                    if (updated.MedicalRecordNumber.HasValue)
+                        existing.MedicalRecordNumber = updated.MedicalRecordNumber.Value;
+
+                    if (updated.DateOfBirth.HasValue)
+                        existing.DateOfBirth = updated.DateOfBirth.Value;
+                    break;
+
+                case Role.Specialist:
+                    if (!string.IsNullOrWhiteSpace(updated.Speciality))
+                        existing.Speciality = updated.Speciality;
+
+                    if (updated.DateOfBirth.HasValue)
+                        existing.DateOfBirth = updated.DateOfBirth.Value;
+                    break;
+            }
+
+            // ------------------------ SAVE ------------------------
+            _userRepo.UpdateUser(existing);
+
             return true;
         }
         catch (Exception ex)
