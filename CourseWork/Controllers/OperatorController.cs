@@ -207,6 +207,39 @@ public class OperatorController : ControllerBase
             ? Ok("Payment created")
             : BadRequest("Failed to create payment");
     }
+    
+    // -------------------- Payments Update --------------------
+    [HttpPut("payments/{id}")]
+    public IActionResult UpdatePayment(string id, [FromBody] PaymentUpdateDto dto)
+    {
+        var existingPayment = _operatorService.GetAllPaymentsByOperator()
+            .FirstOrDefault(p => p.Id == id);
+
+        if (existingPayment == null)
+            return NotFound("Payment not found");
+        
+        existingPayment.VisitId = dto.VisitId;
+        existingPayment.PatientMedicalRecord = dto.PatientMedicalRecord;
+        existingPayment.TotalAmount = dto.TotalAmount;
+        existingPayment.PaidAmount = dto.PaidAmount;
+        existingPayment.RemainingAmount = dto.RemainingAmount;
+        existingPayment.IssuedDate = dto.IssuedDate;
+        existingPayment.DueDate = dto.DueDate;
+        existingPayment.LastPaymentDate = dto.LastPaymentDate;
+        
+        if (Enum.TryParse<PaymentStatus>(dto.Status, true, out var status))
+        {
+            existingPayment.Status = status;
+        }
+        else
+        {
+            return BadRequest("Invalid payment status value");
+        }
+        
+        var result = _operatorService.UpdatePaymentByOperator(id, existingPayment);
+
+        return result ? Ok("Payment updated") : BadRequest("Failed to update payment");
+    }
 
     [HttpDelete("payments/{id}")]
     public IActionResult DeletePayment(string id)
