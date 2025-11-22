@@ -29,8 +29,23 @@ public class PaymentRepository
     
     public void UpdatePayment(string id, Payment payment)
     {
-        var filter = Builders<Payment>.Filter.Eq(u => u.Id, id);
-        _db_collection.ReplaceOne(filter, payment); // <--- повна заміна документа
+        var filter = Builders<Payment>.Filter.Eq(p => p.Id, id);
+
+        var update = Builders<Payment>.Update
+            .Set(p => p.TotalAmount, payment.TotalAmount)
+            .Set(p => p.PaidAmount, payment.PaidAmount)
+            .Set(p => p.RemainingAmount, payment.RemainingAmount)
+            .Set(p => p.IssuedDate, payment.IssuedDate)
+            .Set(p => p.DueDate, payment.DueDate)
+            .Set(p => p.LastPaymentDate, payment.LastPaymentDate)
+            .Set(p => p.Status, payment.Status);
+        
+        _db_collection.UpdateOne(filter, update);
+        
+        _db_collection.UpdateOne(
+            filter,
+            Builders<Payment>.Update.Set(p => p.LastPaymentDate, payment.LastPaymentDate)
+        );
     }
     
     public void DeletePayment(string id)

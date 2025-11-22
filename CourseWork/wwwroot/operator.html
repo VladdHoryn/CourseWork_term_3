@@ -564,6 +564,63 @@
     </div>
 </div>
 
+<!-- Edit Payment -->
+<div class="modal fade" id="modalEditPayment" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5>Edit Payment</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+
+            <div class="modal-body">
+                <form id="formEditPayment">
+                    <input type="hidden" name="id">
+
+                    <div class="mb-3">
+                        <label>Total Amount</label>
+                        <input name="totalAmount" type="number" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Paid Amount</label>
+                        <input name="paidAmount" type="number" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Remaining Amount</label>
+                        <input name="remainingAmount" type="number" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Issued Date</label>
+                        <input name="issuedDate" type="datetime-local" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Due Date</label>
+                        <input name="dueDate" type="datetime-local" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Last Payment Date</label>
+                        <input name="lastPaymentDate" type="datetime-local" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Status</label>
+                        <select name="status" class="form-control">
+                            <option>Pending</option>
+                            <option>Paid</option>
+                            <option>Overdue</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-primary w-100 mt-3">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!-- Delete Payment -->
 <div class="modal fade" id="modalDeletePayment" tabindex="-1">
     <div class="modal-dialog">

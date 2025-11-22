@@ -293,10 +293,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const id = document.getElementById("edit-visit-id").value;
 
             const dto = {
-                Anamnesis: "", // якщо в тебе немає поля, залиш пустим
+                Anamnesis: "",
                 Diagnosis: document.getElementById("edit-diagnosis").value,
-                Treatment: "", // якщо немає поля в формі
-                Recommendations: "", // якщо немає поля в формі
+                Treatment: "",
+                Recommendations: "",
                 ServiceCost: Number(document.getElementById("edit-service-cost").value) || 0,
                 MedicationCost: Number(document.getElementById("edit-medication-cost").value) || 0,
                 Status: document.getElementById("edit-status").value

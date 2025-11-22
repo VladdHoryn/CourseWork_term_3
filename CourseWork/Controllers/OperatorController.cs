@@ -218,8 +218,6 @@ public class OperatorController : ControllerBase
         if (existingPayment == null)
             return NotFound("Payment not found");
         
-        existingPayment.VisitId = dto.VisitId;
-        existingPayment.PatientMedicalRecord = dto.PatientMedicalRecord;
         existingPayment.TotalAmount = dto.TotalAmount;
         existingPayment.PaidAmount = dto.PaidAmount;
         existingPayment.RemainingAmount = dto.RemainingAmount;

@@ -681,77 +681,175 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // =====================================================================
-    //                              PAYMENTS
-    // =====================================================================
+//                              PAYMENTS
+// =====================================================================
 
     let payments = [];
+    let deletePaymentId = null;
 
+// -------------------- Load Payments --------------------
     async function loadPayments() {
         const res = await authFetch("/operator/payments");
         payments = res.ok ? await res.json() : [];
         renderPaymentsTable();
     }
 
+// -------------------- Render Table --------------------
     function renderPaymentsTable() {
         const container = document.getElementById("payments-table-container");
 
         let html = `
-        <button class="btn btn-primary mb-3" id="btn-add-payment">Add Payment</button>
-
-        <table class="table table-bordered table-hover">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Visit ID</th>
-                    <th>Patient MRN</th>
-                    <th>Total Amount</th>
-                    <th>Paid Amount</th>
-                    <th>Remaining</th>
-                    <th>Issued</th>
-                    <th>Due</th>
-                    <th>Last Payment</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Visit ID</th>
+                <th>Patient MRN</th>
+                <th>Total Amount</th>
+                <th>Paid Amount</th>
+                <th>Remaining</th>
+                <th>Issued</th>
+                <th>Due</th>
+                <th>Last Payment</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
     `;
 
         payments.forEach(p => {
             html += `
-            <tr>
-                <td>${p.id}</td>
-                <td>${p.visitId}</td>
-                <td>${p.patientMedicalRecord}</td>
-                <td>${p.totalAmount}</td>
-                <td>${p.paidAmount}</td>
-                <td>${p.remainingAmount}</td>
-                <td>${p.issuedDate}</td>
-                <td>${p.dueDate}</td>
-                <td>${p.lastPaymentDate ?? "-"}</td>
-                <td>${p.status}</td>
-                <td>
-                    <button class="btn btn-danger btn-sm" data-id="${p.id}" data-delete>Delete</button>
-                </td>
-            </tr>`;
+        <tr>
+            <td>${p.id}</td>
+            <td>${p.visitId}</td>
+            <td>${p.patientMedicalRecord}</td>
+            <td>${p.totalAmount}</td>
+            <td>${p.paidAmount}</td>
+            <td>${p.remainingAmount}</td>
+            <td>${p.issuedDate ?? "-"}</td>
+            <td>${p.dueDate ?? "-"}</td>
+            <td>${p.lastPaymentDate ?? "-"}</td>
+            <td>${p.status}</td>
+            <td>
+                <button class="btn btn-warning btn-sm" data-id="${p.id}" data-edit>Edit</button>
+                <button class="btn btn-danger btn-sm" data-id="${p.id}" data-delete>Delete</button>
+            </td>
+        </tr>`;
         });
 
         html += `</tbody></table>`;
         container.innerHTML = html;
 
-        document.getElementById("btn-add-payment").addEventListener("click", () => openPaymentModal());
+        // Edit buttons
+        document.querySelectorAll("[data-edit]").forEach(btn =>
+            btn.addEventListener("click", () => {
+                const payment = payments.find(p => p.id == btn.dataset.id);
+                openPaymentModal(payment);
+            })
+        );
 
+        // Delete buttons
         document.querySelectorAll("[data-delete]").forEach(btn =>
-            btn.addEventListener("click", () => deletePayment(btn.dataset.id))
+            btn.addEventListener("click", () => {
+                deletePaymentId = btn.dataset.id;
+                new bootstrap.Modal(document.getElementById("modalDeletePayment")).show();
+            })
         );
     }
 
+// -------------------- Open Add/Edit Modal --------------------
+    let editingPayment = null;
 
-    async function deletePayment(id) {
-        if (!confirm("Delete payment?")) return;
+    function openPaymentModal(payment = null) {
+        editingPayment = payment; // зберігаємо поточний об’єкт
 
-        const res = await authFetch(`/operator/payments/${id}`, {method: "DELETE"});
-        if (res.ok) loadPayments();
+        const modal = document.getElementById(payment ? "modalEditPayment" : "modalAddPayment");
+        const form = modal.querySelector("form");
+
+        if (payment) {
+            form.id.value = payment.id;
+            form.totalAmount.value = payment.totalAmount;
+            form.paidAmount.value = payment.paidAmount ?? 0;
+            form.remainingAmount.value = payment.remainingAmount ?? 0;
+            form.issuedDate.value = payment.issuedDate ? new Date(payment.issuedDate).toISOString().slice(0,16) : "";
+            form.dueDate.value = payment.dueDate ? new Date(payment.dueDate).toISOString().slice(0,16) : "";
+            form.lastPaymentDate.value = payment.lastPaymentDate ? new Date(payment.lastPaymentDate).toISOString().slice(0,16) : "";
+            form.status.value = payment.status ?? "Pending";
+        } else {
+            form.reset();
+        }
+
+        new bootstrap.Modal(modal).show();
     }
 
+// -------------------- Add Payment --------------------
+    document.getElementById("formAddPayment").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const form = e.target;
+
+        const dto = {
+            visitId: form.visitId.value,
+            patientMedicalRecord: Number(form.patientMedicalRecord.value),
+            totalAmount: Number(form.totalAmount.value)
+        };
+
+        const res = await authFetch("/operator/payments", {
+            method: "POST",
+            body: JSON.stringify(dto)
+        });
+
+        if (res.ok) {
+            bootstrap.Modal.getInstance(document.getElementById("modalAddPayment")).hide();
+            loadPayments();
+        } else {
+            alert("Failed to create payment");
+        }
+    });
+
+// -------------------- Edit Payment --------------------
+    document.getElementById("formEditPayment").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const form = e.target;
+
+        const dto = {
+            totalAmount: form.totalAmount.value || 0,
+            paidAmount: form.paidAmount.value || 0,
+            remainingAmount: form.remainingAmount.value || 0,
+            issuedDate: form.issuedDate.value ? new Date(form.issuedDate.value).toISOString() : null,
+            dueDate: form.dueDate.value ? new Date(form.dueDate.value).toISOString() : null,
+            lastPaymentDate: form.lastPaymentDate.value ? new Date(form.lastPaymentDate.value).toISOString() : null,
+            status: form.status.value
+        };
+
+        const paymentId = form.id.value; // <-- правильний ID
+
+        const res = await authFetch(`/operator/payments/${paymentId}`, {
+            method: "PUT",
+            body: JSON.stringify(dto)
+        });
+
+        if (res.ok) {
+            bootstrap.Modal.getInstance(document.getElementById("modalEditPayment")).hide();
+            loadPayments();
+        } else {
+            const text = await res.text();
+            alert("Failed to update payment: " + text);
+        }
+    });
+
+
+// -------------------- Delete Payment --------------------
+    document.getElementById("btnConfirmDeletePayment").addEventListener("click", async () => {
+        if (!deletePaymentId) return;
+
+        const res = await authFetch(`/operator/payments/${deletePaymentId}`, { method: "DELETE" });
+
+        if (res.ok) {
+            bootstrap.Modal.getInstance(document.getElementById("modalDeletePayment")).hide();
+            loadPayments();
+        } else {
+            alert("Failed to delete payment");
+        }
+    });
 });
