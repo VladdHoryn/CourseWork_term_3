@@ -271,10 +271,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // =====================================================================
-    //                        SPECIALISTS CRUD + GROUPING
-    // =====================================================================
+//                        SPECIALISTS CRUD + GROUPING
+// =====================================================================
 
     let specialists = [];
+
+// ====================== LOAD & RENDER ======================
 
     async function loadSpecialists() {
         const res = await authFetch("/operator/specialists");
@@ -285,9 +287,14 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderSpecialistsTable() {
         const container = document.getElementById("specialists-table-container");
 
+        if (!specialists.length) {
+            container.innerHTML = "<p class='text-muted'>No specialists found</p>";
+            return;
+        }
+
+        // Кнопка Group by Specialty над таблицею
         let html = `
-        <button class="btn btn-primary mb-3" id="btn-add-specialist">Add Specialist</button>
-        <button class="btn btn-secondary mb-3 ms-2" id="btn-group-specialty">Group by Specialty</button>
+        <button class="btn btn-secondary mb-3" id="btn-group-specialty">Group by Specialty</button>
 
         <table class="table table-bordered table-hover">
             <thead>
@@ -295,8 +302,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <th>ID</th>
                     <th>UserName</th>
                     <th>Full Name</th>
-                    <th>Speciality</th>
-                    <th>Date of Birth</th>
+                    <th>Specialty</th>
                     <th>Phone</th>
                     <th>Address</th>
                     <th>Created At</th>
@@ -308,31 +314,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
         specialists.forEach(s => {
             html += `
-            <tr>
-                <td>${s.id}</td>
-                <td>${s.userName}</td>
-                <td>${s.fullName}</td>
-                <td>${s.speciality}</td>
-                <td>${s.dateOfBirth ?? "-"}</td>
-                <td>${s.phone ?? "-"}</td>
-                <td>${s.address ?? "-"}</td>
-                <td>${s.createdAt ?? "-"}</td>
-                <td>
-                    <button class="btn btn-warning btn-sm btn-edit" data-id="${s.id}">Edit</button>
-                    <button class="btn btn-danger btn-sm btn-delete" data-id="${s.id}">Delete</button>
-                </td>
-            </tr>`;
+        <tr>
+            <td>${s.id}</td>
+            <td>${s.userName}</td>
+            <td>${s.fullName}</td>
+            <td>${s.speciality}</td>
+            <td>${s.phone ?? "-"}</td>
+            <td>${s.address ?? "-"}</td>
+            <td>${s.createdAt ?? "-"}</td>
+            <td>
+                <button class="btn btn-warning btn-sm btn-edit" data-id="${s.id}">Edit</button>
+                <button class="btn btn-danger btn-sm btn-delete" data-id="${s.id}">Delete</button>
+            </td>
+        </tr>`;
         });
 
         html += `</tbody></table>`;
+
         container.innerHTML = html;
 
-        document.getElementById("btn-add-specialist").addEventListener("click", () =>
-            openSpecialistModal()
-        );
-
+        // Прив'язка кнопки Group by Specialty
         document.getElementById("btn-group-specialty").addEventListener("click", loadGroupedBySpecialty);
 
+        // Edit & Delete кнопки
         document.querySelectorAll(".btn-edit").forEach(btn =>
             btn.addEventListener("click", () => {
                 const specialist = specialists.find(s => s.id == btn.dataset.id);
@@ -345,20 +349,112 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
+// ====================== MODAL HANDLING ======================
+
+    function openSpecialistModal(specialist = null) {
+        const modalEl = document.getElementById(specialist ? "modalEditSpecialist" : "modalAddSpecialist");
+        const form = modalEl.querySelector("form");
+
+        if (specialist) {
+            form.id.value = specialist.id;
+            form.fullName.value = specialist.fullName;
+            form.specialty.value = specialist.speciality ?? "";
+            form.phone.value = specialist.phone ?? "";
+            form.address.value = specialist.address ?? "";
+        } else {
+            form.reset();
+        }
+
+        new bootstrap.Modal(modalEl).show();
+    }
+
+// ====================== CREATE SPECIALIST ======================
+
+    document.getElementById("formAddSpecialist").addEventListener("submit", async e => {
+        e.preventDefault();
+        const form = e.target;
+
+        const dto = {
+            userName: form.userName.value,
+            fullName: form.fullName.value,
+            password: form.password.value,
+            specialty: form.specialty.value,
+            phone: form.phone.value || null,
+            address: form.address.value || null
+        };
+
+        const res = await authFetch("/operator/specialists", {
+            method: "POST",
+            body: JSON.stringify(dto)
+        });
+
+        if (res.ok) {
+            bootstrap.Modal.getInstance(document.getElementById("modalAddSpecialist")).hide();
+            loadSpecialists();
+        } else {
+            alert("Failed to create specialist");
+        }
+    });
+
+// ====================== EDIT SPECIALIST ======================
+
+    document.getElementById("formEditSpecialist").addEventListener("submit", async e => {
+        e.preventDefault();
+        const form = e.target;
+        const id = form.id.value;
+
+        const dto = {
+            fullName: form.fullName.value,
+            specialty: form.specialty.value,
+            phone: form.phone.value || null,
+            address: form.address.value || null
+        };
+
+        const res = await authFetch(`/operator/specialists/${id}`, {
+            method: "PUT",
+            body: JSON.stringify(dto)
+        });
+
+        if (res.ok) {
+            bootstrap.Modal.getInstance(document.getElementById("modalEditSpecialist")).hide();
+            loadSpecialists();
+        } else {
+            alert("Update failed");
+        }
+    });
+
+// ====================== DELETE SPECIALIST ======================
+
+    async function deleteSpecialist(id) {
+        if (!confirm("Delete specialist?")) return;
+
+        const res = await authFetch(`/operator/specialists/${id}`, { method: "DELETE" });
+        if (res.ok) loadSpecialists();
+        else {
+            const errorText = await res.text();
+            alert("Delete failed: " + errorText);
+        }
+    }
+
+// ====================== GROUP BY SPECIALTY ======================
+
     async function loadGroupedBySpecialty() {
         const res = await authFetch("/operator/specialists/group-by-specialty");
         if (!res.ok) return;
 
         const data = await res.json();
-        alert(JSON.stringify(data, null, 2));
+        // Відображаємо у зручному alert
+        let msg = "Specialists grouped by specialty:\n\n";
+        for (const [specialty, count] of Object.entries(data)) {
+            msg += `${specialty}: ${count}\n`;
+        }
+        alert(msg);
     }
 
-    async function deleteSpecialist(id) {
-        if (!confirm("Delete specialist?")) return;
+// ====================== INIT ======================
 
-        const res = await authFetch(`/operator/specialists/${id}`, {method: "DELETE"});
-        if (res.ok) loadSpecialists();
-    }
+    loadSpecialists();
+
 
 
     // =====================================================================
