@@ -1,4 +1,4 @@
-﻿import { authFetch } from "./auth.js";
+﻿import {authFetch} from "./auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -17,11 +17,21 @@ document.addEventListener("DOMContentLoaded", () => {
             btn.classList.add("active");
 
             switch (tab) {
-                case "dashboard": loadDashboard(); break;
-                case "patients": loadPatients(); break;
-                case "specialists": loadSpecialists(); break;
-                case "visits": loadVisits(); break;
-                case "payments": loadPayments(); break;
+                case "dashboard":
+                    loadDashboard();
+                    break;
+                case "patients":
+                    loadPatients();
+                    break;
+                case "specialists":
+                    loadSpecialists();
+                    break;
+                case "visits":
+                    loadVisits();
+                    break;
+                case "payments":
+                    loadPayments();
+                    break;
             }
         });
     });
@@ -77,10 +87,9 @@ document.addEventListener("DOMContentLoaded", () => {
     loadDashboard();
 
 
-
     // =====================================================================
-    //                            PATIENTS CRUD
-    // =====================================================================
+//                            PATIENTS CRUD
+// =====================================================================
 
     let patients = [];
 
@@ -100,87 +109,155 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         let html = `
-            <button class="btn btn-primary mb-3" id="btn-add-patient">Add Patient</button>
-
-            <table class="table table-hover table-bordered">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>UserName</th>
-                        <th>FullName</th>
-                        <th>Phone</th>
-                        <th>Address</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
+        <table class="table table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>UserName</th>
+                    <th>Full Name</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>Medical Record #</th>
+                    <th>Date of Birth</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
 
         patients.forEach(p => {
             html += `
-                <tr>
-                    <td>${p.id}</td>
-                    <td>${p.userName}</td>
-                    <td>${p.fullName}</td>
-                    <td>${p.phone ?? "-"}</td>
-                    <td>${p.address ?? "-"}</td>
-                    <td>
-                        <button class="btn btn-sm btn-warning btn-edit" data-id="${p.id}">Edit</button>
-                        <button class="btn btn-sm btn-danger btn-delete" data-id="${p.id}">Delete</button>
-                    </td>
-                </tr>
-            `;
+            <tr>
+                <td>${p.id}</td>
+                <td>${p.userName}</td>
+                <td>${p.fullName}</td>
+                <td>${p.phone ?? "-"}</td>
+                <td>${p.address ?? "-"}</td>
+                <td>${p.medicalRecordNumber ?? "-"}</td>
+                <td>${p.dateOfBirth ?? "-"}</td>
+                <td>${p.createdAt ?? "-"}</td>
+                <td>
+                    <button class="btn btn-sm btn-warning btn-edit-patient" data-id="${p.id}">Edit</button>
+                    <button class="btn btn-sm btn-danger btn-delete-patient" data-id="${p.id}">Delete</button>
+                </td>
+            </tr>
+        `;
         });
 
         html += `</tbody></table>`;
         container.innerHTML = html;
 
-        document.getElementById("btn-add-patient").addEventListener("click", () => openPatientModal());
-
-        document.querySelectorAll(".btn-edit").forEach(btn =>
-            btn.addEventListener("click", () => {
-                const id = btn.getAttribute("data-id");
-                openPatientModal(patients.find(x => x.id === id));
-            })
-        );
-
-        document.querySelectorAll(".btn-delete").forEach(btn =>
-            btn.addEventListener("click", () => deletePatient(btn.getAttribute("data-id")))
-        );
+        bindEditPatientButtons();
+        bindDeletePatientButtons();
     }
 
-    // --- Patient Modal ---
+// ====================== CREATE PATIENT ======================
 
-    async function savePatient(isEdit, id) {
+    document.getElementById("formAddPatient").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const form = e.target;
         const dto = {
-            userName: document.getElementById("p-username").value,
-            fullName: document.getElementById("p-fullname").value,
-            password: document.getElementById("p-password").value,
-            phone: document.getElementById("p-phone").value,
-            address: document.getElementById("p-address").value,
-            medicalRecordNumber: 0
+            userName: form.userName.value,
+            fullName: form.fullName.value,
+            password: form.password.value,
+            phone: form.phone.value || null,
+            address: form.address.value || null,
+            medicalRecordNumber: Number(form.medicalRecordNumber.value),
+            dateOfBirth: form.dateOfBirth.value || null
         };
 
-        const url = isEdit ? `/operator/patients/${id}` : "/operator/patients";
-        const method = isEdit ? "PUT" : "POST";
-
-        const res = await authFetch(url, {
-            method,
+        const res = await fetch("/operator/patients", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dto)
         });
 
         if (res.ok) {
-            bootstrap.Modal.getInstance(document.getElementById("patientModal")).hide();
+            bootstrap.Modal.getInstance(document.getElementById("modalAddPatient")).hide();
             loadPatients();
+        } else {
+            alert("Failed to create patient");
         }
+    });
+
+// ====================== EDIT PATIENT ======================
+
+    function bindEditPatientButtons() {
+        document.querySelectorAll(".btn-edit-patient").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const id = btn.dataset.id;
+                const patient = patients.find(p => p.id === id);
+
+                const modal = document.getElementById("modalEditPatient");
+                modal.querySelector("[name=id]").value = patient.id;
+                modal.querySelector("[name=fullName]").value = patient.fullName;
+                modal.querySelector("[name=phone]").value = patient.phone || "";
+                modal.querySelector("[name=address]").value = patient.address || "";
+                modal.querySelector("[name=medicalRecordNumber]").value = patient.medicalRecordNumber ?? "";
+                modal.querySelector("[name=dateOfBirth]").value = patient.dateOfBirth ? patient.dateOfBirth.substring(0,10) : "";
+
+                new bootstrap.Modal(modal).show();
+            });
+        });
     }
 
-    async function deletePatient(id) {
-        if (!confirm("Delete this patient?")) return;
+    document.getElementById("formEditPatient").addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-        const res = await authFetch(`/operator/patients/${id}`, { method: "DELETE" });
-        if (res.ok) loadPatients();
+        const form = e.target;
+        const id = form.id.value;
+
+        const dto = {
+            fullName: form.fullName.value,
+            phone: form.phone.value || null,
+            address: form.address.value || null,
+            medicalRecordNumber: form.medicalRecordNumber.value ? Number(form.medicalRecordNumber.value) : null,
+            dateOfBirth: form.dateOfBirth.value || null
+        };
+
+        const res = await fetch(`/operator/patients/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(dto)
+        });
+
+        if (res.ok) {
+            bootstrap.Modal.getInstance(document.getElementById("modalEditPatient")).hide();
+            loadPatients();
+        } else {
+            alert("Update failed");
+        }
+    });
+
+// ====================== DELETE PATIENT ======================
+
+    let deletePatientId = null;
+
+    function bindDeletePatientButtons() {
+        document.querySelectorAll(".btn-delete-patient").forEach(btn => {
+            btn.addEventListener("click", () => {
+                deletePatientId = btn.dataset.id;
+                new bootstrap.Modal(document.getElementById("modalDeletePatient")).show();
+            });
+        });
     }
+
+    document.getElementById("btnConfirmDeletePatient").addEventListener("click", async () => {
+        if (!deletePatientId) return;
+
+        const res = await fetch(`/operator/patients/${deletePatientId}`, {
+            method: "DELETE"
+        });
+
+        if (res.ok) {
+            bootstrap.Modal.getInstance(document.getElementById("modalDeletePatient")).hide();
+            loadPatients();
+        } else {
+            alert("Delete failed");
+        }
+    });
 
 
 
@@ -200,38 +277,42 @@ document.addEventListener("DOMContentLoaded", () => {
         const container = document.getElementById("specialists-table-container");
 
         let html = `
-            <button class="btn btn-primary mb-3" id="btn-add-specialist">Add Specialist</button>
-            <button class="btn btn-secondary mb-3 ms-2" id="btn-group-specialty">Group by Specialty</button>
+        <button class="btn btn-primary mb-3" id="btn-add-specialist">Add Specialist</button>
+        <button class="btn btn-secondary mb-3 ms-2" id="btn-group-specialty">Group by Specialty</button>
 
-            <table class="table table-bordered table-hover">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>UserName</th>
-                        <th>FullName</th>
-                        <th>Specialty</th>
-                        <th>Phone</th>
-                        <th>Address</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>UserName</th>
+                    <th>Full Name</th>
+                    <th>Speciality</th>
+                    <th>Date of Birth</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
 
         specialists.forEach(s => {
             html += `
-                <tr>
-                    <td>${s.id}</td>
-                    <td>${s.userName}</td>
-                    <td>${s.fullName}</td>
-                    <td>${s.speciality}</td>
-                    <td>${s.phone ?? "-"}</td>
-                    <td>${s.address ?? "-"}</td>
-                    <td>
-                        <button class="btn btn-warning btn-sm btn-edit" data-id="${s.id}">Edit</button>
-                        <button class="btn btn-danger btn-sm btn-delete" data-id="${s.id}">Delete</button>
-                    </td>
-                </tr>`;
+            <tr>
+                <td>${s.id}</td>
+                <td>${s.userName}</td>
+                <td>${s.fullName}</td>
+                <td>${s.speciality}</td>
+                <td>${s.dateOfBirth ?? "-"}</td>
+                <td>${s.phone ?? "-"}</td>
+                <td>${s.address ?? "-"}</td>
+                <td>${s.createdAt ?? "-"}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm btn-edit" data-id="${s.id}">Edit</button>
+                    <button class="btn btn-danger btn-sm btn-delete" data-id="${s.id}">Delete</button>
+                </td>
+            </tr>`;
         });
 
         html += `</tbody></table>`;
@@ -245,7 +326,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.querySelectorAll(".btn-edit").forEach(btn =>
             btn.addEventListener("click", () => {
-                const specialist = specialists.find(s => s.id === btn.dataset.id);
+                const specialist = specialists.find(s => s.id == btn.dataset.id);
                 openSpecialistModal(specialist);
             })
         );
@@ -266,10 +347,9 @@ document.addEventListener("DOMContentLoaded", () => {
     async function deleteSpecialist(id) {
         if (!confirm("Delete specialist?")) return;
 
-        const res = await authFetch(`/operator/specialists/${id}`, { method: "DELETE" });
+        const res = await authFetch(`/operator/specialists/${id}`, {method: "DELETE"});
         if (res.ok) loadSpecialists();
     }
-
 
 
     // =====================================================================
@@ -288,35 +368,49 @@ document.addEventListener("DOMContentLoaded", () => {
         const container = document.getElementById("visits-table-container");
 
         let html = `
-            <button class="btn btn-primary mb-3" id="btn-add-visit">Add Visit</button>
+        <button class="btn btn-primary mb-3" id="btn-add-visit">Add Visit</button>
 
-            <table class="table table-bordered table-hover">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Patient</th>
-                        <th>Specialist</th>
-                        <th>Date</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Patient MRN</th>
+                    <th>Specialist ID</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>First Visit</th>
+                    <th>Anamnesis</th>
+                    <th>Diagnosis</th>
+                    <th>Treatment</th>
+                    <th>Recommendations</th>
+                    <th>Service Cost</th>
+                    <th>Medication Cost</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
 
         visits.forEach(v => {
             html += `
-                <tr>
-                    <td>${v.id}</td>
-                    <td>${v.patientName}</td>
-                    <td>${v.specialistName}</td>
-                    <td>${v.visitDate}</td>
-                    <td>${v.status}</td>
-                    <td>
-                        <button class="btn btn-warning btn-sm" data-id="${v.id}" data-edit>Edit</button>
-                        <button class="btn btn-danger btn-sm" data-id="${v.id}" data-delete>Delete</button>
-                    </td>
-                </tr>`;
+            <tr>
+                <td>${v.id}</td>
+                <td>${v.patientMedicalRecord}</td>
+                <td>${v.specialistId}</td>
+                <td>${v.visitDate}</td>
+                <td>${v.status}</td>
+                <td>${v.isFirstVisit ? "Yes" : "No"}</td>
+                <td>${v.anamnesis ?? "-"}</td>
+                <td>${v.diagnosis ?? "-"}</td>
+                <td>${v.treatment ?? "-"}</td>
+                <td>${v.recommendations ?? "-"}</td>
+                <td>${v.serviceCost}</td>
+                <td>${v.medicationCost}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" data-id="${v.id}" data-edit>Edit</button>
+                    <button class="btn btn-danger btn-sm" data-id="${v.id}" data-delete>Delete</button>
+                </td>
+            </tr>`;
         });
 
         html += `</tbody></table>`;
@@ -326,7 +420,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.querySelectorAll("[data-edit]").forEach(btn =>
             btn.addEventListener("click", () => {
-                const visit = visits.find(v => v.id === btn.dataset.id);
+                const visit = visits.find(v => v.id == btn.dataset.id);
                 openVisitModal(visit);
             })
         );
@@ -336,13 +430,13 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
+
     async function deleteVisit(id) {
         if (!confirm("Delete visit?")) return;
 
-        const res = await authFetch(`/operator/visits/${id}`, { method: "DELETE" });
+        const res = await authFetch(`/operator/visits/${id}`, {method: "DELETE"});
         if (res.ok) loadVisits();
     }
-
 
 
     // =====================================================================
@@ -361,34 +455,44 @@ document.addEventListener("DOMContentLoaded", () => {
         const container = document.getElementById("payments-table-container");
 
         let html = `
-            <button class="btn btn-primary mb-3" id="btn-add-payment">Add Payment</button>
+        <button class="btn btn-primary mb-3" id="btn-add-payment">Add Payment</button>
 
-            <table class="table table-bordered table-hover">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Visit</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                        <th>Issued</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Visit ID</th>
+                    <th>Patient MRN</th>
+                    <th>Total Amount</th>
+                    <th>Paid Amount</th>
+                    <th>Remaining</th>
+                    <th>Issued</th>
+                    <th>Due</th>
+                    <th>Last Payment</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
 
         payments.forEach(p => {
             html += `
-                <tr>
-                    <td>${p.id}</td>
-                    <td>${p.visitId}</td>
-                    <td>${p.totalAmount}</td>
-                    <td>${p.status}</td>
-                    <td>${p.issuedDate}</td>
-                    <td>
-                        <button class="btn btn-danger btn-sm" data-id="${p.id}" data-delete>Delete</button>
-                    </td>
-                </tr>`;
+            <tr>
+                <td>${p.id}</td>
+                <td>${p.visitId}</td>
+                <td>${p.patientMedicalRecord}</td>
+                <td>${p.totalAmount}</td>
+                <td>${p.paidAmount}</td>
+                <td>${p.remainingAmount}</td>
+                <td>${p.issuedDate}</td>
+                <td>${p.dueDate}</td>
+                <td>${p.lastPaymentDate ?? "-"}</td>
+                <td>${p.status}</td>
+                <td>
+                    <button class="btn btn-danger btn-sm" data-id="${p.id}" data-delete>Delete</button>
+                </td>
+            </tr>`;
         });
 
         html += `</tbody></table>`;
@@ -401,33 +505,12 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
+
     async function deletePayment(id) {
         if (!confirm("Delete payment?")) return;
 
-        const res = await authFetch(`/operator/payments/${id}`, { method: "DELETE" });
+        const res = await authFetch(`/operator/payments/${id}`, {method: "DELETE"});
         if (res.ok) loadPayments();
-    }
-
-
-
-    // =====================================================================
-    //                         MODAL WINDOW BUILDERS
-    // =====================================================================
-
-    function openPatientModal(patient = null) {
-        alert("TODO: Insert patient modal HTML + JS logic here (I can generate it). For now modal auto-handled.");
-    }
-
-    function openSpecialistModal(spec = null) {
-        alert("TODO: Insert specialist modal HTML + JS logic here.");
-    }
-
-    function openVisitModal(visit = null) {
-        alert("TODO: Insert visit modal HTML + JS logic here.");
-    }
-
-    function openPaymentModal() {
-        alert("TODO: Insert payment modal HTML + JS logic here.");
     }
 
 });
