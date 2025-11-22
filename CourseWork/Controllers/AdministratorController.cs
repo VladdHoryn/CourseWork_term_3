@@ -167,8 +167,8 @@ public IActionResult UpdatePayment(string id, [FromBody] PaymentUpdateDto dto)
     if (!Enum.TryParse<PaymentStatus>(dto.Status, true, out var status))
         status = PaymentStatus.Pending;
 
-    existing.VisitId = dto.VisitId;
-    existing.PatientMedicalRecord = dto.PatientMedicalRecord;
+    // existing.VisitId = dto.VisitId;
+    // existing.PatientMedicalRecord = dto.PatientMedicalRecord;
     existing.TotalAmount = dto.TotalAmount;
     existing.PaidAmount = dto.PaidAmount;
     existing.RemainingAmount = dto.RemainingAmount;
@@ -231,4 +231,15 @@ public IActionResult GetRevenueByPeriod([FromQuery] DateTime start, [FromQuery] 
             stats.totalRevenue
         });
     }
+    
+    // -------------------- SQL Queries --------------------
+    // [HttpPost("queries/run")]
+    // public IActionResult RunRawQuery([FromBody] RawSqlRequestDto request)
+    // {
+    //     if (string.IsNullOrWhiteSpace(request.Sql))
+    //         return BadRequest("Query cannot be empty.");
+    //
+    //     var result = _operatorService.ExecuteRawSql(request.Sql);
+    //     return Ok(result);
+    // }
 }
