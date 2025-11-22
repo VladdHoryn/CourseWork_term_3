@@ -33,4 +33,30 @@ public static class PaymentMapper
             Status = payment.Status.ToString()
         };
     }
+    
+    public static Payment ToPayment(PaymentCreateDto dto, int patientMedicalRecord)
+    {
+        if (dto == null)
+            throw new ArgumentNullException(nameof(dto), "PaymentCreateDto cannot be null.");
+
+        if (string.IsNullOrWhiteSpace(dto.VisitId))
+            throw new ArgumentException("VisitId must be provided.", nameof(dto.VisitId));
+
+        if (dto.Amount <= 0)
+            throw new ArgumentException("TotalAmount must be greater than zero.", nameof(dto.Amount));
+
+        var payment = new Payment
+        {
+            VisitId = dto.VisitId,
+            PatientMedicalRecord = patientMedicalRecord,
+            TotalAmount = dto.Amount,
+            PaidAmount = 0,
+            RemainingAmount = dto.Amount,
+            IssuedDate = DateTime.UtcNow,
+            DueDate = DateTime.UtcNow.AddDays(30), // стандартний термін
+            Status = PaymentStatus.Pending
+        };
+
+        return payment;
+    }
 }

@@ -13,156 +13,336 @@ namespace CourseWork.Controllers;
 public class SpecialistController : Controller
 {
     private readonly SpecialistService _specialistService;
-    private readonly VisitService _visitService;
-    private readonly PatientService _patientService;
 
-    public SpecialistController(
-        SpecialistService specialistService,
-        VisitService visitService,
-        PatientService patientService)
+    public SpecialistController(SpecialistService specialistService)
     {
         _specialistService = specialistService;
-        _visitService = visitService;
-        _patientService = patientService;
+    }
+    
+    // =====================================================================
+    // ============================= HELPERS ================================
+    // =====================================================================
+
+    private string? GetCurrentSpecialistId()
+    {
+        return User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 
-    // -------------------- DASHBOARD --------------------
+    // =====================================================================
+    // ========================== DASHBOARD DATA ============================
+    // =====================================================================
     [HttpGet("dashboard")]
     public IActionResult Dashboard()
     {
-        var specialistId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (specialistId is null)
-            return RedirectToAction("Login", "Auth");
+        var id = GetCurrentSpecialistId();
+        if (id is null)
+            return Unauthorized();
 
-        var visits = _visitService.GetAllVisits()
-            .Where(v => v.SpecialistId == specialistId)
-            .OrderBy(v => v.VisitDate)
-            .ToList();
+        var visits = _specialistService.GetAllVisitsForSpecialist(id);
+
+        var today = visits.Where(v => v.VisitDate.Date == DateTime.Today).ToList();
+        var nextWeek = visits.Where(v => v.VisitDate.Date <= DateTime.Today.AddDays(7)).ToList();
 
         return Ok(new
         {
-            Today = visits.Where(v => v.VisitDate.Date == DateTime.Today),
-            Week = visits.Where(v => v.VisitDate.Date <= DateTime.Today.AddDays(7))
+            Today = today,
+            Week = nextWeek
         });
     }
 
-    // -------------------- VISITS LIST --------------------
+    // =====================================================================
+    // =============================== VISITS ===============================
+    // =====================================================================
+
     [HttpGet("visits")]
-    public IActionResult Visits(string? patientSearch, DateTime? dateFrom, DateTime? dateTo)
+    public IActionResult GetVisits()
     {
-        var specialistId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var specialistId = GetCurrentSpecialistId();
         if (specialistId is null)
             return Unauthorized();
 
-        var visits = _visitService.GetAllVisits()
-            .Where(v => v.SpecialistId == specialistId);
+        return Ok(_specialistService.GetAllVisitsForSpecialist(specialistId));
+    }
 
-        if (!string.IsNullOrWhiteSpace(patientSearch))
+
+    [HttpGet("visits/{id}")]
+    public IActionResult GetVisitById(string id)
+    {
+        var specialistId = GetCurrentSpecialistId();
+        if (specialistId is null)
+            return Unauthorized();
+
+        try
         {
-            var patients = _patientService.SearchBySurname(patientSearch);
-            var recordNumbers = patients
-                .Where(p => p.MedicalRecordNumber != null)
-                .Select(p => p.MedicalRecordNumber.Value)
-                .ToList();
-
-            visits = visits.Where(v => recordNumbers.Contains(v.PatientMedicalRecord));
+            var visit = _specialistService.GetVisitForSpecialist(specialistId, id);
+            return Ok(visit);
         }
-
-        if (dateFrom != null) visits = visits.Where(v => v.VisitDate >= dateFrom);
-        if (dateTo != null) visits = visits.Where(v => v.VisitDate <= dateTo);
-
-        return Ok(visits.OrderByDescending(v => v.VisitDate).ToList());
-    }
-
-    // -------------------- ADD VISIT --------------------
-    [HttpPost("visits/add")]
-    public IActionResult AddVisit([FromBody] VisitRequestDto dto)
-    {
-        
-        var specialistId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (specialistId is null) return Unauthorized();
-
-        var patient = _patientService.GetById(dto.PatientId);
-        if (patient?.MedicalRecordNumber is null)
-            return BadRequest("Invalid patient medical record.");
-
-        var visit = VisitMapper.ToVisit(dto, patient.MedicalRecordNumber.Value, specialistId);
-
-        var success = _visitService.CreateVisit(visit);
-        if (!success)
-            return BadRequest("Failed to create visit.");
-
-        return Ok(visit);
-    }
-
-    // -------------------- UPDATE VISIT --------------------
-    [HttpPut("visits/update/{id}")] //Fix problem with Status!!!!!!
-    public IActionResult UpdateVisit(string id, [FromBody] VisitUpdateDto dto)
-    {
-        Visit visit;
-
-        try { visit = _visitService.GetVisitById(id); }
-        catch { return NotFound("Visit not found."); }
-
-        if (!visit.CanBeModified())
-            return BadRequest("This visit cannot be modified.");
-
-        VisitMapper.ApplyUpdate(visit, dto);
-
-        var success = _visitService.UpdateVisit(id, visit);
-        if (!success)
-            return BadRequest("Failed to update visit.");
-
-        return Ok(visit);
-    }
-
-    // -------------------- DELETE VISIT --------------------
-    [HttpPost("visits/delete/{id}")]
-    public IActionResult DeleteVisit(string id)
-    {
-        Visit? visit;
-        try { visit = _visitService.GetVisitById(id); }
-        catch { return NotFound("Visit not found."); }
-
-        if (visit.Status == VisitStatus.Completed)
+        catch (UnauthorizedAccessException)
         {
-            TempData["Error"] = "Completed visits cannot be deleted.";
-            return RedirectToAction("Visits");
+            return Forbid("This visit does not belong to you.");
         }
-
-        var success = _visitService.DeleteVisit(id);
-        if (!success)
-            TempData["Error"] = "Failed to delete visit.";
-
-        return RedirectToAction("Visits");
+        catch
+        {
+            return NotFound("Visit not found.");
+        }
     }
 
-    // -------------------- STATISTICS --------------------
-    [HttpGet("statistics")]
-    public IActionResult Statistics(DateTime? startDate, DateTime? endDate)
+
+    [HttpPost("visits")]
+    public IActionResult CreateVisit([FromBody] VisitCreateDto dto)
     {
-        var specialistId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var specialistId = GetCurrentSpecialistId();
+        if (specialistId is null)
+            return Unauthorized();
 
-        var visits = _visitService.GetAllVisits()
-            .Where(v => v.SpecialistId == specialistId);
-
-        if (startDate != null) visits = visits.Where(v => v.VisitDate >= startDate);
-        if (endDate != null) visits = visits.Where(v => v.VisitDate <= endDate);
-
-        var list = visits.ToList();
-
-        var avgPerDay = list
-            .GroupBy(v => v.VisitDate.Date)
-            .Select(g => g.Count())
-            .DefaultIfEmpty(0)
-            .Average();
-
-        var revenue = list.Sum(v => v.TotalCost);
-
-        return Ok(new
+        try
         {
-            AvgPatientsPerDay = Math.Round(avgPerDay, 2),
-            Revenue = revenue
-        });
+            // Визначаємо, чи це перший візит пацієнта
+            bool isFirstVisit = !_specialistService
+                .GetAllVisitsForSpecialist(this.GetCurrentSpecialistId())
+                .Any(v => v.PatientMedicalRecord == dto.PatientMedicalRecord);
+
+            var visit = VisitMapper.ToVisitFromCreateDto(dto, dto.PatientMedicalRecord, specialistId, isFirstVisit);
+
+            var success = _specialistService.CreateVisitBySpecialist(specialistId, visit);
+
+            if (!success)
+                return BadRequest("Failed to create visit.");
+
+            return Ok(VisitMapper.ToResponse(visit));
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Unexpected error: {ex.Message}");
+        }
+    }
+
+
+    [HttpPut("visits/{visitId}")]
+    public IActionResult UpdateVisit(string visitId, [FromBody] VisitUpdateDto dto)
+    {
+        var specialistId = GetCurrentSpecialistId();
+        if (specialistId is null)
+            return Unauthorized();
+
+        try
+        {
+            // Отримуємо існуючий візит
+            var existing = _specialistService.GetVisitForSpecialist(specialistId, visitId);
+
+            // Застосовуємо оновлення з DTO
+            VisitMapper.ApplyUpdate(existing, dto);
+
+            var success = _specialistService.UpdateVisitBySpecialist(specialistId, visitId, existing);
+
+            if (!success)
+                return BadRequest("Failed to update visit.");
+
+            return Ok(VisitMapper.ToResponse(existing));
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Forbid("You can modify only your own visits.");
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound("Visit not found.");
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Unexpected error: {ex.Message}");
+        }
+    }
+
+
+
+    [HttpPatch("visits/{visitId}/status")]
+    public IActionResult ChangeVisitStatus(string visitId, [FromBody] StatusChangeDto dto)
+    {
+        var specialistId = GetCurrentSpecialistId();
+        if (specialistId is null)
+            return Unauthorized();
+
+        try
+        {
+            var success = _specialistService.ChangeVisitStatus(specialistId, visitId, dto.Status);
+
+            if (!success)
+                return BadRequest("Failed to change status.");
+
+            return Ok();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Forbid("You can modify only your own visits.");
+        }
+        catch
+        {
+            return NotFound("Visit not found.");
+        }
+    }
+
+
+    // =====================================================================
+    // =============================== PAYMENTS =============================
+    // =====================================================================
+
+    [HttpGet("payments")]
+    public IActionResult GetPayments()
+    {
+        var specialistId = GetCurrentSpecialistId();
+        if (specialistId is null)
+            return Unauthorized();
+
+        return Ok(_specialistService.GetPaymentsForSpecialist(specialistId));
+    }
+
+
+    [HttpGet("payments/{paymentId}")]
+    public IActionResult GetPaymentById(string paymentId)
+    {
+        var specialistId = GetCurrentSpecialistId();
+        if (specialistId is null)
+            return Unauthorized();
+
+        try
+        {
+            var payment = _specialistService.GetPaymentForSpecialist(specialistId, paymentId);
+            return Ok(payment);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Forbid("You can access only payments related to your visits.");
+        }
+        catch
+        {
+            return NotFound("Payment not found.");
+        }
+    }
+
+
+    [HttpPost("payments")]
+    public IActionResult CreatePayment([FromBody] PaymentCreateDto dto)
+    {
+        var specialistId = GetCurrentSpecialistId();
+        if (specialistId is null)
+            return Unauthorized();
+
+        var payment = PaymentMapper.ToPayment(dto, dto.PatientMedicalRecord);
+
+        try
+        {
+            var success = _specialistService.CreatePaymentBySpecialist(specialistId, payment);
+
+            if (!success)
+                return BadRequest("Failed to create payment.");
+
+            return Ok(payment);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Forbid("You can create payments only for your own visits.");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+
+    [HttpPatch("payments/{paymentId}/cancel")]
+    public IActionResult CancelPayment(string paymentId)
+    {
+        var specialistId = GetCurrentSpecialistId();
+        if (specialistId is null)
+            return Unauthorized();
+
+        try
+        {
+            var success = _specialistService.CancelPaymentBySpecialist(specialistId, paymentId);
+
+            if (!success)
+                return BadRequest("Failed to cancel payment.");
+
+            return Ok();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Forbid("You can cancel only your own payments.");
+        }
+        catch
+        {
+            return NotFound("Payment not found.");
+        }
+    }
+    
+    // =====================================================================
+// ============================== PATIENTS ===============================
+// =====================================================================
+
+    [HttpGet("patients")]
+    public IActionResult GetAllPatients()
+    {
+        var specialistId = GetCurrentSpecialistId();
+        if (specialistId is null)
+            return Unauthorized();
+
+        return Ok(_specialistService.GetAllPatients());
+    }
+
+    [HttpGet("patients/{medicalRecord}")]
+    public IActionResult GetPatientByMedicalRecord(int medicalRecord)
+    {
+        var specialistId = GetCurrentSpecialistId();
+        if (specialistId is null)
+            return Unauthorized();
+
+        var patient = _specialistService.GetPatientByMedicalRecord(medicalRecord);
+        if (patient is null)
+            return NotFound("Patient not found.");
+
+        return Ok(patient);
+    }
+
+    [HttpGet("patients/search")]
+    public IActionResult SearchPatientsBySurname([FromQuery] string surname)
+    {
+        var specialistId = GetCurrentSpecialistId();
+        if (specialistId is null)
+            return Unauthorized();
+
+        try
+        {
+            var result = _specialistService.SearchPatientsBySurname(surname);
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpGet("patients/filter")]
+    public IActionResult GetPatientsByFilters(
+        [FromQuery] DateTime? birthFrom,
+        [FromQuery] DateTime? birthTo,
+        [FromQuery] string? healthStatus)
+    {
+        var specialistId = GetCurrentSpecialistId();
+        if (specialistId is null)
+            return Unauthorized();
+
+        var patients = _specialistService.GetPatientsByFilters(
+            birthFrom, birthTo, specialistId, healthStatus);
+
+        return Ok(patients);
     }
 }

@@ -1,4 +1,6 @@
-﻿using Сoursework.Models;
+﻿using CourseWork.DTOs;
+using CourseWork.Mappers;
+using Сoursework.Models;
 using Сoursework.Repositories;
 
 namespace Сoursework.Services;
@@ -100,6 +102,40 @@ public class VisitService
         {
             Console.WriteLine($"[Error] GetPatientTotalCostByYear failed: {ex.Message}");
             return 0;
+        }
+    }
+    public bool IsFirstVisit(int patientMedicalRecord)
+    {
+        try
+        {
+            var visits = _visitRepo.GetVisitsByPatientRecord(patientMedicalRecord);
+            return visits.Count == 0;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Error] IsFirstVisit failed: {ex.Message}");
+            return false;
+        }
+    }
+    
+    public Visit CreateVisitBySpecialist(string specialistId, int patientMedicalRecord, VisitCreateDto dto)
+    {
+        try
+        {
+            bool isFirstVisit = IsFirstVisit(patientMedicalRecord);
+            var visit = VisitMapper.ToVisitFromCreateDto(dto, patientMedicalRecord, specialistId, isFirstVisit);
+            
+            if (!visit.IsValid())
+                throw new ArgumentException("Visit data is invalid.");
+            
+            _visitRepo.CreateVisit(visit);
+
+            return visit;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Error] CreateVisitBySpecialist failed: {ex.Message}");
+            throw;
         }
     }
 }

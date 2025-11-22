@@ -8,7 +8,7 @@ public class Visit
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
-    public ObjectId Id { get; set; }
+    public string Id { get; set; }
 
     [BsonElement("patientMedicalRecord")]
     public int PatientMedicalRecord { get; set; }
@@ -39,7 +39,7 @@ public class Visit
     public decimal TotalCost => ServiceCost + MedicationCost;
     public Visit()
     {
-        Id = ObjectId.GenerateNewId();
+        Id = ObjectId.GenerateNewId().ToString();
     }
 
     public Visit(int patientMedicalRecord, string specialistId, DateTime visitDate, VisitStatus status): this()

@@ -188,7 +188,7 @@
                 window.location.href = "/patient.html";
                 break;
             case "Specialist":
-                window.location.href = "/specialist.html";
+                window.location.href = "specialist.html";
                 break;
             case "Operator":
                 window.location.href = "/operator.html";

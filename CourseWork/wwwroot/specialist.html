@@ -1,0 +1,458 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Specialist Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3">
+    <a class="navbar-brand" href="#">Specialist Portal</a>
+    <div class="ms-auto text-white d-flex align-items-center gap-3">
+        <div><i class="bi bi-person-circle"></i> Спеціаліст</div>
+        <button id="btn-logout" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right"></i> Logout</button>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- SIDEBAR -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-dark text-white sidebar vh-100 p-0">
+            <ul class="nav flex-column mt-3">
+                <li class="nav-item">
+                    <button class="nav-link text-white active w-100 text-start" data-tab="dashboard"><i class="bi bi-speedometer2"></i> Dashboard</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link text-white w-100 text-start" data-tab="visits"><i class="bi bi-calendar-check"></i> Visits</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link text-white w-100 text-start" data-tab="payments"><i class="bi bi-receipt"></i> Payments</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link text-white w-100 text-start" data-tab="patients"><i class="bi bi-people"></i> Patients</button>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- MAIN CONTENT -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 bg-white">
+
+            <!-- DASHBOARD -->
+            <section id="dashboard" class="tab active">
+                <h2>📌 Dashboard</h2>
+
+                <h4 class="mt-3">Today's Visits</h4>
+                <div id="dashboard-today-container"></div>
+
+                <h4 class="mt-4">Week Visits</h4>
+                <div id="dashboard-week-container"></div>
+
+                <div id="dashboard-stats" class="mt-4"></div>
+                <div id="next-visit-timer" class="mt-3 fw-bold"></div>
+            </section>
+
+            <!-- VISITS -->
+            <section id="visits" class="tab d-none">
+                <h2>🗓 Visits</h2>
+
+                <!-- FILTER BAR -->
+                <div class="card p-3 mb-3 shadow-sm">
+                    <div class="row g-3">
+
+                        <!-- SEARCH BY MR -->
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Search by Patient MR</label>
+                            <input id="visit-patient-search" class="form-control" placeholder="Enter Medical Record">
+                        </div>
+
+                        <!-- DATE FROM -->
+                        <div class="col-md-2">
+                            <label class="form-label fw-bold">Date From</label>
+                            <input id="visit-date-from" type="date" class="form-control">
+                        </div>
+
+                        <!-- DATE TO -->
+                        <div class="col-md-2">
+                            <label class="form-label fw-bold">Date To</label>
+                            <input id="visit-date-to" type="date" class="form-control">
+                        </div>
+
+                        <!-- STATUS SELECT -->
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Status</label>
+                            <select id="visit-status-filter" class="form-select">
+                                <option value="">All statuses</option>
+                                <option value="0">Scheduled</option>
+                                <option value="1">InProgress</option>
+                                <option value="2">Completed</option>
+                                <option value="3">Cancelled</option>
+                                <option value="4">NoShow</option>
+                            </select>
+                        </div>
+
+                        <!-- APPLY BUTTON -->
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button id="apply-visit-filters" class="btn btn-primary w-100">Apply</button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <button id="btn-add-visit" class="btn btn-success mb-3">Add Visit</button>
+
+                <div id="visits-table-container"></div>
+
+                <!-- EDIT VISIT MODAL -->
+                <div class="modal fade" id="editVisitModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title">Update Visit</h5>
+                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                <form id="edit-visit-form">
+
+                                    <input type="hidden" id="edit-visit-id">
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Diagnosis</label>
+                                        <input id="edit-diagnosis" class="form-control">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Visit Date</label>
+                                        <input id="edit-visit-date" type="datetime-local" class="form-control">
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Service Cost</label>
+                                            <input id="edit-service-cost" type="number" class="form-control">
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label">Medication Cost</label>
+                                            <input id="edit-medication-cost" type="number" class="form-control">
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Status</label>
+                                        <select id="edit-status" class="form-select">
+                                            <option value="0">Scheduled</option>
+                                            <option value="1">InProgress</option>
+                                            <option value="2">Completed</option>
+                                            <option value="3">Cancelled</option>
+                                            <option value="4">NoShow</option>
+                                        </select>
+                                    </div>
+
+                                </form>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button id="save-visit-changes" class="btn btn-primary">Save</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CANCEL VISIT MODAL -->
+                <div class="modal fade" id="cancelVisitModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title">Cancel Visit</h5>
+                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                Are you sure you want to cancel this visit?
+                                <input type="hidden" id="cancel-visit-id">
+                            </div>
+
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                                <button id="confirm-cancel-visit" class="btn btn-danger">Yes, cancel</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ADD VISIT MODAL -->
+                <div class="modal fade" id="addVisitModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add Visit</h5>
+                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                <form id="add-visit-form">
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Patient</label>
+                                        <select id="add-patient-mr" class="form-select" required>
+                                            <option value="">Select patient</option>
+                                            <!-- варіанти підвантажуються через JS -->
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Visit Date</label>
+                                        <input id="add-visit-date" type="datetime-local" class="form-control" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Diagnosis</label>
+                                        <input id="add-diagnosis" class="form-control">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Anamnesis</label>
+                                        <input id="add-anamnesis" class="form-control">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Treatment</label>
+                                        <input id="add-treatment" class="form-control">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Recommendations</label>
+                                        <input id="add-recommendations" class="form-control">
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Service Cost</label>
+                                            <input id="add-service-cost" type="number" class="form-control">
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label">Medication Cost</label>
+                                            <input id="add-medication-cost" type="number" class="form-control">
+                                        </div>
+                                    </div>
+
+                                </form>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button id="save-new-visit" class="btn btn-success">Add Visit</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAYMENTS -->
+            <section id="payments" class="tab d-none">
+                <h2>💳 Payments</h2>
+
+                <!-- ================= FILTERS ================= -->
+                <div class="card p-3 mb-3">
+                    <div class="row g-2">
+                        <div class="col-md-3">
+                            <input id="payment-patient-filter" class="form-control" placeholder="Search by Patient MR">
+                        </div>
+                        <div class="col-md-2">
+                            <input id="payment-total-min" type="number" class="form-control" placeholder="Total min">
+                        </div>
+                        <div class="col-md-2">
+                            <input id="payment-total-max" type="number" class="form-control" placeholder="Total max">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small mb-0">Issued From</label>
+                            <input id="payment-issued-from" type="date" class="form-control">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small mb-0">Issued To</label>
+                            <input id="payment-issued-to" type="date" class="form-control">
+                        </div>
+                        <div class="col-md-3 mt-2">
+                            <select id="payment-status-filter" class="form-select">
+                                <option value="">Status: Any</option>
+                                <option value="0">Pending</option>
+                                <option value="1">Paid</option>
+                                <option value="2">PartiallyPaid</option>
+                                <option value="3">Overdue</option>
+                                <option value="4">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mt-2">
+                            <button id="apply-payment-filters" class="btn btn-primary w-100">Apply</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= BUTTON ================= -->
+                <button id="btn-add-payment" class="btn btn-success mb-2">Add Payment</button>
+
+                <!-- ================= TABLE ================= -->
+                <div id="payments-table-container"></div>
+
+                <!-- ADD PAYMENT MODAL -->
+                <div class="modal fade" id="addPaymentModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add Payment</h5>
+                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="add-payment-form">
+                                    <div class="mb-3">
+                                        <label class="form-label">Select Visit</label>
+                                        <select id="add-payment-visit" class="form-select" required>
+                                            <option value="">Select visit</option>
+                                            <!-- варіанти підвантажуються через JS -->
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Total Amount</label>
+                                        <input id="add-payment-total" type="number" class="form-control" required>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button id="save-new-payment" class="btn btn-success">Add Payment</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CANCEL PAYMENT MODAL -->
+                <div class="modal fade" id="cancelPaymentModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title">Cancel Payment</h5>
+                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you want to cancel this payment?
+                                <input type="hidden" id="cancel-payment-id">
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                                <button id="confirm-cancel-payment" class="btn btn-danger">Yes, cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PATIENTS -->
+            <section id="patients" class="tab d-none">
+                <h2>🧑‍⚕️ Patients</h2>
+
+                <div class="card p-3 mb-3">
+                    <div class="row g-2">
+
+                        <!-- Surname -->
+                        <div class="col-md-3">
+                            <input id="patient-surname-filter" class="form-control" placeholder="Search by surname">
+                        </div>
+
+                        <!-- Birth Date From -->
+                        <div class="col-md-3">
+                            <label class="form-label small mb-0">Birth date from</label>
+                            <input id="patient-birth-from" type="date" class="form-control">
+                        </div>
+
+                        <!-- Birth Date To -->
+                        <div class="col-md-3">
+                            <label class="form-label small mb-0">Birth date to</label>
+                            <input id="patient-birth-to" type="date" class="form-control">
+                        </div>
+
+                        <!-- Apply -->
+                        <div class="col-md-3 mt-2">
+                            <button id="apply-patient-filters" class="btn btn-primary w-100">Apply</button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="patients-table-container"></div>
+
+                <!-- ADD VISIT MODAL -->
+                <div class="modal fade" id="patientAddVisitModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+
+                            <div class="modal-header bg-primary text-white">
+                                <h5 class="modal-title">Add Visit</h5>
+                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                <form id="patient-add-visit-form">
+                                    <input type="hidden" id="patient-visit-mr">
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Visit Date</label>
+                                        <input id="patient-visit-date" type="datetime-local" class="form-control" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Anamnesis</label>
+                                        <textarea id="patient-visit-anamnesis" class="form-control" rows="2" required></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Diagnosis</label>
+                                        <textarea id="patient-visit-diagnosis" class="form-control" rows="2" required></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Treatment</label>
+                                        <textarea id="patient-visit-treatment" class="form-control" rows="2" required></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Recommendations</label>
+                                        <textarea id="patient-visit-recommendations" class="form-control" rows="2"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Service Cost</label>
+                                        <input id="patient-visit-service-cost" type="number" class="form-control" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Medication Cost</label>
+                                        <input id="patient-visit-medication-cost" type="number" class="form-control" required>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button id="patient-save-new-visit" class="btn btn-success">Add Visit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module" src="js/specialist.js"></script>
+<script type="module" src="js/auth.js"></script>
+</body>
+</html>
