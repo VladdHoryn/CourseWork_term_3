@@ -64,8 +64,8 @@ public class UserRepository
         Users.ReplaceOne(filter, updatedUser);
     }
     
-    public void DeleteUser(string username)
+    public void DeleteUser(string id)
     {
-        Users.DeleteOne(u => u.UserName == username);
+        Users.DeleteOne(u => u.Id == id);
     }
 }

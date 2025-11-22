@@ -48,17 +48,33 @@ public class OperatorController : ControllerBase
     public IActionResult CreatePatient([FromBody] CreateUserDto dto)
     {
         var user = new User(dto.UserName, dto.FullName, Role.Patient);
+
+        user.Phone = dto.Phone;
+        user.Address = dto.Address;
+        user.MedicalRecordNumber = dto.MedicalRecordNumber;
+
+        if (dto.DateOfBirth.HasValue)
+            user.DateOfBirth = dto.DateOfBirth;
+
         var result = _operatorService.CreateUserByOperator(user, dto.Password);
         return result ? Ok("Patient created") : BadRequest("Failed to create");
     }
+
 
     [HttpPut("patients/{id}")]
     public IActionResult UpdatePatient(string id, [FromBody] UpdateUserDto dto)
     {
         var user = _operatorService.GetById(id);
+
         user.FullName = dto.FullName;
         user.Phone = dto.Phone;
         user.Address = dto.Address;
+
+        if (dto.MedicalRecordNumber.HasValue)
+            user.MedicalRecordNumber = dto.MedicalRecordNumber;
+
+        if (dto.DateOfBirth.HasValue)
+            user.DateOfBirth = dto.DateOfBirth;
 
         return _operatorService.UpdateUserByOperator(user)
             ? Ok("Patient updated")
@@ -184,12 +200,44 @@ public class OperatorController : ControllerBase
     }
 
     [HttpPost("payments")]
-    public IActionResult CreatePayment([FromBody] PaymentDto dto)
+    public IActionResult CreatePayment([FromBody] PaymentCreateDto dto)
     {
-        var payment = new Payment(dto.VisitId, dto.PatientMedicalRecord, dto.TotalAmount, 0);
+        // var payment = new Payment(dto.VisitId, dto.PatientMedicalRecord, dto.TotalAmount, 0);
+        var payment = PaymentMapper.ToPayment(dto, dto.PatientMedicalRecord);
         return _operatorService.CreatePaymentByOperator(payment)
             ? Ok("Payment created")
             : BadRequest("Failed to create payment");
+    }
+    
+    // -------------------- Payments Update --------------------
+    [HttpPut("payments/{id}")]
+    public IActionResult UpdatePayment(string id, [FromBody] PaymentUpdateDto dto)
+    {
+        var existingPayment = _operatorService.GetAllPaymentsByOperator()
+            .FirstOrDefault(p => p.Id == id);
+
+        if (existingPayment == null)
+            return NotFound("Payment not found");
+        
+        existingPayment.TotalAmount = dto.TotalAmount;
+        existingPayment.PaidAmount = dto.PaidAmount;
+        existingPayment.RemainingAmount = dto.RemainingAmount;
+        existingPayment.IssuedDate = dto.IssuedDate;
+        existingPayment.DueDate = dto.DueDate;
+        existingPayment.LastPaymentDate = dto.LastPaymentDate;
+        
+        if (Enum.TryParse<PaymentStatus>(dto.Status, true, out var status))
+        {
+            existingPayment.Status = status;
+        }
+        else
+        {
+            return BadRequest("Invalid payment status value");
+        }
+        
+        var result = _operatorService.UpdatePaymentByOperator(id, existingPayment);
+
+        return result ? Ok("Payment updated") : BadRequest("Failed to update payment");
     }
 
     [HttpDelete("payments/{id}")]
@@ -199,7 +247,7 @@ public class OperatorController : ControllerBase
             ? Ok("Payment deleted")
             : BadRequest("Delete failed");
     }
-
+    
     // -------------------- SQL Queries --------------------
     // [HttpPost("queries/run")]
     // public IActionResult RunRawQuery([FromBody] RawSqlRequestDto request)

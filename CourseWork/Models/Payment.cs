@@ -39,6 +39,7 @@ public class Payment
         DueDate = DateTime.UtcNow.AddDays(30);
         PaidAmount = 0;
         Status = PaymentStatus.Pending;
+        // LastPaymentDate = DateTime.UtcNow;
     }
 
     public Payment(string visitId, int patientMedicalRecord, decimal totalAmount, decimal paidAmount) : this()

@@ -2,8 +2,6 @@
 
 public class PaymentUpdateDto
 {
-    public string VisitId { get; set; }
-    public int PatientMedicalRecord { get; set; }
     public decimal TotalAmount { get; set; }
     public decimal PaidAmount { get; set; }
     public decimal RemainingAmount { get; set; }
