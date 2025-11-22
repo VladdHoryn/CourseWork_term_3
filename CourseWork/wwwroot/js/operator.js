@@ -458,23 +458,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // =====================================================================
-    //                               VISITS
-    // =====================================================================
+//                               VISITS
+// =====================================================================
 
     let visits = [];
+    let deleteVisitId = null;
 
+// -------------------- Load Visits --------------------
     async function loadVisits() {
         const res = await authFetch("/operator/visits");
         visits = res.ok ? await res.json() : [];
         renderVisitsTable();
     }
 
+// -------------------- Render Table --------------------
     function renderVisitsTable() {
         const container = document.getElementById("visits-table-container");
 
         let html = `
-        <button class="btn btn-primary mb-3" id="btn-add-visit">Add Visit</button>
-
         <table class="table table-bordered table-hover">
             <thead>
                 <tr>
@@ -502,7 +503,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${v.id}</td>
                 <td>${v.patientMedicalRecord}</td>
                 <td>${v.specialistId}</td>
-                <td>${v.visitDate}</td>
+                <td>${v.visitDate ?? "-"}</td>
                 <td>${v.status}</td>
                 <td>${v.isFirstVisit ? "Yes" : "No"}</td>
                 <td>${v.anamnesis ?? "-"}</td>
@@ -515,14 +516,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     <button class="btn btn-warning btn-sm" data-id="${v.id}" data-edit>Edit</button>
                     <button class="btn btn-danger btn-sm" data-id="${v.id}" data-delete>Delete</button>
                 </td>
-            </tr>`;
+            </tr>
+        `;
         });
 
         html += `</tbody></table>`;
         container.innerHTML = html;
 
-        document.getElementById("btn-add-visit").addEventListener("click", () => openVisitModal());
-
+        // Edit buttons
         document.querySelectorAll("[data-edit]").forEach(btn =>
             btn.addEventListener("click", () => {
                 const visit = visits.find(v => v.id == btn.dataset.id);
@@ -530,18 +531,153 @@ document.addEventListener("DOMContentLoaded", () => {
             })
         );
 
+        // Delete buttons
         document.querySelectorAll("[data-delete]").forEach(btn =>
-            btn.addEventListener("click", () => deleteVisit(btn.dataset.id))
+            btn.addEventListener("click", () => {
+                deleteVisitId = btn.dataset.id;
+                new bootstrap.Modal(document.getElementById("modalDeleteVisit")).show();
+            })
         );
     }
 
+    // visits = [];
+    // deleteVisitId = null;
+    // patients = [];
+    // specialists = [];
 
-    async function deleteVisit(id) {
-        if (!confirm("Delete visit?")) return;
+// -------------------- Load Patients and Specialists --------------------
+    async function loadPatientsAndSpecialists() {
+        const [resPatients, resSpecialists] = await Promise.all([
+            authFetch("/operator/patients"),
+            authFetch("/operator/specialists")
+        ]);
 
-        const res = await authFetch(`/operator/visits/${id}`, {method: "DELETE"});
-        if (res.ok) loadVisits();
+        patients = resPatients.ok ? await resPatients.json() : [];
+        specialists = resSpecialists.ok ? await resSpecialists.json() : [];
     }
+
+// -------------------- Open Add/Edit Modal --------------------
+    document.getElementById("btnAddVisit").addEventListener("click", () => openVisitModal());
+    async function openVisitModal(visit = null) {
+        await loadPatientsAndSpecialists(); // підвантажуємо перед відкриттям модалки
+
+        const modal = document.getElementById(visit ? "modalEditVisit" : "modalAddVisit");
+        const form = modal.querySelector("form");
+
+        // ---------- Populate dropdowns (only for Add modal) ----------
+        if (!visit) {
+            const patientSelect = form.patientId;
+            const specialistSelect = form.specialistId;
+
+            patientSelect.innerHTML = "";
+            specialistSelect.innerHTML = "";
+
+            patients.forEach(p => {
+                const opt = document.createElement("option");
+                opt.value = p.id;
+                opt.textContent = `${p.fullName} (MRN: ${p.medicalRecordNumber})`;
+                patientSelect.appendChild(opt);
+            });
+
+            specialists.forEach(s => {
+                const opt = document.createElement("option");
+                opt.value = s.id;
+                opt.textContent = `${s.fullName} (${s.speciality})`;
+                specialistSelect.appendChild(opt);
+            });
+        }
+
+        if (visit) {
+            form.id.value = visit.id;
+            form.anamnesis.value = visit.anamnesis ?? "";
+            form.diagnosis.value = visit.diagnosis ?? "";
+            form.treatment.value = visit.treatment ?? "";
+            form.recommendations.value = visit.recommendations ?? "";
+            form.serviceCost.value = visit.serviceCost ?? 0;
+            form.medicationCost.value = visit.medicationCost ?? 0;
+            form.status.value = visit.status ?? "Scheduled";
+        } else {
+            form.reset();
+        }
+
+        new bootstrap.Modal(modal).show();
+    }
+
+// -------------------- Add Visit --------------------
+    document.getElementById("formAddVisit").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const form = e.target;
+
+        const dto = {
+            patientId: form.patientId.value,
+            patientMedicalRecord: Number(form.patientMedicalRecord.value),
+            specialistId: form.specialistId.value,
+            visitDate: form.visitDate.value,
+            status: form.status.value,
+            isFirstVisit: form.isFirstVisit.value === "true",
+            anamnesis: form.anamnesis.value,
+            diagnosis: form.diagnosis.value,
+            treatment: form.treatment.value,
+            recommendations: form.recommendations.value,
+            serviceCost: Number(form.serviceCost.value),
+            medicationCost: Number(form.medicationCost.value)
+        };
+
+        const res = await authFetch("/operator/visits", {
+            method: "POST",
+            body: JSON.stringify(dto)
+        });
+
+        if (res.ok) {
+            bootstrap.Modal.getInstance(document.getElementById("modalAddVisit")).hide();
+            loadVisits();
+        } else {
+            alert("Failed to create visit");
+        }
+    });
+
+// -------------------- Edit Visit --------------------
+    document.getElementById("formEditVisit").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const form = e.target;
+
+        const dto = {
+            anamnesis: form.anamnesis.value,
+            diagnosis: form.diagnosis.value,
+            treatment: form.treatment.value,
+            recommendations: form.recommendations.value,
+            serviceCost: Number(form.serviceCost.value),
+            medicationCost: Number(form.medicationCost.value),
+            status: form.status.value
+        };
+
+        const res = await authFetch(`/operator/visits/${form.id.value}`, {
+            method: "PUT",
+            body: JSON.stringify(dto)
+        });
+
+        if (res.ok) {
+            bootstrap.Modal.getInstance(document.getElementById("modalEditVisit")).hide();
+            loadVisits();
+        } else {
+            alert("Failed to update visit");
+        }
+    });
+
+// -------------------- Delete Visit --------------------
+    document.getElementById("btnConfirmDeleteVisit").addEventListener("click", async () => {
+        if (!deleteVisitId) return;
+
+        const res = await authFetch(`/operator/visits/${deleteVisitId}`, { method: "DELETE" });
+
+        if (res.ok) {
+            bootstrap.Modal.getInstance(document.getElementById("modalDeleteVisit")).hide();
+            loadVisits();
+        } else {
+            alert("Failed to delete visit");
+        }
+    });
+
 
 
     // =====================================================================

@@ -115,7 +115,7 @@
             <section id="visits" class="tab d-none">
                 <div class="d-flex justify-content-between align-items-center">
                     <h2>🗓 Visits</h2>
-                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAddVisit">
+                    <button class="btn btn-success" id="btnAddVisit">
                         <i class="bi bi-plus-circle"></i> Add Visit
                     </button>
                 </div>
@@ -380,13 +380,17 @@
                     <div class="row">
 
                         <div class="col-md-6 mb-3">
-                            <label>Patient ID</label>
-                            <input name="patientId" class="form-control" required>
+                            <label>Patient</label>
+                            <select name="patientId" class="form-control" required>
+                                <!-- JS підставляє список пацієнтів -->
+                            </select>
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label>Specialist ID</label>
-                            <input name="specialistId" class="form-control" required>
+                            <label>Specialist</label>
+                            <select name="specialistId" class="form-control" required>
+                                <!-- JS підставляє список спеціалістів -->
+                            </select>
                         </div>
 
                         <div class="col-md-6 mb-3">
