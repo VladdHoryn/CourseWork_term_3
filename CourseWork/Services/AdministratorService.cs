@@ -9,6 +9,8 @@ namespace Сoursework.Services;
 public class AdministratorService : UserService
 {
     private readonly AdministratorRepository _adminRepo;
+    private readonly SpecialistRepository _specialistRepository;
+    private readonly PatientRepository _patientRepository;
     private readonly VisitService _visitService;
     private readonly PaymentService _paymentService;
     private readonly RegistrationRequestService _requestService;
@@ -18,13 +20,17 @@ public class AdministratorService : UserService
         UserRepository userRepo,
         VisitService visitService,
         PaymentService paymentService,
-        RegistrationRequestService requestService)
+        RegistrationRequestService requestService,
+        SpecialistRepository repo,
+        PatientRepository patientRepository)
         : base(userRepo)
     {
         _adminRepo = adminRepo ?? throw new ArgumentNullException(nameof(adminRepo));
         _visitService = visitService ?? throw new ArgumentNullException(nameof(visitService));
         _paymentService = paymentService ?? throw new ArgumentNullException(nameof(paymentService));
         _requestService = requestService ?? throw new ArgumentNullException(nameof(requestService));
+        _specialistRepository = repo;
+        _patientRepository = patientRepository;
     }
 
     // -------------------- ADMINISTRATIVE USER MANAGEMENT --------------------
@@ -54,6 +60,18 @@ public class AdministratorService : UserService
             Console.WriteLine($"[Error] Cannot delete user by ID '{id}': {ex.Message}");
             return false;
         }
+    }
+    
+    public List<User> GetAllSpecialists()
+    {
+        var specialists = _specialistRepository.GetAllSpecialists();
+        return specialists.OrderBy(s => s.FullName).ToList();
+    }
+    
+    public List<User> GetAllPatients()
+    {
+        var patients = _patientRepository.GetAllPatients();
+        return patients.OrderBy(p => p.FullName).ToList();
     }
 
     // -------------------- VISIT MANAGEMENT --------------------

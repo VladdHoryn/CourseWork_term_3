@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Сoursework.Models;
 
@@ -61,7 +62,19 @@ public class UserRepository
     public void UpdateUser(User updatedUser)
     {
         var filter = Builders<User>.Filter.Eq(u => u.Id, updatedUser.Id);
-        Users.ReplaceOne(filter, updatedUser);
+
+        var update = Builders<User>.Update
+            .Set(u => u.UserName, updatedUser.UserName)
+            .Set(u => u.FullName, updatedUser.FullName)
+            .Set(u => u.Phone, updatedUser.Phone)
+            .Set(u => u.Address, updatedUser.Address)
+            .Set(u => u.UserRole, updatedUser.UserRole)
+            .Set(u => u.PasswordHash, updatedUser.PasswordHash)
+            .Set(u => u.Speciality, updatedUser.Speciality)
+            .Set(u => u.MedicalRecordNumber, updatedUser.MedicalRecordNumber)
+            .Set(u => u.DateOfBirth, updatedUser.DateOfBirth);
+        
+        Users.UpdateOne(filter, update);
     }
     
     public void DeleteUser(string id)

@@ -1,0 +1,602 @@
+﻿<!-- administrator.html -->
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrator Portal</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body { background:#f7f7f7; }
+        .sidebar { border-right:1px solid #333; }
+        .nav-link.active { background:#0d6efd !important; }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-dark bg-dark px-3">
+    <span class="navbar-brand mb-0 h1">Administrator Portal</span>
+
+    <div class="ms-auto d-flex align-items-center gap-3 text-white">
+        <span id="admin-name"><i class="bi bi-person-circle"></i> Administrator</span>
+        <button id="btn-logout" class="btn btn-outline-light btn-sm">
+            <i class="bi bi-box-arrow-right"></i> Logout
+        </button>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- SIDEBAR -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-dark text-white sidebar vh-100 p-0">
+            <ul class="nav flex-column mt-3">
+                <li class="nav-item"><button class="nav-link text-white active w-100 text-start" data-tab="dashboard"><i class="bi bi-speedometer2"></i> Dashboard</button></li>
+
+                <li class="nav-item"><button class="nav-link text-white w-100 text-start" data-tab="users"><i class="bi bi-people"></i> Users</button></li>
+
+                <li class="nav-item"><button class="nav-link text-white w-100 text-start" data-tab="visits"><i class="bi bi-calendar-check"></i> Visits</button></li>
+
+                <li class="nav-item"><button class="nav-link text-white w-100 text-start" data-tab="payments"><i class="bi bi-receipt"></i> Payments</button></li>
+
+                <li class="nav-item"><button class="nav-link text-white w-100 text-start" data-tab="requests"><i class="bi bi-journal-text"></i> Registration Requests</button></li>
+
+                <li class="nav-item"><button class="nav-link text-white w-100 text-start" data-tab="statistics"><i class="bi bi-graph-up"></i> Statistics</button></li>
+
+                <li class="nav-item"><button class="nav-link text-white w-100 text-start" data-tab="sql"><i class="bi bi-code-slash"></i> SQL Queries</button></li>
+            </ul>
+        </nav>
+
+        <!-- MAIN CONTENT -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 bg-white">
+
+            <!-- ====================== DASHBOARD ====================== -->
+            <section id="dashboard" class="tab active">
+                <h2>📌 Dashboard</h2>
+                <div class="row mt-4">
+
+                    <div class="col-md-3">
+                        <div class="card shadow-sm text-center p-3">
+                            <h5>Users</h5>
+                            <p id="quick-users">—</p>
+                            <button data-tab="users" class="btn btn-primary switch-tab mt-3">Open</button>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card shadow-sm text-center p-3">
+                            <h5>Visits</h5>
+                            <p id="quick-visits">—</p>
+                            <button data-tab="visits" class="btn btn-primary switch-tab mt-3">Open</button>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card shadow-sm text-center p-3">
+                            <h5>Payments</h5>
+                            <p id="quick-payments">—</p>
+                            <button data-tab="payments" class="btn btn-primary switch-tab mt-3">Open</button>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card shadow-sm text-center p-3">
+                            <h5>Requests</h5>
+                            <p id="quick-requests">—</p>
+                            <button data-tab="requests" class="btn btn-primary switch-tab mt-3">Open</button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- ====================== USERS ====================== -->
+            <section id="users" class="tab d-none">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2>🧍 Users</h2>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-4 mb-3">
+                        <label>Filter by role</label>
+                        <select id="filter-role" class="form-control">
+                            <option value="">All</option>
+                            <option value="Administrator">Administrator</option>
+                            <option value="Operator">Operator</option>
+                            <option value="Specialist">Specialist</option>
+                            <option value="Patient">Patient</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="users-table-container" class="mt-3"></div>
+            </section>
+
+            <!-- ====================== VISITS ====================== -->
+            <section id="visits" class="tab d-none">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2>🗓 Visits</h2>
+                    <button class="btn btn-success" id="btnAddVisit" data-bs-toggle="modal" data-bs-target="#modalAddVisit">
+                        <i class="bi bi-plus-circle"></i> Add Visit
+                    </button>
+                </div>
+
+                <div id="visits-table-container" class="mt-3"></div>
+            </section>
+
+            <!-- ====================== PAYMENTS ====================== -->
+            <section id="payments" class="tab d-none">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2>💳 Payments</h2>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAddPayment">
+                        <i class="bi bi-plus-circle"></i> Add Payment
+                    </button>
+                </div>
+
+                <div id="payments-table-container" class="mt-3"></div>
+            </section>
+
+            <!-- ====================== REQUESTS ====================== -->
+            <section id="requests" class="tab d-none">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2>📨 Registration Requests</h2>
+                </div>
+
+                <div id="requests-table-container" class="mt-3"></div>
+            </section>
+
+            <!-- ====================== STATISTICS ====================== -->
+            <section id="statistics" class="tab d-none">
+                <h2>📈 Statistics</h2>
+
+                <!-- Filters -->
+                <div class="card p-3 mt-3">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label>Start Date</label>
+                            <input id="statsStart" type="date" class="form-control">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>End Date</label>
+                            <input id="statsEnd" type="date" class="form-control">
+                        </div>
+
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button id="btnApplyStats" class="btn btn-primary w-100">Apply Filter</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results -->
+                <div id="statistics-container" class="mt-4"></div>
+
+                <!-- Chart -->
+                <div class="card p-3 mt-4">
+                    <canvas id="statsChart" height="120"></canvas>
+                </div>
+            </section>
+
+            <!-- Chart.js -->
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+            <!-- ====================== SQL (disabled) ====================== -->
+            <section id="sql" class="tab d-none">
+                <h2>🧾 SQL Queries (disabled)</h2>
+                <div class="alert alert-warning">Raw SQL execution is disabled in FE — backend endpoint is commented out for safety.</div>
+                <textarea id="sql-input" class="form-control" rows="4" placeholder="SELECT * FROM Users;"></textarea>
+                <button id="btnRunSql" class="btn btn-secondary mt-2" disabled>Run (disabled)</button>
+                <div id="sql-result" class="mt-3"></div>
+            </section>
+
+        </main>
+    </div>
+</div>
+
+<!-- =================================================== -->
+<!-- =================== MODALS ======================== -->
+<!-- =================================================== -->
+<!-- Add User -->
+<div class="modal fade" id="modalAddUser" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formAddUser">
+                    <div class="row">
+                        <!-- Username -->
+                        <div class="col-md-6 mb-3">
+                            <label>Username</label>
+                            <input name="userName" class="form-control" required>
+                        </div>
+
+                        <!-- Full Name -->
+                        <div class="col-md-6 mb-3">
+                            <label>Full Name</label>
+                            <input name="fullName" class="form-control" required>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="col-md-6 mb-3">
+                            <label>Password</label>
+                            <input name="password" class="form-control" type="password" required>
+                        </div>
+
+                        <!-- Role -->
+                        <div class="col-md-6 mb-3">
+                            <label>Role</label>
+                            <select name="role" class="form-control" required id="addUserRole">
+                                <option value="Administrator">Administrator</option>
+                                <option value="Operator">Operator</option>
+                                <option value="Specialist">Specialist</option>
+                                <option value="Patient">Patient</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Role-specific fields will appear here -->
+                    <div id="roleSpecificFields" class="mt-3"></div>
+
+                    <!-- Submit button -->
+                    <button class="btn btn-primary w-100 mt-3" type="submit">Create User</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User -->
+<div class="modal fade" id="modalEditUser" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditUser">
+                    <input type="hidden" name="id">
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Username</label>
+                            <input name="userName" class="form-control" required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Role</label>
+                            <select name="role" class="form-control" required>
+                                <option value="Administrator">Administrator</option>
+                                <option value="Operator">Operator</option>
+                                <option value="Specialist">Specialist</option>
+                                <option value="Patient">Patient</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Контейнер для fullName, Medical Record, Speciality тощо -->
+                    <div id="editRoleSpecificFields"></div>
+
+                    <button class="btn btn-primary w-100 mt-3" type="submit">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Delete -->
+<div class="modal fade" id="modalConfirmUser" tabindex="-1">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <p id="confirm-user-text">Are you sure?</p>
+                <div class="d-flex gap-2">
+                    <button id="confirm-yes-user" class="btn btn-danger w-100">Yes</button>
+                    <button class="btn btn-secondary w-100" data-bs-dismiss="modal">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ========== VISITS MODALS ========== -->
+
+<!-- Add Visit -->
+<div class="modal fade" id="modalAddVisit" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header"><h5>Add Visit</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+
+            <div class="modal-body">
+                <form id="formAddVisit">
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+                            <label>Patient</label>
+                            <select name="patientId" class="form-control" required></select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Specialist</label>
+                            <select name="specialistId" class="form-control" required></select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Medical Record</label>
+                            <input name="patientMedicalRecord" type="number" class="form-control" required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Visit Date</label>
+                            <input name="visitDate" type="datetime-local" class="form-control" required>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label>Anamnesis</label>
+                            <textarea name="anamnesis" class="form-control"></textarea>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label>Diagnosis</label>
+                            <textarea name="diagnosis" class="form-control"></textarea>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label>Treatment</label>
+                            <textarea name="treatment" class="form-control"></textarea>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label>Recommendations</label>
+                            <textarea name="recommendations" class="form-control"></textarea>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Service Cost</label>
+                            <input name="serviceCost" type="number" class="form-control">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Medication Cost</label>
+                            <input name="medicationCost" type="number" class="form-control">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Status</label>
+                            <select name="status" class="form-control">
+                                <option>Scheduled</option>
+                                <option>Completed</option>
+                                <option>Cancelled</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>First Visit?</label>
+                            <select name="isFirstVisit" class="form-control">
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <button class="btn btn-primary w-100 mt-3">Create Visit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Visit -->
+<div class="modal fade" id="modalEditVisit" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header"><h5>Edit Visit</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+
+            <div class="modal-body">
+                <form id="formEditVisit">
+                    <input type="hidden" name="id">
+
+                    <div class="row">
+
+                        <div class="col-md-12 mb-3">
+                            <label>Anamnesis</label>
+                            <textarea name="anamnesis" class="form-control"></textarea>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label>Diagnosis</label>
+                            <textarea name="diagnosis" class="form-control"></textarea>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label>Treatment</label>
+                            <textarea name="treatment" class="form-control"></textarea>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label>Recommendations</label>
+                            <textarea name="recommendations" class="form-control"></textarea>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Service Cost</label>
+                            <input name="serviceCost" type="number" class="form-control">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Medication Cost</label>
+                            <input name="medicationCost" type="number" class="form-control">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Status</label>
+                            <select name="status" class="form-control">
+                                <option>Scheduled</option>
+                                <option>Completed</option>
+                                <option>Cancelled</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mt-3">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Visit -->
+<div class="modal fade" id="modalDeleteVisit" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5>Delete Visit</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <p>Are you sure?</p>
+                <button id="btnConfirmDeleteVisit" class="btn btn-danger w-100">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Delete -->
+<div class="modal fade" id="modalConfirm" tabindex="-1">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <p id="confirm-text">Are you sure?</p>
+                <div class="d-flex gap-2">
+                    <button id="confirm-yes" class="btn btn-danger w-100">Yes</button>
+                    <button class="btn btn-secondary w-100" data-bs-dismiss="modal">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== PAYMENTS MODALS ========== -->
+
+<div class="modal fade" id="modalAddPayment" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Add Payment</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <form id="formAddPayment">
+
+                    <div class="mb-3">
+                        <label>Visit</label>
+                        <select id="addPaymentVisitSelect" class="form-control" required>
+                            <option disabled selected>Select Visit</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Patient Medical Record</label>
+                        <input id="addPaymentPatientSelect" class="form-control" readonly required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Total Amount</label>
+                        <input name="totalAmount" type="number" class="form-control" required>
+                    </div>
+
+                    <button class="btn btn-primary w-100 mt-3">Create Payment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Edit Payment -->
+<div class="modal fade" id="modalEditPayment" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5>Edit Payment</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+
+            <div class="modal-body">
+                <form id="formEditPayment">
+                    <input type="hidden" name="id">
+
+                    <div class="mb-3">
+                        <label>Total Amount</label>
+                        <input name="totalAmount" type="number" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Paid Amount</label>
+                        <input name="paidAmount" type="number" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Remaining Amount</label>
+                        <input name="remainingAmount" type="number" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Issued Date</label>
+                        <input name="issuedDate" type="datetime-local" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Due Date</label>
+                        <input name="dueDate" type="datetime-local" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Last Payment Date</label>
+                        <input name="lastPaymentDate" type="datetime-local" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Status</label>
+                        <select name="status" class="form-control">
+                            <option>Pending</option>
+                            <option>Paid</option>
+                            <option>Overdue</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-primary w-100 mt-3">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Delete Payment -->
+<div class="modal fade" id="modalDeletePayment" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5>Delete Payment</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <p>Are you sure?</p>
+                <button id="btnConfirmDeletePayment" class="btn btn-danger w-100">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module" src="js/administrator.js"></script>
+<script type="module" src="js/auth.js"></script>
+
+</body>
+</html>
