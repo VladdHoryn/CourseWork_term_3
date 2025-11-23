@@ -181,9 +181,9 @@ document.addEventListener("DOMContentLoaded", () => {
             form.totalAmount.value = payment.totalAmount;
             form.paidAmount.value = payment.paidAmount ?? 0;
             form.remainingAmount.value = payment.remainingAmount ?? 0;
-            form.issuedDate.value = payment.issuedDate ? new Date(payment.issuedDate).toISOString().slice(0,16) : "";
-            form.dueDate.value = payment.dueDate ? new Date(payment.dueDate).toISOString().slice(0,16) : "";
-            form.lastPaymentDate.value = payment.lastPaymentDate ? new Date(payment.lastPaymentDate).toISOString().slice(0,16) : "";
+            form.issuedDate.value = payment.issuedDate ? new Date(payment.issuedDate).toISOString().slice(0, 16) : "";
+            form.dueDate.value = payment.dueDate ? new Date(payment.dueDate).toISOString().slice(0, 16) : "";
+            form.lastPaymentDate.value = payment.lastPaymentDate ? new Date(payment.lastPaymentDate).toISOString().slice(0, 16) : "";
             form.status.value = payment.status ?? "Pending";
         } else {
             form.reset();
@@ -296,7 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("btnConfirmDeletePayment").addEventListener("click", async () => {
         if (!deletePaymentId) return;
 
-        const res = await authFetch(`/administrator/payments/${deletePaymentId}`, { method: "DELETE" });
+        const res = await authFetch(`/administrator/payments/${deletePaymentId}`, {method: "DELETE"});
 
         if (res.ok) {
             bootstrap.Modal.getInstance(document.getElementById("modalDeletePayment")).hide();
@@ -305,36 +305,6 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Failed to delete payment");
         }
     });
-
-    async function approveRequest(id) {
-        if (!confirm("Approve this registration?")) return;
-
-        const res = await authFetch(`/administrator/requests/${id}/approve`, {
-            method: "POST"
-        });
-
-        if (res.ok) {
-            alert("Approved!");
-            loadRequests();
-        } else {
-            alert("Error approving.");
-        }
-    }
-
-    async function rejectRequest(id) {
-        if (!confirm("Reject this registration?")) return;
-
-        const res = await authFetch(`/administrator/requests/${id}/reject`, {
-            method: "POST"
-        });
-
-        if (res.ok) {
-            alert("Rejected!");
-            loadRequests();
-        } else {
-            alert("Error rejecting.");
-        }
-    }
 
     async function loadRequests() {
         try {
@@ -365,28 +335,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
             requests.forEach(r => {
                 html += `
-                <tr>
-                    <td>${r.userName}</td>
-                    <td>${r.fullName ?? "-"}</td>
-                    <td>${r.phone ?? "-"}</td>
-                    <td>${r.address ?? "-"}</td>
-                    <td>
-                        <button class="btn btn-success btn-sm" onclick="approveRequest('${r.id}')">Accept</button>
-                        <button class="btn btn-danger btn-sm ms-1" onclick="rejectRequest('${r.id}')">Reject</button>
-                    </td>
-                </tr>
-            `;
+                    <tr>
+                        <td>${r.userName}</td>
+                        <td>${r.fullName ?? "-"}</td>
+                        <td>${r.phone ?? "-"}</td>
+                        <td>${r.address ?? "-"}</td>
+                        <td>
+                            <button class="btn btn-success btn-sm btn-approve" data-id="${r.id}">Accept</button>
+                            <button class="btn btn-danger btn-sm btn-reject ms-1" data-id="${r.id}">Reject</button>
+                        </td>
+                    </tr>
+                `;
             });
 
             html += `</tbody></table>`;
             container.innerHTML = html;
+
+            container.querySelectorAll(".btn-approve").forEach(b =>
+                b.addEventListener("click", () => approveRequest(b.dataset.id))
+            );
+            container.querySelectorAll(".btn-reject").forEach(b =>
+                b.addEventListener("click", () => rejectRequest(b.dataset.id))
+            );
 
         } catch (err) {
             console.error(err);
             alert("Помилка при завантаженні запитів.");
         }
     }
-    
+
     async function loadStatistics() {
         try {
             const res = await authFetch("/administrator/statistics");
@@ -435,10 +412,10 @@ document.addEventListener("DOMContentLoaded", () => {
             container.innerHTML = "<p class='text-muted'>No users found</p>";
             return;
         }
-        
+
         const columns = new Set();
         users.forEach(u => Object.keys(u).forEach(k => columns.add(k)));
-        
+
         columns.delete("passwordHash");
 
         const colArray = Array.from(columns);
@@ -498,7 +475,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "Operator": 3,
         "Administrator": 4
     };
-    
+
     const roleSelect = document.getElementById("addUserRole");
     const roleFieldsContainer = document.getElementById("roleSpecificFields");
 
@@ -632,7 +609,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
     }
-    
+
     document.getElementById("formEditUser").role.addEventListener("change", (e) => {
         const role = e.target.value;
         const roleFieldsContainer = document.getElementById("editRoleSpecificFields");
@@ -960,6 +937,36 @@ document.getElementById("btnConfirmDeleteVisit")?.addEventListener("click", asyn
         console.error("Delete error:", err);
     }
 });
+
+async function approveRequest(id) {
+    if (!confirm("Approve this registration?")) return;
+
+    const res = await authFetch(`/administrator/requests/${id}/approve`, {
+        method: "POST"
+    });
+
+    if (res.ok) {
+        alert("Approved!");
+        loadRequests();
+    } else {
+        alert("Error approving.");
+    }
+}
+
+async function rejectRequest(id) {
+    if (!confirm("Reject this registration?")) return;
+
+    const res = await authFetch(`/administrator/requests/${id}/reject`, {
+        method: "POST"
+    });
+
+    if (res.ok) {
+        alert("Rejected!");
+        loadRequests();
+    } else {
+        alert("Error rejecting.");
+    }
+}
 
 
 
