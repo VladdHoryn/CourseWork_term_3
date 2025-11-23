@@ -306,33 +306,87 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    async function approveRequest(id) {
+        if (!confirm("Approve this registration?")) return;
+
+        const res = await authFetch(`/administrator/requests/${id}/approve`, {
+            method: "POST"
+        });
+
+        if (res.ok) {
+            alert("Approved!");
+            loadRequests();
+        } else {
+            alert("Error approving.");
+        }
+    }
+
+    async function rejectRequest(id) {
+        if (!confirm("Reject this registration?")) return;
+
+        const res = await authFetch(`/administrator/requests/${id}/reject`, {
+            method: "POST"
+        });
+
+        if (res.ok) {
+            alert("Rejected!");
+            loadRequests();
+        } else {
+            alert("Error rejecting.");
+        }
+    }
+
     async function loadRequests() {
         try {
-            const res = await authFetch("/administrator/requests");
+            const res = await authFetch("/administrator/pending");
             if (!res.ok) throw new Error("Failed to load requests");
-            const requests = await res.json();
 
+            const requests = await res.json();
             const container = document.getElementById("requests-table-container");
-            let html = `<table class="table table-bordered">
-                <thead><tr><th>ID</th><th>User</th><th>Status</th></tr></thead>
-                <tbody>`;
+
+            if (requests.length === 0) {
+                container.innerHTML = `<p class="text-muted">No pending registration requests.</p>`;
+                return;
+            }
+
+            let html = `
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Full Name</th>
+                        <th>Phone</th>
+                        <th>Address</th>
+                        <th style="width: 180px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
 
             requests.forEach(r => {
-                html += `<tr>
-                    <td>${r.id}</td>
+                html += `
+                <tr>
                     <td>${r.userName}</td>
-                    <td>${r.status}</td>
-                </tr>`;
+                    <td>${r.fullName ?? "-"}</td>
+                    <td>${r.phone ?? "-"}</td>
+                    <td>${r.address ?? "-"}</td>
+                    <td>
+                        <button class="btn btn-success btn-sm" onclick="approveRequest('${r.id}')">Accept</button>
+                        <button class="btn btn-danger btn-sm ms-1" onclick="rejectRequest('${r.id}')">Reject</button>
+                    </td>
+                </tr>
+            `;
             });
 
             html += `</tbody></table>`;
             container.innerHTML = html;
+
         } catch (err) {
             console.error(err);
             alert("Помилка при завантаженні запитів.");
         }
     }
-
+    
     async function loadStatistics() {
         try {
             const res = await authFetch("/administrator/statistics");

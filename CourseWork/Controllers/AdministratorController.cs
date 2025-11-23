@@ -57,7 +57,7 @@ public class AdministratorController : ControllerBase
             ? Ok("User deleted successfully")
             : BadRequest("Failed to delete user");
     }
-    
+
     // -------------------- CREATE USER --------------------
     [HttpPost("users")]
     public IActionResult CreateUser([FromBody] User dto)
@@ -93,7 +93,7 @@ public class AdministratorController : ControllerBase
         var result = _adminService.CreateUser(user, dto.PasswordHash);
         return result ? Ok(UserMapper.ToDto(user)) : BadRequest("Failed to create user");
     }
-    
+
     /// -------------------- UPDATE USER --------------------
     [HttpPut("users/{id}")]
     public IActionResult UpdateUser(string id, [FromBody] UpdateUserDtoAdmin dto)
@@ -128,6 +128,7 @@ public class AdministratorController : ControllerBase
                     DateTime? dob = dto.DateOfBirth ?? user.DateOfBirth;
                     user.SetPatientInfo(dto.MedicalRecordNumber.Value, dob);
                 }
+
                 break;
 
             case Role.Specialist:
@@ -136,18 +137,19 @@ public class AdministratorController : ControllerBase
                     DateTime? dob = dto.DateOfBirth ?? user.DateOfBirth;
                     user.SetSpecialistInfo(dto.Speciality, dob);
                 }
+
                 break;
         }
 
         // ===================== PASSWORD =====================
         if (!string.IsNullOrWhiteSpace(dto.PasswordHash))
             user.SetPasswordHash(dto.PasswordHash, _hasher);
-        
+
         var result = _adminService.UpdateUser(user);
         return result ? Ok(UserMapper.ToDto(user)) : BadRequest("Failed to update user");
     }
 
-    
+
     // -------------------- Visits Management --------------------
     [HttpGet("visits")]
     public IActionResult GetVisits()
@@ -203,81 +205,81 @@ public class AdministratorController : ControllerBase
     }
 
     // -------------------- Payments Management --------------------
-[HttpGet("payments")]
-public IActionResult GetPayments()
-{
-    var payments = _adminService.GetAllPayments()
-        .Select(PaymentMapper.ToDto)
-        .ToList();
-    return Ok(payments);
-}
-
-[HttpGet("payments/{id}")]
-public IActionResult GetPaymentById(string id)
-{
-    var payment = _adminService.GetPaymentById(id);
-    return payment != null
-        ? Ok(PaymentMapper.ToResponseDto(payment))
-        : NotFound("Payment not found");
-}
-
-[HttpPost("payments")]
-public IActionResult CreatePayment([FromBody] PaymentCreateDto dto)
-{
-    var payment = PaymentMapper.ToPayment(dto, dto.PatientMedicalRecord);
-    return _adminService.CreatePayment(payment)
-        ? Ok("Payment created")
-        : BadRequest("Failed to create payment");
-}
-
-[HttpPut("payments/{id}")]
-public IActionResult UpdatePayment(string id, [FromBody] PaymentUpdateDto dto)
-{
-    var existingPayment = _adminService.GetPaymentById(id);
-    if (existingPayment == null)
-        return NotFound("Payment not found");
-        
-    existingPayment.TotalAmount = dto.TotalAmount;
-    existingPayment.PaidAmount = dto.PaidAmount;
-    existingPayment.RemainingAmount = dto.RemainingAmount;
-    existingPayment.IssuedDate = dto.IssuedDate;
-    existingPayment.DueDate = dto.DueDate;
-    existingPayment.LastPaymentDate = dto.LastPaymentDate;
-        
-    if (Enum.TryParse<PaymentStatus>(dto.Status, true, out var status))
+    [HttpGet("payments")]
+    public IActionResult GetPayments()
     {
-        existingPayment.Status = status;
+        var payments = _adminService.GetAllPayments()
+            .Select(PaymentMapper.ToDto)
+            .ToList();
+        return Ok(payments);
     }
-    else
+
+    [HttpGet("payments/{id}")]
+    public IActionResult GetPaymentById(string id)
     {
-        return BadRequest("Invalid payment status value");
+        var payment = _adminService.GetPaymentById(id);
+        return payment != null
+            ? Ok(PaymentMapper.ToResponseDto(payment))
+            : NotFound("Payment not found");
     }
-        
-    var result = _adminService.UpdatePayment(id, existingPayment);
 
-    return result ? Ok("Payment updated") : BadRequest("Failed to update payment");
-}
+    [HttpPost("payments")]
+    public IActionResult CreatePayment([FromBody] PaymentCreateDto dto)
+    {
+        var payment = PaymentMapper.ToPayment(dto, dto.PatientMedicalRecord);
+        return _adminService.CreatePayment(payment)
+            ? Ok("Payment created")
+            : BadRequest("Failed to create payment");
+    }
 
-[HttpDelete("payments/{id}")]
-public IActionResult DeletePayment(string id)
-{
-    return _adminService.DeletePayment(id)
-        ? Ok("Payment deleted")
-        : BadRequest("Delete failed");
-}
+    [HttpPut("payments/{id}")]
+    public IActionResult UpdatePayment(string id, [FromBody] PaymentUpdateDto dto)
+    {
+        var existingPayment = _adminService.GetPaymentById(id);
+        if (existingPayment == null)
+            return NotFound("Payment not found");
 
-[HttpGet("payments/revenue")]
-public IActionResult GetRevenueByPeriod([FromQuery] DateTime start, [FromQuery] DateTime end)
-{
-    var revenue = _adminService.GetClinicRevenueByPeriod(start, end);
-    return Ok(new { StartDate = start, EndDate = end, TotalRevenue = revenue });
-}
+        existingPayment.TotalAmount = dto.TotalAmount;
+        existingPayment.PaidAmount = dto.PaidAmount;
+        existingPayment.RemainingAmount = dto.RemainingAmount;
+        existingPayment.IssuedDate = dto.IssuedDate;
+        existingPayment.DueDate = dto.DueDate;
+        existingPayment.LastPaymentDate = dto.LastPaymentDate;
+
+        if (Enum.TryParse<PaymentStatus>(dto.Status, true, out var status))
+        {
+            existingPayment.Status = status;
+        }
+        else
+        {
+            return BadRequest("Invalid payment status value");
+        }
+
+        var result = _adminService.UpdatePayment(id, existingPayment);
+
+        return result ? Ok("Payment updated") : BadRequest("Failed to update payment");
+    }
+
+    [HttpDelete("payments/{id}")]
+    public IActionResult DeletePayment(string id)
+    {
+        return _adminService.DeletePayment(id)
+            ? Ok("Payment deleted")
+            : BadRequest("Delete failed");
+    }
+
+    [HttpGet("payments/revenue")]
+    public IActionResult GetRevenueByPeriod([FromQuery] DateTime start, [FromQuery] DateTime end)
+    {
+        var revenue = _adminService.GetClinicRevenueByPeriod(start, end);
+        return Ok(new { StartDate = start, EndDate = end, TotalRevenue = revenue });
+    }
 
     // -------------------- Registration Requests --------------------Затестити
     [HttpGet("pending")]
     [Authorize(Roles = "Administrator")]
     public IActionResult GetPending() => Ok(_adminService.GetPendingRequests());
-    
+
     [HttpPost("requests/{id}/approve")]
     public IActionResult ApproveRegistration(string id, [FromQuery] Role role = Role.Patient)
     {
@@ -307,7 +309,7 @@ public IActionResult GetRevenueByPeriod([FromQuery] DateTime start, [FromQuery] 
             stats.totalRevenue
         });
     }
-    
+
     [HttpGet("patients")]
     public IActionResult GetPatients()
     {
@@ -319,7 +321,7 @@ public IActionResult GetRevenueByPeriod([FromQuery] DateTime start, [FromQuery] 
     {
         return Ok(_adminService.GetAllSpecialists());
     }
-    
+
     // -------------------- SQL Queries --------------------
     // [HttpPost("queries/run")]
     // public IActionResult RunRawQuery([FromBody] RawSqlRequestDto request)
