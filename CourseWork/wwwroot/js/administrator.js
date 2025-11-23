@@ -364,23 +364,76 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    let statsChart = null;
+
     async function loadStatistics() {
         try {
-            const res = await authFetch("/administrator/statistics");
+            // Беремо діапазон з input
+            const startInput = document.getElementById("statsStart").value;
+            const endInput = document.getElementById("statsEnd").value;
+
+            // Якщо юзер не вибрав — ставимо останні 30 днів
+            let end = endInput ? new Date(endInput) : new Date();
+            let start = startInput ? new Date(startInput) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+            const startIso = start.toISOString();
+            const endIso = end.toISOString();
+
+            const res = await authFetch(`/administrator/statistics?start=${startIso}&end=${endIso}`);
+
             if (!res.ok) throw new Error("Failed to load statistics");
+
             const stats = await res.json();
 
+            // ====== RENDER DATA ======
             document.getElementById("statistics-container").innerHTML = `
-                <div class="alert alert-info">
-                    Total revenue: ${stats.totalRevenue}<br>
-                    Visits this month: ${stats.visitsThisMonth}<br>
-                    Active users: ${stats.activeUsers}
-                </div>
-            `;
+            <div class="alert alert-info">
+                <strong>Total Users:</strong> ${stats.totalUsers}<br>
+                <strong>Total Visits:</strong> ${stats.totalVisits}<br>
+                <strong>Total Payments:</strong> ${stats.totalPayments}<br>
+                <strong>Total Revenue:</strong> ${stats.totalRevenue}
+            </div>
+        `;
+
+            // ====== RENDER CHART ======
+            renderStatisticsChart(stats);
+
         } catch (err) {
             console.error(err);
             alert("Помилка при завантаженні статистики.");
         }
+    }
+
+// Apply Filter button
+    document.getElementById("btnApplyStats")?.addEventListener("click", loadStatistics);
+
+
+    function renderStatisticsChart(stats) {
+        const ctx = document.getElementById("statsChart");
+
+        if (statsChart) statsChart.destroy();
+
+        statsChart = new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: ["Users", "Visits", "Payments", "Revenue"],
+                datasets: [{
+                    label: "System Statistics",
+                    data: [
+                        stats.totalUsers,
+                        stats.totalVisits,
+                        stats.totalPayments,
+                        stats.totalRevenue
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
     }
 
     // -------------------------

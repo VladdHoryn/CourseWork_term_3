@@ -153,8 +153,37 @@
             <!-- ====================== STATISTICS ====================== -->
             <section id="statistics" class="tab d-none">
                 <h2>📈 Statistics</h2>
-                <div id="statistics-container" class="mt-3"></div>
+
+                <!-- Filters -->
+                <div class="card p-3 mt-3">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label>Start Date</label>
+                            <input id="statsStart" type="date" class="form-control">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>End Date</label>
+                            <input id="statsEnd" type="date" class="form-control">
+                        </div>
+
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button id="btnApplyStats" class="btn btn-primary w-100">Apply Filter</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results -->
+                <div id="statistics-container" class="mt-4"></div>
+
+                <!-- Chart -->
+                <div class="card p-3 mt-4">
+                    <canvas id="statsChart" height="120"></canvas>
+                </div>
             </section>
+
+            <!-- Chart.js -->
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
             <!-- ====================== SQL (disabled) ====================== -->
             <section id="sql" class="tab d-none">
