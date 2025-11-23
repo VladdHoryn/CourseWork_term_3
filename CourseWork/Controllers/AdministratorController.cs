@@ -3,7 +3,10 @@ using CourseWork.Mappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using Сoursework.Models;
+using Сoursework.Repositories;
 using Сoursework.Services;
 
 namespace CourseWork.Controllers;
@@ -14,12 +17,21 @@ namespace CourseWork.Controllers;
 public class AdministratorController : ControllerBase
 {
     private readonly AdministratorService _adminService;
+    private readonly MongoDBRepository _repo;
     private readonly PasswordHasher<User> _hasher = new();
 
-    public AdministratorController(AdministratorService adminService)
+    public AdministratorController(AdministratorService adminService, MongoDBRepository repo)
     {
         _adminService = adminService;
+        _repo = repo;
     }
+    
+    // public IMongoDatabase GetMongoDatabase()
+    // {
+    //     var client = new MongoClient(_connectionString); // твій MongoDB connection string
+    //     var db = client.GetDatabase(_dbName);
+    //     return db;
+    // }
 
     // -------------------- Dashboard --------------------
     [HttpGet("dashboard")]
@@ -322,14 +334,46 @@ public class AdministratorController : ControllerBase
         return Ok(_adminService.GetAllSpecialists());
     }
 
-    // -------------------- SQL Queries --------------------
-    // [HttpPost("queries/run")]
-    // public IActionResult RunRawQuery([FromBody] RawSqlRequestDto request)
-    // {
-    //     if (string.IsNullOrWhiteSpace(request.Sql))
-    //         return BadRequest("Query cannot be empty.");
-    //
-    //     var result = _operatorService.ExecuteRawSql(request.Sql);
-    //     return Ok(result);
-    // }
+    // ==================== RAW MONGO QUERIES ====================
+    [HttpPost("mongo/run")]
+    public async Task<IActionResult> RunRawMongoQuery([FromBody] RawMongoQueryRequestDto request)
+    {
+        if (string.IsNullOrWhiteSpace(request.CollectionName))
+            return BadRequest("CollectionName is required.");
+        if (string.IsNullOrWhiteSpace(request.Operation))
+            return BadRequest("Operation is required.");
+
+        try
+        {
+            switch (request.Operation.ToLower())
+            {
+                case "find":
+                    var findResult = await _repo.ExecuteRawQueryAsync(request.CollectionName, request.Filter ?? new BsonDocument());
+                    return Ok(findResult);
+
+                case "insert":
+                    if (request.Document == null) return BadRequest("Document is required for insert.");
+                    var insertResult = await _repo.InsertDocumentAsync(request.CollectionName, request.Document);
+                    return Ok(insertResult);
+
+                case "update":
+                    if (request.Filter == null || request.Document == null)
+                        return BadRequest("Filter and Document are required for update.");
+                    var updateResult = await _repo.UpdateDocumentsAsync(request.CollectionName, request.Filter, request.Document);
+                    return Ok(new { MatchedCount = updateResult.MatchedCount, ModifiedCount = updateResult.ModifiedCount });
+
+                case "delete":
+                    if (request.Filter == null) return BadRequest("Filter is required for delete.");
+                    var deleteResult = await _repo.DeleteDocumentsAsync(request.CollectionName, request.Filter);
+                    return Ok(new { DeletedCount = deleteResult.DeletedCount });
+
+                default:
+                    return BadRequest("Unsupported operation. Use: find, insert, update, delete.");
+            }
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Error = ex.Message });
+        }
+    }
 }
