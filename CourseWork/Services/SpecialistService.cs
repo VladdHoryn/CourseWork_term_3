@@ -169,23 +169,44 @@ public class SpecialistService : UserService
                 if (!ObjectId.TryParse(p.VisitId, out _))
                     return false;
 
-                var visit = _visitService.GetVisitById(p.VisitId);
-                return visit != null && visit.SpecialistId == specialistId;
+                Visit visit;
+                try
+                {
+                    visit = _visitService.GetVisitById(p.VisitId);
+                }
+                catch (KeyNotFoundException)
+                {
+                    // Якщо Visit не знайдено, просто пропускаємо цей Payment
+                    return false;
+                }
+
+                return visit.SpecialistId == specialistId;
             })
             .ToList();
     }
+
 
     /// Get single payment only if Visit belongs to specialist
     public Payment GetPaymentForSpecialist(string specialistId, string paymentId)
     {
         var payment = _paymentService.GetPaymentById(paymentId);
-        var visit = _visitService.GetVisitById(payment.VisitId);
+    
+        Visit visit;
+        try
+        {
+            visit = _visitService.GetVisitById(payment.VisitId);
+        }
+        catch (KeyNotFoundException)
+        {
+            throw new UnauthorizedAccessException("Visit for this payment not found or deleted.");
+        }
 
         if (visit.SpecialistId != specialistId)
             throw new UnauthorizedAccessException("You can access only your own payments.");
 
         return payment;
     }
+
 
     /// Create payment — must validate that Visit belongs to specialist
     public bool CreatePaymentBySpecialist(string specialistId, Payment payment)
