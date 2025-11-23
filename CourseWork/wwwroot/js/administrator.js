@@ -95,40 +95,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // async function loadVisits() {
-    //     try {
-    //         const res = await authFetch("/administrator/visits");
-    //         if (!res.ok) throw new Error("Failed to load visits");
-    //         const visits = await res.json();
-    //
-    //         const container = document.getElementById("visits-table-container");
-    //         let html = `<table class="table table-bordered table-hover">
-    //             <thead>
-    //                 <tr>
-    //                     <th>ID</th><th>Patient</th><th>Specialist</th>
-    //                     <th>Date</th><th>Status</th>
-    //                 </tr>
-    //             </thead>
-    //             <tbody>`;
-    //
-    //         visits.forEach(v => {
-    //             html += `<tr>
-    //                 <td>${v.id}</td>
-    //                 <td>${v.patientMedicalRecord}</td>
-    //                 <td>${v.specialistId}</td>
-    //                 <td>${v.visitDate}</td>
-    //                 <td>${v.status}</td>
-    //             </tr>`;
-    //         });
-    //
-    //         html += `</tbody></table>`;
-    //         container.innerHTML = html;
-    //     } catch (err) {
-    //         console.error(err);
-    //         alert("Помилка при завантаженні візитів.");
-    //     }
-    // }
-
     async function loadPayments() {
         try {
             const res = await authFetch("/administrator/payments");
@@ -743,17 +709,25 @@ async function saveEditedVisit(event) {
     }
 }
 
-
-// -------------------- Delete Visit --------------------
-document.getElementById("btnDeleteVisit")?.addEventListener("click", async () => {
+// ======================== DELETE VISIT ========================
+document.getElementById("btnConfirmDeleteVisit")?.addEventListener("click", async () => {
     if (!deleteVisitId) return;
 
-    const res = await authFetch(`/administrator/visits/${deleteVisitId}`, {
-        method: "DELETE"
-    });
+    try {
+        const res = await authFetch(`/administrator/visits/${deleteVisitId}`, {
+            method: "DELETE"
+        });
 
-    if (res.ok) {
-        bootstrap.Modal.getInstance(document.getElementById("modalDeleteVisit")).hide();
-        loadVisits();
-    } else alert("Failed to delete visit");
+        if (res.ok) {
+            const modal = bootstrap.Modal.getInstance(document.getElementById("modalDeleteVisit"));
+            modal.hide();
+
+            await loadVisits();
+        } else {
+            const txt = await res.text();
+        }
+    } catch (err) {
+        console.error("Delete error:", err);
+    }
 });
+
