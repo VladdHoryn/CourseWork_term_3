@@ -95,39 +95,39 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    async function loadVisits() {
-        try {
-            const res = await authFetch("/administrator/visits");
-            if (!res.ok) throw new Error("Failed to load visits");
-            const visits = await res.json();
-
-            const container = document.getElementById("visits-table-container");
-            let html = `<table class="table table-bordered table-hover">
-                <thead>
-                    <tr>
-                        <th>ID</th><th>Patient</th><th>Specialist</th>
-                        <th>Date</th><th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-
-            visits.forEach(v => {
-                html += `<tr>
-                    <td>${v.id}</td>
-                    <td>${v.patientMedicalRecord}</td>
-                    <td>${v.specialistId}</td>
-                    <td>${v.visitDate}</td>
-                    <td>${v.status}</td>
-                </tr>`;
-            });
-
-            html += `</tbody></table>`;
-            container.innerHTML = html;
-        } catch (err) {
-            console.error(err);
-            alert("Помилка при завантаженні візитів.");
-        }
-    }
+    // async function loadVisits() {
+    //     try {
+    //         const res = await authFetch("/administrator/visits");
+    //         if (!res.ok) throw new Error("Failed to load visits");
+    //         const visits = await res.json();
+    //
+    //         const container = document.getElementById("visits-table-container");
+    //         let html = `<table class="table table-bordered table-hover">
+    //             <thead>
+    //                 <tr>
+    //                     <th>ID</th><th>Patient</th><th>Specialist</th>
+    //                     <th>Date</th><th>Status</th>
+    //                 </tr>
+    //             </thead>
+    //             <tbody>`;
+    //
+    //         visits.forEach(v => {
+    //             html += `<tr>
+    //                 <td>${v.id}</td>
+    //                 <td>${v.patientMedicalRecord}</td>
+    //                 <td>${v.specialistId}</td>
+    //                 <td>${v.visitDate}</td>
+    //                 <td>${v.status}</td>
+    //             </tr>`;
+    //         });
+    //
+    //         html += `</tbody></table>`;
+    //         container.innerHTML = html;
+    //     } catch (err) {
+    //         console.error(err);
+    //         alert("Помилка при завантаженні візитів.");
+    //     }
+    // }
 
     async function loadPayments() {
         try {
@@ -436,8 +436,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
     }
-
-// Зміна ролі в формі Edit
+    
     document.getElementById("formEditUser").role.addEventListener("change", (e) => {
         const role = e.target.value;
         const roleFieldsContainer = document.getElementById("editRoleSpecificFields");
@@ -539,4 +538,222 @@ document.addEventListener("DOMContentLoaded", () => {
             loadUsers();
         } else alert("Failed to delete user");
     });
+});
+
+// =====================================================================
+//                               VISITS (ADMIN)
+// =====================================================================
+
+let adminVisits = [];
+let adminPatients = [];
+let adminSpecialists = [];
+let deleteVisitId = null;
+
+// -------------------- Load Visits --------------------
+async function loadVisits() {
+    try {
+        const res = await authFetch("/administrator/visits");
+        adminVisits = res.ok ? await res.json() : [];
+        renderVisitsTable();
+    } catch (err) {
+        console.error(err);
+        alert("Помилка при завантаженні візитів.");
+    }
+}
+
+// -------------------- Render Table --------------------
+function renderVisitsTable() {
+    const container = document.getElementById("visits-table-container");
+
+    if (!adminVisits.length) {
+        container.innerHTML = "<p class='text-muted'>No visits found</p>";
+        return;
+    }
+
+    let html = `
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Patient MRN</th>
+                <th>Specialist</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>First Visit</th>
+                <th>Anamnesis</th>
+                <th>Diagnosis</th>
+                <th>Treatment</th>
+                <th>Recommendations</th>
+                <th>Service Cost</th>
+                <th>Medication Cost</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+    `;
+
+    adminVisits.forEach(v => {
+        html += `
+            <tr>
+                <td>${v.id}</td>
+                <td>${v.patientMedicalRecord}</td>
+                <td>${v.specialistId}</td>
+                <td>${v.visitDate ?? "-"}</td>
+                <td>${v.status}</td>
+                <td>${v.isFirstVisit ? "Yes" : "No"}</td>
+                <td>${v.anamnesis ?? "-"}</td>
+                <td>${v.diagnosis ?? "-"}</td>
+                <td>${v.treatment ?? "-"}</td>
+                <td>${v.recommendations ?? "-"}</td>
+                <td>${v.serviceCost}</td>
+                <td>${v.medicationCost}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" data-edit="${v.id}">Edit</button>
+                    <button class="btn btn-danger btn-sm" data-delete="${v.id}">Delete</button>
+                </td>
+            </tr>
+        `;
+    });
+
+    html += `</tbody></table>`;
+    container.innerHTML = html;
+
+    // Edit buttons
+    document.querySelectorAll("[data-edit]").forEach(btn =>
+        btn.addEventListener("click", () => {
+            const visit = adminVisits.find(v => v.id == btn.dataset.edit);
+            openVisitModal(visit);
+        })
+    );
+
+    // Delete buttons
+    document.querySelectorAll("[data-delete]").forEach(btn =>
+        btn.addEventListener("click", () => {
+            deleteVisitId = btn.dataset.delete;
+            bootstrap.Modal.getOrCreateInstance(
+                document.getElementById("modalDeleteVisit")
+            ).show();
+        })
+    );
+}
+
+// -------------------- Load Patients + Specialists --------------------
+async function loadPatientsAndSpecialists() {
+    const [resPatients, resSpecialists] = await Promise.all([
+        authFetch("/administrator/patients"),
+        authFetch("/administrator/specialists")
+    ]);
+
+    adminPatients = resPatients.ok ? await resPatients.json() : [];
+    adminSpecialists = resSpecialists.ok ? await resSpecialists.json() : [];
+}
+
+// ======================== OPEN EDIT VISIT MODAL ========================
+async function openVisitModal(visit = null) {
+    await loadPatientsAndSpecialists();
+
+    const modalId = visit ? "modalEditVisit" : "modalAddVisit";
+    const modalElement = document.getElementById(modalId);
+    const form = modalElement.querySelector("form");
+
+    if (!form) {
+        console.error("Form not found inside modal:", modalId);
+        return;
+    }
+
+    const patientSelect = form.querySelector("[name='patientId']");
+    const specialistSelect = form.querySelector("[name='specialistId']");
+
+    // CREATE: populate dropdowns
+    if (!visit) {
+        if (patientSelect) {
+            patientSelect.innerHTML = adminPatients
+                .map(p => `<option value="${p.id}">${p.fullName} (MRN: ${p.medicalRecordNumber})</option>`)
+                .join("");
+        }
+
+        if (specialistSelect) {
+            specialistSelect.innerHTML = adminSpecialists
+                .map(s => `<option value="${s.id}">${s.fullName} (${s.speciality})</option>`)
+                .join("");
+        }
+
+        form.reset();
+    }
+
+    // EDIT MODE – fill fields
+    if (visit) {
+        form.querySelector("[name='id']").value = visit.id;
+        form.querySelector("[name='anamnesis']").value = visit.anamnesis ?? "";
+        form.querySelector("[name='diagnosis']").value = visit.diagnosis ?? "";
+        form.querySelector("[name='treatment']").value = visit.treatment ?? "";
+        form.querySelector("[name='recommendations']").value = visit.recommendations ?? "";
+        form.querySelector("[name='serviceCost']").value = visit.serviceCost ?? 0;
+        form.querySelector("[name='medicationCost']").value = visit.medicationCost ?? 0;
+
+        if (form.querySelector("[name='status']")) {
+            form.querySelector("[name='status']").value = visit.status ?? "Scheduled";
+        }
+    }
+
+    // Remove default form submission behavior
+    form.onsubmit = saveEditedVisit;
+
+    const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+    modal.show();
+}
+
+
+// ======================== SAVE EDITED VISIT (PUT) ========================
+async function saveEditedVisit(event) {
+    event.preventDefault();
+
+    const form = event.target;
+    const id = form.querySelector("[name='id']").value;
+
+    const dto = {
+        anamnesis: form.anamnesis.value,
+        diagnosis: form.diagnosis.value,
+        treatment: form.treatment.value,
+        recommendations: form.recommendations.value,
+        serviceCost: Number(form.serviceCost.value),
+        medicationCost: Number(form.medicationCost.value),
+        status: form.status.value
+    };
+
+    try {
+        const res = await authFetch(`/administrator/visits/${id}`, {
+            method: "PUT",
+            body: JSON.stringify(dto)
+        });
+
+        if (!res.ok) {
+            const txt = await res.text();
+            alert("Error: " + txt);
+            return;
+        }
+
+        const modal = bootstrap.Modal.getInstance(document.getElementById("modalEditVisit"));
+        modal.hide();
+
+        await loadVisits();
+    } catch (e) {
+        console.error("Update failed:", e);
+        alert("Failed to update visit");
+    }
+}
+
+
+// -------------------- Delete Visit --------------------
+document.getElementById("btnDeleteVisit")?.addEventListener("click", async () => {
+    if (!deleteVisitId) return;
+
+    const res = await authFetch(`/administrator/visits/${deleteVisitId}`, {
+        method: "DELETE"
+    });
+
+    if (res.ok) {
+        bootstrap.Modal.getInstance(document.getElementById("modalDeleteVisit")).hide();
+        loadVisits();
+    } else alert("Failed to delete visit");
 });

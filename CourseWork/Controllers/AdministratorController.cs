@@ -323,6 +323,18 @@ public IActionResult GetRevenueByPeriod([FromQuery] DateTime start, [FromQuery] 
         });
     }
     
+    [HttpGet("patients")]
+    public IActionResult GetPatients()
+    {
+        return Ok(_adminService.GetAllPatients());
+    }
+
+    [HttpGet("specialists")]
+    public IActionResult GetSpecialists()
+    {
+        return Ok(_adminService.GetAllSpecialists());
+    }
+    
     // -------------------- SQL Queries --------------------
     // [HttpPost("queries/run")]
     // public IActionResult RunRawQuery([FromBody] RawSqlRequestDto request)

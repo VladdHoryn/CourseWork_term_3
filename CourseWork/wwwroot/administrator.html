@@ -279,36 +279,88 @@
 </div>
 
 
+<!-- ========== VISITS MODALS ========== -->
+
 <!-- Add Visit -->
 <div class="modal fade" id="modalAddVisit" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header"><h5>Add Visit</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+
             <div class="modal-body">
                 <form id="formAddVisit">
                     <div class="row">
+
                         <div class="col-md-6 mb-3">
-                            <label>Patient ID</label>
-                            <input name="patientMedicalRecord" class="form-control" required>
+                            <label>Patient</label>
+                            <select name="patientId" class="form-control" required></select>
                         </div>
+
                         <div class="col-md-6 mb-3">
-                            <label>Specialist ID</label>
-                            <input name="specialistId" class="form-control" required>
+                            <label>Specialist</label>
+                            <select name="specialistId" class="form-control" required></select>
                         </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Medical Record</label>
+                            <input name="patientMedicalRecord" type="number" class="form-control" required>
+                        </div>
+
                         <div class="col-md-6 mb-3">
                             <label>Visit Date</label>
                             <input name="visitDate" type="datetime-local" class="form-control" required>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label>Service Cost</label>
-                            <input name="serviceCost" type="number" class="form-control">
-                        </div>
+
                         <div class="col-md-12 mb-3">
                             <label>Anamnesis</label>
                             <textarea name="anamnesis" class="form-control"></textarea>
                         </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label>Diagnosis</label>
+                            <textarea name="diagnosis" class="form-control"></textarea>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label>Treatment</label>
+                            <textarea name="treatment" class="form-control"></textarea>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label>Recommendations</label>
+                            <textarea name="recommendations" class="form-control"></textarea>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Service Cost</label>
+                            <input name="serviceCost" type="number" class="form-control">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Medication Cost</label>
+                            <input name="medicationCost" type="number" class="form-control">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Status</label>
+                            <select name="status" class="form-control">
+                                <option>Scheduled</option>
+                                <option>Completed</option>
+                                <option>Cancelled</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>First Visit?</label>
+                            <select name="isFirstVisit" class="form-control">
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+
                     </div>
-                    <button class="btn btn-primary w-100 mt-3" type="submit">Create Visit</button>
+
+                    <button class="btn btn-primary w-100 mt-3">Create Visit</button>
                 </form>
             </div>
         </div>
@@ -319,19 +371,45 @@
 <div class="modal fade" id="modalEditVisit" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
+
             <div class="modal-header"><h5>Edit Visit</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+
             <div class="modal-body">
                 <form id="formEditVisit">
                     <input type="hidden" name="id">
+
                     <div class="row">
+
                         <div class="col-md-12 mb-3">
                             <label>Anamnesis</label>
                             <textarea name="anamnesis" class="form-control"></textarea>
                         </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label>Diagnosis</label>
+                            <textarea name="diagnosis" class="form-control"></textarea>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label>Treatment</label>
+                            <textarea name="treatment" class="form-control"></textarea>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label>Recommendations</label>
+                            <textarea name="recommendations" class="form-control"></textarea>
+                        </div>
+
                         <div class="col-md-6 mb-3">
                             <label>Service Cost</label>
                             <input name="serviceCost" type="number" class="form-control">
                         </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Medication Cost</label>
+                            <input name="medicationCost" type="number" class="form-control">
+                        </div>
+
                         <div class="col-md-6 mb-3">
                             <label>Status</label>
                             <select name="status" class="form-control">
@@ -340,9 +418,24 @@
                                 <option>Cancelled</option>
                             </select>
                         </div>
+
                     </div>
-                    <button class="btn btn-primary w-100 mt-3" type="submit">Save Changes</button>
+
+                    <button type="submit" class="btn btn-primary w-100 mt-3">Save Changes</button>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Visit -->
+<div class="modal fade" id="modalDeleteVisit" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5>Delete Visit</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <p>Are you sure?</p>
+                <button id="btnConfirmDeleteVisit" class="btn btn-danger w-100">Delete</button>
             </div>
         </div>
     </div>
