@@ -207,7 +207,7 @@ public class AdministratorController : ControllerBase
 public IActionResult GetPayments()
 {
     var payments = _adminService.GetAllPayments()
-        .Select(PaymentMapper.ToResponseDto)
+        .Select(PaymentMapper.ToDto)
         .ToList();
     return Ok(payments);
 }
@@ -222,63 +222,48 @@ public IActionResult GetPaymentById(string id)
 }
 
 [HttpPost("payments")]
-public IActionResult CreatePayment([FromBody] PaymentRequestDto dto)
+public IActionResult CreatePayment([FromBody] PaymentCreateDto dto)
 {
-    if (dto == null)
-        return BadRequest("Payment data cannot be null.");
-    
-    if (!Enum.TryParse<PaymentStatus>(dto.Status, true, out var status))
-        status = PaymentStatus.Pending;
-
-    var payment = new Payment(
-        dto.VisitId,
-        dto.PatientMedicalRecord,
-        dto.TotalAmount,
-        dto.PaidAmount)
-    {
-        RemainingAmount = dto.RemainingAmount,
-        Status = status,
-        IssuedDate = dto.IssuedDate,
-        DueDate = dto.DueDate,
-        LastPaymentDate = dto.LastPaymentDate
-    };
-
+    var payment = PaymentMapper.ToPayment(dto, dto.PatientMedicalRecord);
     return _adminService.CreatePayment(payment)
-        ? Ok("Payment created successfully")
+        ? Ok("Payment created")
         : BadRequest("Failed to create payment");
 }
 
 [HttpPut("payments/{id}")]
 public IActionResult UpdatePayment(string id, [FromBody] PaymentUpdateDto dto)
 {
-    var existing = _adminService.GetPaymentById(id);
-    if (existing == null)
+    var existingPayment = _adminService.GetPaymentById(id);
+    if (existingPayment == null)
         return NotFound("Payment not found");
-    
-    if (!Enum.TryParse<PaymentStatus>(dto.Status, true, out var status))
-        status = PaymentStatus.Pending;
+        
+    existingPayment.TotalAmount = dto.TotalAmount;
+    existingPayment.PaidAmount = dto.PaidAmount;
+    existingPayment.RemainingAmount = dto.RemainingAmount;
+    existingPayment.IssuedDate = dto.IssuedDate;
+    existingPayment.DueDate = dto.DueDate;
+    existingPayment.LastPaymentDate = dto.LastPaymentDate;
+        
+    if (Enum.TryParse<PaymentStatus>(dto.Status, true, out var status))
+    {
+        existingPayment.Status = status;
+    }
+    else
+    {
+        return BadRequest("Invalid payment status value");
+    }
+        
+    var result = _adminService.UpdatePayment(id, existingPayment);
 
-    // existing.VisitId = dto.VisitId;
-    // existing.PatientMedicalRecord = dto.PatientMedicalRecord;
-    existing.TotalAmount = dto.TotalAmount;
-    existing.PaidAmount = dto.PaidAmount;
-    existing.RemainingAmount = dto.RemainingAmount;
-    existing.Status = status;
-    existing.IssuedDate = dto.IssuedDate;
-    existing.DueDate = dto.DueDate;
-    existing.LastPaymentDate = dto.LastPaymentDate;
-
-    return _adminService.UpdatePayment(id, existing)
-        ? Ok("Payment updated successfully")
-        : BadRequest("Failed to update payment");
+    return result ? Ok("Payment updated") : BadRequest("Failed to update payment");
 }
 
 [HttpDelete("payments/{id}")]
 public IActionResult DeletePayment(string id)
 {
     return _adminService.DeletePayment(id)
-        ? Ok("Payment deleted successfully")
-        : BadRequest("Failed to delete payment");
+        ? Ok("Payment deleted")
+        : BadRequest("Delete failed");
 }
 
 [HttpGet("payments/revenue")]

@@ -95,40 +95,216 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    let payments = [];
+    let deletePaymentId = null;
+
     async function loadPayments() {
+        const res = await authFetch("/administrator/payments");
+        payments = res.ok ? await res.json() : [];
+        renderPaymentsTable();
+    }
+
+    function renderPaymentsTable() {
+        const container = document.getElementById("payments-table-container");
+
+        let html = `
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Visit ID</th>
+                <th>Patient MRN</th>
+                <th>Total Amount</th>
+                <th>Paid Amount</th>
+                <th>Remaining</th>
+                <th>Issued</th>
+                <th>Due</th>
+                <th>Last Payment</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+    `;
+
+        payments.forEach(p => {
+            html += `
+        <tr>
+            <td>${p.id}</td>
+            <td>${p.visitId}</td>
+            <td>${p.patientMedicalRecord}</td>
+            <td>${p.totalAmount}</td>
+            <td>${p.paidAmount}</td>
+            <td>${p.remainingAmount}</td>
+            <td>${p.issuedDate ?? "-"}</td>
+            <td>${p.dueDate ?? "-"}</td>
+            <td>${p.lastPaymentDate ?? "-"}</td>
+            <td>${p.status}</td>
+            <td>
+                <button class="btn btn-warning btn-sm" data-id="${p.id}" data-edit>Edit</button>
+                <button class="btn btn-danger btn-sm" data-id="${p.id}" data-delete>Delete</button>
+            </td>
+        </tr>`;
+        });
+
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+
+        // Edit buttons
+        document.querySelectorAll("[data-edit]").forEach(btn =>
+            btn.addEventListener("click", () => {
+                const payment = payments.find(p => p.id == btn.dataset.id);
+                openPaymentModal(payment);
+            })
+        );
+
+        // Delete buttons
+        document.querySelectorAll("[data-delete]").forEach(btn =>
+            btn.addEventListener("click", () => {
+                deletePaymentId = btn.dataset.id;
+                new bootstrap.Modal(document.getElementById("modalDeletePayment")).show();
+            })
+        );
+    }
+
+    // -------------------- Open Add/Edit Modal --------------------
+    let editingPayment = null;
+
+    function openPaymentModal(payment = null) {
+        editingPayment = payment; // зберігаємо поточний об’єкт
+
+        const modal = document.getElementById(payment ? "modalEditPayment" : "modalAddPayment");
+        const form = modal.querySelector("form");
+
+        if (payment) {
+            form.id.value = payment.id;
+            form.totalAmount.value = payment.totalAmount;
+            form.paidAmount.value = payment.paidAmount ?? 0;
+            form.remainingAmount.value = payment.remainingAmount ?? 0;
+            form.issuedDate.value = payment.issuedDate ? new Date(payment.issuedDate).toISOString().slice(0,16) : "";
+            form.dueDate.value = payment.dueDate ? new Date(payment.dueDate).toISOString().slice(0,16) : "";
+            form.lastPaymentDate.value = payment.lastPaymentDate ? new Date(payment.lastPaymentDate).toISOString().slice(0,16) : "";
+            form.status.value = payment.status ?? "Pending";
+        } else {
+            form.reset();
+        }
+
+        new bootstrap.Modal(modal).show();
+    }
+
+// -------------------- Add Payment --------------------
+// -------------------- Init dropdowns when modal opens --------------------
+    document.getElementById("modalAddPayment")
+        .addEventListener("show.bs.modal", loadAddPaymentDropdowns);
+
+// -------------------- Form submit --------------------
+    document.getElementById("formAddPayment").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const dto = {
+            visitId: document.getElementById("addPaymentVisitSelect").value,
+            patientMedicalRecord: Number(document.getElementById("addPaymentPatientSelect").value),
+            amount: Number(e.target.totalAmount.value)
+        };
+
         try {
-            const res = await authFetch("/administrator/payments");
-            if (!res.ok) throw new Error("Failed to load payments");
-            const payments = await res.json();
-
-            const container = document.getElementById("payments-table-container");
-            let html = `<table class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>ID</th><th>Visit</th><th>Patient</th>
-                        <th>Total</th><th>Paid</th><th>Remaining</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-
-            payments.forEach(p => {
-                html += `<tr>
-                    <td>${p.id}</td>
-                    <td>${p.visitId}</td>
-                    <td>${p.patientMedicalRecord}</td>
-                    <td>${p.totalAmount}</td>
-                    <td>${p.paidAmount}</td>
-                    <td>${p.remainingAmount}</td>
-                </tr>`;
+            const res = await authFetch("/administrator/payments", {
+                method: "POST",
+                body: JSON.stringify(dto)
             });
 
-            html += `</tbody></table>`;
-            container.innerHTML = html;
+            if (res.ok) {
+                bootstrap.Modal.getInstance(document.getElementById("modalAddPayment")).hide();
+                loadPayments();
+            } else {
+                const t = await res.text();
+                alert("Failed to create payment: " + t);
+            }
         } catch (err) {
-            console.error(err);
-            alert("Помилка при завантаженні платежів.");
+            alert("Error: " + err.message);
+        }
+    });
+
+// -------------------- Load visits and set Patient MR --------------------
+    async function loadAddPaymentDropdowns() {
+        const visitSelect = document.getElementById("addPaymentVisitSelect");
+        const patientInput = document.getElementById("addPaymentPatientSelect");
+
+        visitSelect.innerHTML = "<option disabled selected>Loading visits...</option>";
+        patientInput.value = "";
+
+        try {
+            const visitsRes = await authFetch("/administrator/visits");
+            const visits = await visitsRes.json();
+
+            visitSelect.innerHTML = "<option disabled selected>Select Visit</option>";
+            visits.forEach(v => {
+                const op = document.createElement("option");
+                op.value = v.id;
+                op.textContent = `${v.visitDate} — VisitID: ${v.id}`;
+                op.dataset.patient = v.patientMedicalRecord;
+                visitSelect.appendChild(op);
+            });
+
+            // коли змінюється вибір візиту
+            visitSelect.addEventListener("change", () => {
+                const selectedOption = visitSelect.selectedOptions[0];
+                patientInput.value = selectedOption ? selectedOption.dataset.patient : "";
+            });
+
+        } catch (err) {
+            console.error("Failed to load visits:", err);
+            visitSelect.innerHTML = "<option>Error loading visits</option>";
+            patientInput.value = "";
         }
     }
+
+
+// -------------------- Edit Payment --------------------
+    document.getElementById("formEditPayment").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const form = e.target;
+
+        const dto = {
+            totalAmount: form.totalAmount.value || 0,
+            paidAmount: form.paidAmount.value || 0,
+            remainingAmount: form.remainingAmount.value || 0,
+            issuedDate: form.issuedDate.value ? new Date(form.issuedDate.value).toISOString() : null,
+            dueDate: form.dueDate.value ? new Date(form.dueDate.value).toISOString() : null,
+            lastPaymentDate: form.lastPaymentDate.value ? new Date(form.lastPaymentDate.value).toISOString() : null,
+            status: form.status.value
+        };
+
+        const paymentId = form.id.value; // <-- правильний ID
+
+        const res = await authFetch(`/administrator/payments/${paymentId}`, {
+            method: "PUT",
+            body: JSON.stringify(dto)
+        });
+
+        if (res.ok) {
+            bootstrap.Modal.getInstance(document.getElementById("modalEditPayment")).hide();
+            loadPayments();
+        } else {
+            const text = await res.text();
+            alert("Failed to update payment: " + text);
+        }
+    });
+
+
+// -------------------- Delete Payment --------------------
+    document.getElementById("btnConfirmDeletePayment").addEventListener("click", async () => {
+        if (!deletePaymentId) return;
+
+        const res = await authFetch(`/administrator/payments/${deletePaymentId}`, { method: "DELETE" });
+
+        if (res.ok) {
+            bootstrap.Modal.getInstance(document.getElementById("modalDeletePayment")).hide();
+            loadPayments();
+        } else {
+            alert("Failed to delete payment");
+        }
+    });
 
     async function loadRequests() {
         try {
@@ -730,4 +906,6 @@ document.getElementById("btnConfirmDeleteVisit")?.addEventListener("click", asyn
         console.error("Delete error:", err);
     }
 });
+
+
 
