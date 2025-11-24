@@ -82,43 +82,129 @@ async function loadBills() {
     container.innerHTML = "Loading...";
 
     const res = await authFetch("/patient/bills");
-    if (!res || !res.ok) { container.innerHTML = "Error loading bills."; return; }
+    if (!res || !res.ok) {
+        container.innerHTML = "Error loading bills.";
+        return;
+    }
 
     const bills = await res.json();
-    container.innerHTML = bills.length === 0 ? `<p class="text-secondary">No bills found.</p>` : "";
+    container.innerHTML = bills.length === 0
+        ? `<p class="text-secondary">No bills found.</p>`
+        : "";
 
-    bills.forEach(b => {
+    bills.forEach((b, index) => {
         const rem = b.totalAmount - b.paidAmount;
+        const isOverdue = new Date(b.dueDate) < new Date() && rem > 0;
+
+        // ❗ Нормальна перевірка чи можна платити
+        const isPayDisabled =
+            b.status === "Paid" ||
+            b.status === "Cancelled" ||
+            rem <= 0;
+
+        // Badge by status
+        const statusColor = {
+            Pending: "secondary",
+            PartiallyPaid: "warning",
+            Paid: "success",
+            Overdue: "danger",
+            Cancelled: "dark"
+        }[b.status] || "secondary";
+
         const card = document.createElement("div");
-        card.className = "card mb-3";
+        card.className = "card mb-3 shadow-sm";
         card.innerHTML = `
-            <div class="card-body">
-                <h5>Bill #${b.id}</h5>
-                <p><b>Total:</b> ${b.totalAmount} грн</p>
-                <p><b>Paid:</b> ${b.paidAmount} грн</p>
-                <p><b>Remaining:</b> ${rem} грн</p>
-                <p><b>Issued:</b> ${new Date(b.issuedDate).toLocaleDateString()}</p>
-                ${rem>0?`<button class="btn btn-success btn-pay" data-id="${b.id}">Pay Now</button>`:
-            `<button class="btn btn-secondary" disabled>Paid</button>`}
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="m-0">Bill #${index + 1}</h5>
+                <span class="badge bg-${statusColor}">${b.status}</span>
             </div>
-        `;
+
+            <p><b>Total:</b> ${b.totalAmount} грн</p>
+            <p><b>Paid:</b> ${b.paidAmount} грн</p>
+            <p><b>Remaining:</b> ${rem} грн</p>
+
+            <p><b>Issued:</b> ${new Date(b.issuedDate).toLocaleDateString()}</p>
+
+            <p>
+                <b>Due:</b>
+                <span class="${isOverdue ? "text-danger fw-bold" : ""}">
+                    ${new Date(b.dueDate).toLocaleDateString()}
+                </span>
+                ${isOverdue ? "⚠️ Overdue" : ""}
+            </p>
+
+            ${
+            isPayDisabled
+                ? `<button class="btn btn-secondary w-100 mt-2" disabled>${b.status}</button>`
+                : `<button class="btn btn-success btn-pay w-100 mt-2"
+                       data-id="${b.id}"
+                       data-rem="${rem}">
+                       Pay Now
+                   </button>`
+        }
+
+        </div>
+    `;
+
         container.appendChild(card);
     });
 
-    document.querySelectorAll(".btn-pay").forEach(btn=>{
-        btn.addEventListener("click",()=>{
+    // Attach button events
+    document.querySelectorAll(".btn-pay").forEach(btn => {
+        btn.addEventListener("click", () => {
             currentBillId = btn.getAttribute("data-id");
+            const remaining = btn.getAttribute("data-rem");
+
+            const input = document.getElementById("payment-amount");
+            input.value = "";
+            input.setAttribute("max", remaining);
+            input.setAttribute("placeholder", `Enter amount (max ${remaining} грн)`);
+
             const modal = new bootstrap.Modal(document.getElementById("paymentModal"));
             modal.show();
         });
     });
 }
 
+// ========= CONFIRM PAYMENT ==========
 document.getElementById("confirm-payment").addEventListener("click", async () => {
     const amount = Number(document.getElementById("payment-amount").value);
-    await authFetch(`/patient/bills/pay/${currentBillId}?amount=${amount}`, { method: "POST" });
+    const max = Number(document.getElementById("payment-amount").getAttribute("max"));
+
+    if (!amount || amount <= 0) {
+        alert("Enter a valid payment amount.");
+        return;
+    }
+
+    if (amount > max) {
+        alert(`You cannot pay more than ${max} грн.`);
+        return;
+    }
+
+    const body = JSON.stringify({
+        paymentId: currentBillId,
+        amount: amount
+    });
+
+    const res = await authFetch("/patient/payments/pay", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body
+    });
+
+    if (!res.ok) {
+        const txt = await res.text();
+        alert("Payment failed: " + txt);
+        return;
+    }
+
+    alert("Payment successful!");
+
     document.getElementById("payment-amount").value = "";
     bootstrap.Modal.getInstance(document.getElementById("paymentModal")).hide();
+
     loadBills();
 });
 

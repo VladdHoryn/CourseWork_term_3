@@ -93,6 +93,7 @@ public class PatientController : Controller
                 return Forbid("You can pay only your own bills.");
 
             payment.ProcessPayment(dto.Amount);
+
             _paymentService.UpdatePayment(payment.Id, payment);
 
             return Ok(payment);
