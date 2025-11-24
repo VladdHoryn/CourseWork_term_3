@@ -416,4 +416,21 @@ public class AdministratorController : ControllerBase
             revenue
         });
     }
+    
+    [HttpGet("statistics/patient-medications")]
+    public IActionResult GetPatientMedicationPayments(
+        [FromQuery] int patientMedicalRecord,
+        [FromQuery] DateTime start,
+        [FromQuery] DateTime end)
+    {
+        var total = _adminService.GetPatientMedicationPaymentsByPeriod(patientMedicalRecord, start, end);
+
+        return Ok(new
+        {
+            patientMedicalRecord,
+            start,
+            end,
+            totalMedicationPayments = total
+        });
+    }
 }

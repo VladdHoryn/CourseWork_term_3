@@ -195,4 +195,10 @@ public class AdministratorService : UserService
 
         return totalPatients / totalDays;
     }
+    
+    public decimal GetPatientMedicationPaymentsByPeriod(int patientMedicalRecord, DateTime start, DateTime end)
+    {
+        return _paymentService.GetPatientMedicationPaymentsByPeriod(patientMedicalRecord, start, end);
+    }
+
 }

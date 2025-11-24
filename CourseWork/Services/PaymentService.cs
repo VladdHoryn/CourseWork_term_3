@@ -99,4 +99,21 @@ public class PaymentService
             return 0;
         }
     }
+    
+    public decimal GetPatientMedicationPaymentsByPeriod(int patientMedicalRecord, DateTime start, DateTime end)
+    {
+        try
+        {
+            if (end < start)
+                throw new ArgumentException("End date cannot be before start date.");
+
+            return _paymentRepo.GetPatientMedicationPaymentsByPeriod(patientMedicalRecord, start, end);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Error] GetPatientMedicationPaymentsByPeriod failed: {ex.Message}");
+            return 0;
+        }
+    }
+
 }
