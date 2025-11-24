@@ -155,4 +155,45 @@ public class AdministratorService : UserService
             return (0, 0, 0, 0);
         }
     }
+    
+    public double GetAveragePatientsPerDay(
+        string? specialistId = null,
+        string? specialty = null)
+    {
+        var allVisits = GetAllVisits();
+
+        if (!string.IsNullOrWhiteSpace(specialistId))
+        {
+            allVisits = allVisits
+                .Where(v => v.SpecialistId == specialistId)
+                .ToList();
+        }
+
+        if (!string.IsNullOrWhiteSpace(specialty))
+        {
+            var specialists = GetAllSpecialists()
+                .Where(s => s.Speciality == specialty)
+                .Select(s => s.Id)
+                .ToList();
+
+            allVisits = allVisits
+                .Where(v => specialists.Contains(v.SpecialistId))
+                .ToList();
+        }
+
+        if (!allVisits.Any())
+            return 0;
+
+        // Групуємо за датою
+        var grouped = allVisits
+            .GroupBy(v => v.VisitDate.Date)
+            .Select(g => g.Count())
+            .ToList();
+
+        double totalPatients = grouped.Sum();
+        double totalDays = grouped.Count;
+
+        return totalPatients / totalDays;
+    }
+
 }

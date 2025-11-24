@@ -376,4 +376,26 @@ public class AdministratorController : ControllerBase
             return BadRequest(new { Error = ex.Message });
         }
     }
+    
+    [HttpGet("statistics/avg-patients")]
+    public IActionResult GetAveragePatients(
+        [FromQuery] string? specialistId = null,
+        [FromQuery] string? specialty = null)
+    {
+        if (!string.IsNullOrWhiteSpace(specialistId) &&
+            !ObjectId.TryParse(specialistId, out _))
+        {
+            return BadRequest("Invalid specialistId format.");
+        }
+
+        double avg = _adminService.GetAveragePatientsPerDay(specialistId, specialty);
+
+        return Ok(new
+        {
+            SpecialistId = specialistId,
+            Specialty = specialty,
+            AveragePatientsPerDay = Math.Round(avg, 2)
+        });
+    }
+
 }

@@ -247,15 +247,4 @@ public class OperatorController : ControllerBase
             ? Ok("Payment deleted")
             : BadRequest("Delete failed");
     }
-    
-    // -------------------- SQL Queries --------------------
-    // [HttpPost("queries/run")]
-    // public IActionResult RunRawQuery([FromBody] RawSqlRequestDto request)
-    // {
-    //     if (string.IsNullOrWhiteSpace(request.Sql))
-    //         return BadRequest("Query cannot be empty.");
-    //
-    //     var result = _operatorService.ExecuteRawSql(request.Sql);
-    //     return Ok(result);
-    // }
 }
