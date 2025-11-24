@@ -510,8 +510,12 @@ document.addEventListener("DOMContentLoaded", () => {
 // -----------------------------------------------------
 // LOAD SPECIALISTS + SPECIALTIES INTO SELECTS
 // -----------------------------------------------------
+    let specialistsLoaded = false;
+
     async function loadSpecialistsAndSpecialties() {
         try {
+            if (specialistsLoaded) return; // завантажуємо лише 1 раз
+
             const res = await authFetch("/administrator/specialists");
             if (!res.ok) throw new Error("Failed to load specialists");
 
@@ -519,10 +523,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const specSelect = document.getElementById("avgSpecId");
             const typeSelect = document.getElementById("avgSpecType");
+            const revenueSelect = document.getElementById("revSpecId");
+
+            if (!specSelect || !typeSelect || !revenueSelect) {
+                console.warn("One of selects not found on the page");
+                return;
+            }
 
             // Очистити
             specSelect.innerHTML = `<option value="">-- All Specialists --</option>`;
             typeSelect.innerHTML = `<option value="">-- All Specialties --</option>`;
+            revenueSelect.innerHTML = `<option value="">-- Select Specialist --</option>`;
 
             // Наповнити specialists (ID + Full Name + Specialty)
             specialists.forEach(s => {
@@ -530,10 +541,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 opt.value = s.id;
                 opt.textContent = `${s.fullName} (${s.speciality})`;
                 specSelect.appendChild(opt);
+
+                // Для revenue drop-down
+                const opt2 = document.createElement("option");
+                opt2.value = s.id;
+                opt2.textContent = `${s.fullName} (${s.speciality})`;
+                revenueSelect.appendChild(opt2);
             });
 
             // Унікальні спеціальності
-            const uniqueTypes = [...new Set(specialists.map(s => s.speciality))];
+            const uniqueTypes = [...new Set(specialists.map(s => s.speciality).filter(x => x))];
 
             uniqueTypes.forEach(t => {
                 const opt = document.createElement("option");
@@ -542,18 +559,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 typeSelect.appendChild(opt);
             });
 
+            specialistsLoaded = true;
         } catch (err) {
             console.error(err);
             alert("Помилка при завантаженні списку спеціалістів.");
         }
     }
 
-// Run when statistics tab becomes visible
+// Викликати один раз при відкритті таба (як у тебе раніше)
     document.querySelector('[data-tab="statistics"]')
-        ?.addEventListener("click", () => {
-            loadSpecialistsAndSpecialties();
-        });
-
+        ?.addEventListener("click", () => loadSpecialistsAndSpecialties());
 
 // -----------------------------------------------------
 // LOAD AVERAGE PATIENTS PER DAY
@@ -630,20 +645,71 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    let revenueChart = null;
+
     async function loadRevenue() {
-        const id = document.getElementById("revSpecId").value;
-        const start = document.getElementById("revStart").value;
-        const end = document.getElementById("revEnd").value;
+        try {
+            const specialistId = document.getElementById("revSpecId").value;
+            const start = document.getElementById("revStart").value;
+            const end = document.getElementById("revEnd").value;
 
-        const res = await authFetch(`/administrator/statistics/revenue?specialistId=${id}&start=${start}&end=${end}`);
-        const data = await res.json();
+            if (!specialistId) {
+                alert("Please select a specialist.");
+                return;
+            }
+            if (!start || !end) {
+                alert("Please select both dates.");
+                return;
+            }
 
-        document.getElementById("revenue-result").innerHTML = `
-        <strong>Specialist:</strong> ${data.specialistId}<br>
-        <strong>Period:</strong> ${data.start} — ${data.end}<br>
-        <strong>Revenue:</strong> <span class="text-success">${data.revenue} грн</span>
-    `;
+            const res = await authFetch(
+                `/administrator/statistics/revenue?specialistId=${specialistId}&start=${start}&end=${end}`
+            );
+
+            if (!res.ok) throw new Error("Failed to load revenue");
+
+            const data = await res.json();
+
+            const resultBox = document.getElementById("revenue-result");
+            resultBox.classList.remove("d-none");
+            resultBox.innerHTML = `
+            <strong>Specialist ID:</strong> ${data.specialistId}<br>
+            <strong>Period:</strong> ${data.start.split("T")[0]} — ${data.end.split("T")[0]}<br>
+            <strong>Revenue:</strong> <span class="text-success fw-bold">${data.revenue} грн</span>
+        `;
+
+            renderRevenueChart(data.revenue);
+
+        } catch (err) {
+            console.error(err);
+            alert("Помилка при завантаженні виручки.");
+        }
     }
+
+    function renderRevenueChart(value) {
+        const ctx = document.getElementById("revenueChart");
+
+        if (revenueChart) revenueChart.destroy();
+
+        revenueChart = new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: ["Revenue"],
+                datasets: [{
+                    label: "UAH",
+                    data: [value]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+
+    document.getElementById("btnLoadRevenue")
+        ?.addEventListener("click", loadRevenue);
     // =====================================================================
 //                            USERS CRUD
 // =====================================================================

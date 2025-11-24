@@ -218,6 +218,47 @@
                 <div class="card p-3 mt-4">
                     <canvas id="avgPatientsChart" height="120"></canvas>
                 </div>
+
+                <!-- Specialist Revenue Section -->
+                <div class="card p-3 mt-4">
+                    <h4>💰 Revenue Per Specialist</h4>
+
+                    <div class="row g-3 mt-2">
+
+                        <!-- Specialist list -->
+                        <div class="col-md-4">
+                            <label>Select Specialist</label>
+                            <select id="revSpecId" class="form-select">
+                                <option value="">-- Select Specialist --</option>
+                            </select>
+                        </div>
+
+                        <!-- Start Date -->
+                        <div class="col-md-4">
+                            <label>Start Date</label>
+                            <input id="revStart" type="date" class="form-control">
+                        </div>
+
+                        <!-- End Date -->
+                        <div class="col-md-4">
+                            <label>End Date</label>
+                            <input id="revEnd" type="date" class="form-control">
+                        </div>
+
+                        <div class="col-md-12 d-flex align-items-end">
+                            <button id="btnLoadRevenue" class="btn btn-warning w-100 mt-2">
+                                Calculate Revenue
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="revenue-result" class="alert alert-secondary mt-3 d-none"></div>
+                </div>
+
+                <!-- Revenue Chart -->
+                <div class="card p-3 mt-4">
+                    <canvas id="revenueChart" height="120"></canvas>
+                </div>
             </section>
 
             <!-- Chart.js -->
