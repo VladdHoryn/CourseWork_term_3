@@ -73,8 +73,10 @@ public class PaymentRepository
             .Find(p =>
                 p.PatientMedicalRecord == patientMedicalRecord &&
                 p.PaidAmount > 0 &&
-                p.IssuedDate >= start &&
-                p.IssuedDate <= end
+                (
+                    (p.LastPaymentDate.HasValue && p.LastPaymentDate.Value >= start && p.LastPaymentDate.Value <= end) ||
+                    (!p.LastPaymentDate.HasValue && p.IssuedDate >= start && p.IssuedDate <= end)
+                )
             )
             .ToList();
 

@@ -259,6 +259,46 @@
                 <div class="card p-3 mt-4">
                     <canvas id="revenueChart" height="120"></canvas>
                 </div>
+
+                <!-- Patient Medication Payments Section -->
+                <div class="card p-3 mt-4">
+                    <h4>💊 Medication Payments by Patient</h4>
+
+                    <div class="row g-3 mt-2">
+                        <!-- Select Patient -->
+                        <div class="col-md-4">
+                            <label>Select Patient</label>
+                            <select id="medPatientId" class="form-select">
+                                <option value="">-- Select Patient --</option>
+                            </select>
+                        </div>
+
+                        <!-- Start Date -->
+                        <div class="col-md-4">
+                            <label>Start Date</label>
+                            <input id="medStart" type="date" class="form-control">
+                        </div>
+
+                        <!-- End Date -->
+                        <div class="col-md-4">
+                            <label>End Date</label>
+                            <input id="medEnd" type="date" class="form-control">
+                        </div>
+
+                        <div class="col-md-12 d-flex align-items-end">
+                            <button id="btnLoadMedPayments" class="btn btn-info w-100 mt-2">
+                                Calculate Medication Payments
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="med-payments-result" class="alert alert-secondary mt-3 d-none"></div>
+                </div>
+
+                <!-- Medication Payments Chart -->
+                <div class="card p-3 mt-4">
+                    <canvas id="medPaymentsChart" height="120"></canvas>
+                </div>
             </section>
 
             <!-- Chart.js -->

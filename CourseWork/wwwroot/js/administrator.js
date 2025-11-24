@@ -570,6 +570,99 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector('[data-tab="statistics"]')
         ?.addEventListener("click", () => loadSpecialistsAndSpecialties());
 
+    let medPaymentsChart = null;
+
+// Завантажити список пацієнтів для селекту
+    async function loadPatientsForMedPayments() {
+        try {
+            const res = await authFetch("/administrator/patients");
+            if (!res.ok) throw new Error("Failed to load patients");
+
+            const patients = await res.json();
+            const select = document.getElementById("medPatientId");
+
+            if (!select) return;
+
+            select.innerHTML = `<option value="">-- Select Patient --</option>`;
+            patients.forEach(p => {
+                const opt = document.createElement("option");
+                opt.value = p.medicalRecord; // використовуємо medicalRecord як id
+                opt.textContent = `${p.fullName} (Record: ${p.medicalRecord})`;
+                select.appendChild(opt);
+            });
+        } catch (err) {
+            console.error(err);
+            alert("Помилка при завантаженні пацієнтів.");
+        }
+    }
+
+// Завантажити суму оплати за ліки
+    async function loadMedicationPayments() {
+        try {
+            const patientId = document.getElementById("medPatientId").value;
+            const start = document.getElementById("medStart").value;
+            const end = document.getElementById("medEnd").value;
+
+            if (!patientId) {
+                alert("Будь ласка, оберіть пацієнта.");
+                return;
+            }
+
+            const startIso = start ? new Date(start).toISOString() : "";
+            const endIso = end ? new Date(end).toISOString() : "";
+
+            const res = await authFetch(
+                `/administrator/statistics/patient-medications?patientMedicalRecord=${patientId}&start=${encodeURIComponent(startIso)}&end=${encodeURIComponent(endIso)}`
+            );
+
+            if (!res.ok) throw new Error("Failed to load medication payments");
+
+            const data = await res.json();
+
+            const resultBox = document.getElementById("med-payments-result");
+            resultBox.classList.remove("d-none");
+            resultBox.innerHTML = `
+            <strong>Patient Record:</strong> ${data.patientMedicalRecord}<br>
+            <strong>Period:</strong> ${data.start} — ${data.end}<br>
+            <strong>Total Medication Payments:</strong> 
+            <span class="text-success">${data.totalMedicationPayments} грн</span>
+        `;
+
+            renderMedPaymentsChart(data.totalMedicationPayments);
+
+        } catch (err) {
+            console.error(err);
+            alert("Помилка при завантаженні оплати за ліки.");
+        }
+    }
+
+    function renderMedPaymentsChart(value) {
+        const ctx = document.getElementById("medPaymentsChart");
+
+        if (medPaymentsChart) medPaymentsChart.destroy();
+
+        medPaymentsChart = new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: ["Medication Payments"],
+                datasets: [{
+                    label: "Payments (грн)",
+                    data: [value],
+                    backgroundColor: "#17a2b8"
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+    
+    document.getElementById("btnLoadMedPayments")?.addEventListener("click", loadMedicationPayments);
+    
+    document.querySelector('[data-tab="statistics"]')
+        ?.addEventListener("click", loadPatientsForMedPayments);
 // -----------------------------------------------------
 // LOAD AVERAGE PATIENTS PER DAY
 // -----------------------------------------------------

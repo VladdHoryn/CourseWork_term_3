@@ -417,20 +417,24 @@ public class AdministratorController : ControllerBase
         });
     }
     
-    [HttpGet("statistics/patient-medications")]
-    public IActionResult GetPatientMedicationPayments(
-        [FromQuery] int patientMedicalRecord,
-        [FromQuery] DateTime start,
-        [FromQuery] DateTime end)
+    [HttpPost("statistics/patient-medications")]
+    public IActionResult GetPatientMedicationPayments([FromBody] PatientMedicationRequest request)
     {
-        var total = _adminService.GetPatientMedicationPaymentsByPeriod(patientMedicalRecord, start, end);
+        if (request == null)
+            return BadRequest("Request body is missing");
+
+        var total = _adminService.GetPatientMedicationPaymentsByPeriod(
+            request.PatientMedicalRecord,
+            request.Start,
+            request.End
+        );
 
         return Ok(new
         {
-            patientMedicalRecord,
-            start,
-            end,
-            totalMedicationPayments = total
+            request.PatientMedicalRecord,
+            request.Start,
+            request.End,
+            TotalMedicationPayments = total
         });
     }
 }

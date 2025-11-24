@@ -111,9 +111,8 @@ public class PaymentService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[Error] GetPatientMedicationPaymentsByPeriod failed: {ex.Message}");
+            Console.WriteLine($"[Error] GetPatientMedicationPaymentsByPeriod failed for patient {patientMedicalRecord}: {ex.Message}");
             return 0;
         }
     }
-
 }

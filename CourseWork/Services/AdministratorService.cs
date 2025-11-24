@@ -198,7 +198,7 @@ public class AdministratorService : UserService
     
     public decimal GetPatientMedicationPaymentsByPeriod(int patientMedicalRecord, DateTime start, DateTime end)
     {
+        if (end < start) return 0;
         return _paymentService.GetPatientMedicationPaymentsByPeriod(patientMedicalRecord, start, end);
     }
-
 }
