@@ -501,6 +501,81 @@ document.addEventListener("DOMContentLoaded", () => {
     // -------------------------
     document.getElementById("filter-role")?.addEventListener("change", loadUsers);
 
+    // =======================
+// AVERAGE PATIENTS PER DAY
+// =======================
+
+    let avgPatientsChart = null;
+
+    async function loadAveragePatients() {
+        try {
+            const specialistId = document.getElementById("avgSpecId").value.trim();
+            const specialty = document.getElementById("avgSpecType").value.trim();
+
+            let url = `/administrator/statistics/avg-patients`;
+
+            const params = [];
+            if (specialistId) params.push(`specialistId=${specialistId}`);
+            if (specialty) params.push(`specialty=${encodeURIComponent(specialty)}`);
+
+            if (params.length > 0) url += `?${params.join("&")}`;
+
+            const res = await authFetch(url);
+            if (!res.ok) throw new Error("Failed to load average patients");
+
+            const data = await res.json();
+
+            // Show result
+            const resultBox = document.getElementById("avg-patients-result");
+            resultBox.classList.remove("d-none");
+            resultBox.innerHTML = `
+            <strong>Specialist ID:</strong> ${data.specialistId || "-"}<br>
+            <strong>Specialty:</strong> ${data.specialty || "-"}<br>
+            <strong>Average Patients Per Day:</strong> <span class="text-primary">${data.averagePatientsPerDay}</span>
+        `;
+
+            renderAvgPatientsChart(data.averagePatientsPerDay);
+
+        } catch (err) {
+            console.error(err);
+            alert("Помилка при завантаженні середньої кількості пацієнтів.");
+        }
+    }
+
+    document.getElementById("btnLoadAvgPatients")
+        ?.addEventListener("click", loadAveragePatients);
+
+
+// =======================
+// RENDER CHART
+// =======================
+    function renderAvgPatientsChart(value) {
+        const ctx = document.getElementById("avgPatientsChart");
+
+        if (avgPatientsChart) avgPatientsChart.destroy();
+
+        avgPatientsChart = new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: ["Average Patients Per Day"],
+                datasets: [{
+                    label: "Patients",
+                    data: [value]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
     // =====================================================================
 //                            USERS CRUD
 // =====================================================================
