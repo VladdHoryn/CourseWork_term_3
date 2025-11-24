@@ -572,7 +572,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let medPaymentsChart = null;
 
+// ------------------------
 // Завантажити список пацієнтів для селекту
+// ------------------------
     async function loadPatientsForMedPayments() {
         try {
             const res = await authFetch("/administrator/patients");
@@ -580,14 +582,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const patients = await res.json();
             const select = document.getElementById("medPatientId");
-
             if (!select) return;
 
             select.innerHTML = `<option value="">-- Select Patient --</option>`;
             patients.forEach(p => {
                 const opt = document.createElement("option");
-                opt.value = p.medicalRecord; // використовуємо medicalRecord як id
-                opt.textContent = `${p.fullName} (Record: ${p.medicalRecord})`;
+                opt.value = p.medicalRecordNumber; // використовуємо medicalRecord як id
+                opt.textContent = `${p.fullName} (Record: ${p.medicalRecordNumber})`;
                 select.appendChild(opt);
             });
         } catch (err) {
@@ -596,24 +597,31 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-// Завантажити суму оплати за ліки
+// ------------------------
+// Завантажити суму оплати за ліки (POST)
+// ------------------------
     async function loadMedicationPayments() {
         try {
-            const patientId = document.getElementById("medPatientId").value;
+            const patientRecord = document.getElementById("medPatientId").value;
             const start = document.getElementById("medStart").value;
             const end = document.getElementById("medEnd").value;
 
-            if (!patientId) {
-                alert("Будь ласка, оберіть пацієнта.");
+            if (!patientRecord || !start || !end) {
+                alert("Будь ласка, оберіть пацієнта та обидві дати.");
                 return;
             }
 
-            const startIso = start ? new Date(start).toISOString() : "";
-            const endIso = end ? new Date(end).toISOString() : "";
+            const body = {
+                PatientMedicalRecord: parseInt(patientRecord),
+                Start: new Date(start).toISOString(),
+                End: new Date(end).toISOString()
+            };
 
-            const res = await authFetch(
-                `/administrator/statistics/patient-medications?patientMedicalRecord=${patientId}&start=${encodeURIComponent(startIso)}&end=${encodeURIComponent(endIso)}`
-            );
+            const res = await authFetch("/administrator/statistics/patient-medications", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body)
+            });
 
             if (!res.ok) throw new Error("Failed to load medication payments");
 
@@ -623,9 +631,8 @@ document.addEventListener("DOMContentLoaded", () => {
             resultBox.classList.remove("d-none");
             resultBox.innerHTML = `
             <strong>Patient Record:</strong> ${data.patientMedicalRecord}<br>
-            <strong>Period:</strong> ${data.start} — ${data.end}<br>
-            <strong>Total Medication Payments:</strong> 
-            <span class="text-success">${data.totalMedicationPayments} грн</span>
+            <strong>Period:</strong> ${data.start.split("T")[0]} — ${data.end.split("T")[0]}<br>
+            <strong>Total Medication Payments:</strong> <span class="text-success">${data.totalMedicationPayments} грн</span>
         `;
 
             renderMedPaymentsChart(data.totalMedicationPayments);
@@ -636,6 +643,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    document.getElementById("btnLoadMedPayments")
+        ?.addEventListener("click", loadMedicationPayments);
+
+
+// ------------------------
+// Графік Medication Payments
+// ------------------------
     function renderMedPaymentsChart(value) {
         const ctx = document.getElementById("medPaymentsChart");
 
@@ -658,9 +672,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-    
-    document.getElementById("btnLoadMedPayments")?.addEventListener("click", loadMedicationPayments);
-    
+
     document.querySelector('[data-tab="statistics"]')
         ?.addEventListener("click", loadPatientsForMedPayments);
 // -----------------------------------------------------
