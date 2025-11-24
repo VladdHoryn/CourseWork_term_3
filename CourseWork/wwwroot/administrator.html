@@ -10,9 +10,17 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
-        body { background:#f7f7f7; }
-        .sidebar { border-right:1px solid #333; }
-        .nav-link.active { background:#0d6efd !important; }
+        body {
+            background: #f7f7f7;
+        }
+
+        .sidebar {
+            border-right: 1px solid #333;
+        }
+
+        .nav-link.active {
+            background: #0d6efd !important;
+        }
     </style>
 </head>
 
@@ -36,19 +44,47 @@
         <!-- SIDEBAR -->
         <nav class="col-md-3 col-lg-2 d-md-block bg-dark text-white sidebar vh-100 p-0">
             <ul class="nav flex-column mt-3">
-                <li class="nav-item"><button class="nav-link text-white active w-100 text-start" data-tab="dashboard"><i class="bi bi-speedometer2"></i> Dashboard</button></li>
+                <li class="nav-item">
+                    <button class="nav-link text-white active w-100 text-start" data-tab="dashboard"><i
+                            class="bi bi-speedometer2"></i> Dashboard
+                    </button>
+                </li>
 
-                <li class="nav-item"><button class="nav-link text-white w-100 text-start" data-tab="users"><i class="bi bi-people"></i> Users</button></li>
+                <li class="nav-item">
+                    <button class="nav-link text-white w-100 text-start" data-tab="users"><i class="bi bi-people"></i>
+                        Users
+                    </button>
+                </li>
 
-                <li class="nav-item"><button class="nav-link text-white w-100 text-start" data-tab="visits"><i class="bi bi-calendar-check"></i> Visits</button></li>
+                <li class="nav-item">
+                    <button class="nav-link text-white w-100 text-start" data-tab="visits"><i
+                            class="bi bi-calendar-check"></i> Visits
+                    </button>
+                </li>
 
-                <li class="nav-item"><button class="nav-link text-white w-100 text-start" data-tab="payments"><i class="bi bi-receipt"></i> Payments</button></li>
+                <li class="nav-item">
+                    <button class="nav-link text-white w-100 text-start" data-tab="payments"><i
+                            class="bi bi-receipt"></i> Payments
+                    </button>
+                </li>
 
-                <li class="nav-item"><button class="nav-link text-white w-100 text-start" data-tab="requests"><i class="bi bi-journal-text"></i> Registration Requests</button></li>
+                <li class="nav-item">
+                    <button class="nav-link text-white w-100 text-start" data-tab="requests"><i
+                            class="bi bi-journal-text"></i> Registration Requests
+                    </button>
+                </li>
 
-                <li class="nav-item"><button class="nav-link text-white w-100 text-start" data-tab="statistics"><i class="bi bi-graph-up"></i> Statistics</button></li>
+                <li class="nav-item">
+                    <button class="nav-link text-white w-100 text-start" data-tab="statistics"><i
+                            class="bi bi-graph-up"></i> Statistics
+                    </button>
+                </li>
 
-                <li class="nav-item"><button class="nav-link text-white w-100 text-start" data-tab="mongo"><i class="bi bi-code-slash"></i> SQL Queries</button></li>
+                <li class="nav-item">
+                    <button class="nav-link text-white w-100 text-start" data-tab="mongo"><i
+                            class="bi bi-code-slash"></i> SQL Queries
+                    </button>
+                </li>
             </ul>
         </nav>
 
@@ -121,7 +157,8 @@
             <section id="visits" class="tab d-none">
                 <div class="d-flex justify-content-between align-items-center">
                     <h2>🗓 Visits</h2>
-                    <button class="btn btn-success" id="btnAddVisit" data-bs-toggle="modal" data-bs-target="#modalAddVisit">
+                    <button class="btn btn-success" id="btnAddVisit" data-bs-toggle="modal"
+                            data-bs-target="#modalAddVisit">
                         <i class="bi bi-plus-circle"></i> Add Visit
                     </button>
                 </div>
@@ -154,156 +191,138 @@
             <section id="statistics" class="tab d-none">
                 <h2>📈 Statistics</h2>
 
-                <!-- Filters -->
-                <div class="card p-3 mt-3">
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label>Start Date</label>
-                            <input id="statsStart" type="date" class="form-control">
-                        </div>
-
-                        <div class="col-md-4">
-                            <label>End Date</label>
-                            <input id="statsEnd" type="date" class="form-control">
-                        </div>
-
-                        <div class="col-md-4 d-flex align-items-end">
-                            <button id="btnApplyStats" class="btn btn-primary w-100">Apply Filter</button>
-                        </div>
-                    </div>
+                <!-- Tabs for Statistics Blocks -->
+                <div id="statsTabs" class="btn-group mt-3" role="group">
+                    <button class="btn btn-outline-primary active" data-block="systemStats">System Stats</button>
+                    <button class="btn btn-outline-success" data-block="avgPatientsBlock">Average Patients</button>
+                    <button class="btn btn-outline-warning" data-block="revenueBlock">Revenue</button>
+                    <button class="btn btn-outline-info" data-block="medPaymentsBlock">Medication Payments</button>
                 </div>
 
-                <!-- Results -->
-                <div id="statistics-container" class="mt-4"></div>
-
-                <!-- Chart -->
-                <div class="card p-3 mt-4">
-                    <canvas id="statsChart" height="120"></canvas>
-                </div>
-
-                <!-- Average Patients Section -->
-                <div class="card p-3 mt-4">
-                    <h4>👨‍⚕️ Average Patients Per Day</h4>
-
-                    <div class="row g-3 mt-2">
-
-                        <!-- Specialist list -->
-                        <div class="col-md-4">
-                            <label>Select Specialist (optional)</label>
-                            <select id="avgSpecId" class="form-select">
-                                <option value="">-- All Specialists --</option>
-                            </select>
-                        </div>
-
-                        <!-- Specialty list -->
-                        <div class="col-md-4">
-                            <label>Select Specialty (optional)</label>
-                            <select id="avgSpecType" class="form-select">
-                                <option value="">-- All Specialties --</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-4 d-flex align-items-end">
-                            <button id="btnLoadAvgPatients" class="btn btn-success w-100">
-                                Calculate
-                            </button>
-                        </div>
-
-                    </div>
-
-                    <div id="avg-patients-result" class="alert alert-secondary mt-3 d-none"></div>
-                </div>
-
-                <!-- Chart for Average Patients -->
-                <div class="card p-3 mt-4">
-                    <canvas id="avgPatientsChart" height="120"></canvas>
-                </div>
-
-                <!-- Specialist Revenue Section -->
-                <div class="card p-3 mt-4">
-                    <h4>💰 Revenue Per Specialist</h4>
-
-                    <div class="row g-3 mt-2">
-
-                        <!-- Specialist list -->
-                        <div class="col-md-4">
-                            <label>Select Specialist</label>
-                            <select id="revSpecId" class="form-select">
-                                <option value="">-- Select Specialist --</option>
-                            </select>
-                        </div>
-
-                        <!-- Start Date -->
-                        <div class="col-md-4">
-                            <label>Start Date</label>
-                            <input id="revStart" type="date" class="form-control">
-                        </div>
-
-                        <!-- End Date -->
-                        <div class="col-md-4">
-                            <label>End Date</label>
-                            <input id="revEnd" type="date" class="form-control">
-                        </div>
-
-                        <div class="col-md-12 d-flex align-items-end">
-                            <button id="btnLoadRevenue" class="btn btn-warning w-100 mt-2">
-                                Calculate Revenue
-                            </button>
+                <!-- SYSTEM STATISTICS -->
+                <div id="systemStats" class="stats-block mt-4">
+                    <!-- Filters -->
+                    <div class="card p-3">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label>Start Date</label>
+                                <input id="statsStart" type="date" class="form-control">
+                            </div>
+                            <div class="col-md-4">
+                                <label>End Date</label>
+                                <input id="statsEnd" type="date" class="form-control">
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button id="btnApplyStats" class="btn btn-primary w-100">Apply Filter</button>
+                            </div>
                         </div>
                     </div>
 
-                    <div id="revenue-result" class="alert alert-secondary mt-3 d-none"></div>
-                </div>
+                    <!-- Results -->
+                    <div id="statistics-container" class="mt-4"></div>
 
-                <!-- Revenue Chart -->
-                <div class="card p-3 mt-4">
-                    <canvas id="revenueChart" height="120"></canvas>
-                </div>
-
-                <!-- Patient Medication Payments Section -->
-                <div class="card p-3 mt-4">
-                    <h4>💊 Medication Payments by Patient</h4>
-
-                    <div class="row g-3 mt-2">
-                        <!-- Select Patient -->
-                        <div class="col-md-4">
-                            <label>Select Patient</label>
-                            <select id="medPatientId" class="form-select">
-                                <option value="">-- Select Patient --</option>
-                            </select>
-                        </div>
-
-                        <!-- Start Date -->
-                        <div class="col-md-4">
-                            <label>Start Date</label>
-                            <input id="medStart" type="date" class="form-control">
-                        </div>
-
-                        <!-- End Date -->
-                        <div class="col-md-4">
-                            <label>End Date</label>
-                            <input id="medEnd" type="date" class="form-control">
-                        </div>
-
-                        <div class="col-md-12 d-flex align-items-end">
-                            <button id="btnLoadMedPayments" class="btn btn-info w-100 mt-2">
-                                Calculate Medication Payments
-                            </button>
-                        </div>
+                    <!-- Chart -->
+                    <div class="card p-3 mt-4">
+                        <canvas id="statsChart" height="120"></canvas>
                     </div>
-
-                    <div id="med-payments-result" class="alert alert-secondary mt-3 d-none"></div>
                 </div>
 
-                <!-- Medication Payments Chart -->
-                <div class="card p-3 mt-4">
-                    <canvas id="medPaymentsChart" height="120"></canvas>
+                <!-- AVERAGE PATIENTS PER DAY -->
+                <div id="avgPatientsBlock" class="stats-block mt-4 d-none">
+                    <div class="card p-3">
+                        <h4>👨‍⚕️ Average Patients Per Day</h4>
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-4">
+                                <label>Select Specialist (optional)</label>
+                                <select id="avgSpecId" class="form-select">
+                                    <option value="">-- All Specialists --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Select Specialty (optional)</label>
+                                <select id="avgSpecType" class="form-select">
+                                    <option value="">-- All Specialties --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button id="btnLoadAvgPatients" class="btn btn-success w-100">Calculate</button>
+                            </div>
+                        </div>
+                        <div id="avg-patients-result" class="alert alert-secondary mt-3 d-none"></div>
+                    </div>
+                    <div class="card p-3 mt-4">
+                        <canvas id="avgPatientsChart" height="120"></canvas>
+                    </div>
+                </div>
+
+                <!-- REVENUE -->
+                <div id="revenueBlock" class="stats-block mt-4 d-none">
+                    <div class="card p-3">
+                        <h4>💰 Revenue Per Specialist</h4>
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-4">
+                                <label>Select Specialist</label>
+                                <select id="revSpecId" class="form-select">
+                                    <option value="">-- Select Specialist --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Start Date</label>
+                                <input id="revStart" type="date" class="form-control">
+                            </div>
+                            <div class="col-md-4">
+                                <label>End Date</label>
+                                <input id="revEnd" type="date" class="form-control">
+                            </div>
+                            <div class="col-md-12 d-flex align-items-end">
+                                <button id="btnLoadRevenue" class="btn btn-warning w-100 mt-2">Calculate Revenue
+                                </button>
+                            </div>
+                        </div>
+                        <div id="revenue-result" class="alert alert-secondary mt-3 d-none"></div>
+                    </div>
+                    <div class="card p-3 mt-4">
+                        <canvas id="revenueChart" height="120"></canvas>
+                    </div>
+                </div>
+
+                <!-- MEDICATION PAYMENTS -->
+                <div id="medPaymentsBlock" class="stats-block mt-4 d-none">
+                    <div class="card p-3">
+                        <h4>💊 Medication Payments by Patient</h4>
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-4">
+                                <label>Select Patient</label>
+                                <select id="medPatientId" class="form-select">
+                                    <option value="">-- Select Patient --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Start Date</label>
+                                <input id="medStart" type="date" class="form-control">
+                            </div>
+                            <div class="col-md-4">
+                                <label>End Date</label>
+                                <input id="medEnd" type="date" class="form-control">
+                            </div>
+                            <div class="col-md-12 d-flex align-items-end">
+                                <button id="btnLoadMedPayments" class="btn btn-info w-100 mt-2">Calculate Medication
+                                    Payments
+                                </button>
+                            </div>
+                        </div>
+                        <div id="med-payments-result" class="alert alert-secondary mt-3 d-none"></div>
+                    </div>
+                    <div class="card p-3 mt-4">
+                        <canvas id="medPaymentsChart" height="120"></canvas>
+                    </div>
                 </div>
             </section>
 
             <!-- Chart.js -->
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-            
+
+
             <!-- ====================== MONGO QUERIES ====================== -->
             <section id="mongo" class="tab d-none">
                 <h2>🧾 MongoDB Raw Queries</h2>
@@ -325,12 +344,14 @@
 
                 <div class="mb-2">
                     <label for="mongo-filter" class="form-label">Filter (BSON/JSON):</label>
-                    <textarea id="mongo-filter" class="form-control" rows="3" placeholder='{"_id": "some-id"}'></textarea>
+                    <textarea id="mongo-filter" class="form-control" rows="3"
+                              placeholder='{"_id": "some-id"}'></textarea>
                 </div>
 
                 <div class="mb-2">
                     <label for="mongo-document" class="form-label">Document (for insert/update):</label>
-                    <textarea id="mongo-document" class="form-control" rows="3" placeholder='{"field": "value"}'></textarea>
+                    <textarea id="mongo-document" class="form-control" rows="3"
+                              placeholder='{"field": "value"}'></textarea>
                 </div>
 
                 <button id="btnRunMongo" class="btn btn-primary">Run</button>
@@ -377,7 +398,7 @@
                         <div class="col-md-6 mb-3">
                             <label>Role</label>
                             <select name="role" class="form-control" required id="addUserRole">
-<!--                                <option value="Administrator">Administrator</option>-->
+                                <!--                                <option value="Administrator">Administrator</option>-->
                                 <option value="Operator">Operator</option>
                                 <option value="Specialist">Specialist</option>
                                 <option value="Patient">Patient</option>
@@ -456,7 +477,9 @@
 <div class="modal fade" id="modalAddVisit" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header"><h5>Add Visit</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-header"><h5>Add Visit</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
 
             <div class="modal-body">
                 <form id="formAddVisit">
@@ -543,7 +566,9 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
 
-            <div class="modal-header"><h5>Edit Visit</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-header"><h5>Edit Visit</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
 
             <div class="modal-body">
                 <form id="formEditVisit">
@@ -603,7 +628,9 @@
 <div class="modal fade" id="modalDeleteVisit" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header"><h5>Delete Visit</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-header"><h5>Delete Visit</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
             <div class="modal-body">
                 <p>Are you sure?</p>
                 <button id="btnConfirmDeleteVisit" class="btn btn-danger w-100">Delete</button>
@@ -669,7 +696,9 @@
 <div class="modal fade" id="modalEditPayment" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header"><h5>Edit Payment</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-header"><h5>Edit Payment</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
 
             <div class="modal-body">
                 <form id="formEditPayment">
@@ -720,8 +749,8 @@
                 </form>
             </div>
         </div>
-        </div>
     </div>
+</div>
 </div>
 
 
@@ -729,7 +758,9 @@
 <div class="modal fade" id="modalDeletePayment" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header"><h5>Delete Payment</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-header"><h5>Delete Payment</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
             <div class="modal-body">
                 <p>Are you sure?</p>
                 <button id="btnConfirmDeletePayment" class="btn btn-danger w-100">Delete</button>

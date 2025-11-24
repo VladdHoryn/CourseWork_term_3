@@ -424,28 +424,29 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // =======================
+// GLOBAL CHART VARIABLES
+// =======================
     let statsChart = null;
+    let avgPatientsChart = null;
+    let revenueChart = null;
+    let medPaymentsChart = null;
+    let specialistsLoaded = false;
 
+// =======================
+// SYSTEM STATISTICS
+// =======================
     async function loadStatistics() {
         try {
-            // Беремо діапазон з input
             const startInput = document.getElementById("statsStart").value;
             const endInput = document.getElementById("statsEnd").value;
+            const start = startInput ? new Date(startInput) : new Date(Date.now() - 30*24*60*60*1000);
+            const end = endInput ? new Date(endInput) : new Date();
 
-            // Якщо юзер не вибрав — ставимо останні 30 днів
-            let end = endInput ? new Date(endInput) : new Date();
-            let start = startInput ? new Date(startInput) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-
-            const startIso = start.toISOString();
-            const endIso = end.toISOString();
-
-            const res = await authFetch(`/administrator/statistics?start=${startIso}&end=${endIso}`);
-
+            const res = await authFetch(`/administrator/statistics?start=${start.toISOString()}&end=${end.toISOString()}`);
             if (!res.ok) throw new Error("Failed to load statistics");
 
             const stats = await res.json();
-
-            // ====== RENDER DATA ======
             document.getElementById("statistics-container").innerHTML = `
             <div class="alert alert-info">
                 <strong>Total Users:</strong> ${stats.totalUsers}<br>
@@ -454,140 +455,158 @@ document.addEventListener("DOMContentLoaded", () => {
                 <strong>Total Revenue:</strong> ${stats.totalRevenue}
             </div>
         `;
-
-            // ====== RENDER CHART ======
             renderStatisticsChart(stats);
-
         } catch (err) {
             console.error(err);
             alert("Помилка при завантаженні статистики.");
         }
     }
 
-// Apply Filter button
-    document.getElementById("btnApplyStats")?.addEventListener("click", loadStatistics);
-
-
     function renderStatisticsChart(stats) {
         const ctx = document.getElementById("statsChart");
-
         if (statsChart) statsChart.destroy();
-
         statsChart = new Chart(ctx, {
             type: "bar",
             data: {
                 labels: ["Users", "Visits", "Payments", "Revenue"],
-                datasets: [{
-                    label: "System Statistics",
-                    data: [
-                        stats.totalUsers,
-                        stats.totalVisits,
-                        stats.totalPayments,
-                        stats.totalRevenue
-                    ]
-                }]
+                datasets: [{ label: "System Statistics", data: [stats.totalUsers, stats.totalVisits, stats.totalPayments, stats.totalRevenue] }]
             },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: false }
-                }
-            }
+            options: { responsive: true, plugins: { legend: { display: false } } }
         });
     }
 
-    // -------------------------
-    // 4) FILTER CHANGE
-    // -------------------------
-    document.getElementById("filter-role")?.addEventListener("change", loadUsers);
+    document.getElementById("btnApplyStats")?.addEventListener("click", loadStatistics);
 
-    // =======================
-// AVERAGE PATIENTS PER DAY
 // =======================
-
-    let avgPatientsChart = null;
-
-// -----------------------------------------------------
-// LOAD SPECIALISTS + SPECIALTIES INTO SELECTS
-// -----------------------------------------------------
-    let specialistsLoaded = false;
-
+// LOAD SPECIALISTS AND SPECIALTIES
+// =======================
     async function loadSpecialistsAndSpecialties() {
+        if (specialistsLoaded) return;
         try {
-            if (specialistsLoaded) return; // завантажуємо лише 1 раз
-
             const res = await authFetch("/administrator/specialists");
             if (!res.ok) throw new Error("Failed to load specialists");
 
             const specialists = await res.json();
-
             const specSelect = document.getElementById("avgSpecId");
             const typeSelect = document.getElementById("avgSpecType");
             const revenueSelect = document.getElementById("revSpecId");
 
-            if (!specSelect || !typeSelect || !revenueSelect) {
-                console.warn("One of selects not found on the page");
-                return;
-            }
-
-            // Очистити
             specSelect.innerHTML = `<option value="">-- All Specialists --</option>`;
             typeSelect.innerHTML = `<option value="">-- All Specialties --</option>`;
             revenueSelect.innerHTML = `<option value="">-- Select Specialist --</option>`;
 
-            // Наповнити specialists (ID + Full Name + Specialty)
             specialists.forEach(s => {
-                const opt = document.createElement("option");
-                opt.value = s.id;
-                opt.textContent = `${s.fullName} (${s.speciality})`;
-                specSelect.appendChild(opt);
-
-                // Для revenue drop-down
-                const opt2 = document.createElement("option");
-                opt2.value = s.id;
-                opt2.textContent = `${s.fullName} (${s.speciality})`;
-                revenueSelect.appendChild(opt2);
+                const opt1 = document.createElement("option"); opt1.value = s.id; opt1.textContent = `${s.fullName} (${s.speciality})`; specSelect.appendChild(opt1);
+                const opt2 = document.createElement("option"); opt2.value = s.id; opt2.textContent = `${s.fullName} (${s.speciality})`; revenueSelect.appendChild(opt2);
             });
 
-            // Унікальні спеціальності
-            const uniqueTypes = [...new Set(specialists.map(s => s.speciality).filter(x => x))];
-
-            uniqueTypes.forEach(t => {
-                const opt = document.createElement("option");
-                opt.value = t;
-                opt.textContent = t;
-                typeSelect.appendChild(opt);
+            [...new Set(specialists.map(s => s.speciality).filter(x => x))].forEach(t => {
+                const opt = document.createElement("option"); opt.value = t; opt.textContent = t; typeSelect.appendChild(opt);
             });
 
             specialistsLoaded = true;
         } catch (err) {
             console.error(err);
-            alert("Помилка при завантаженні списку спеціалістів.");
+            alert("Помилка при завантаженні спеціалістів.");
         }
     }
 
-// Викликати один раз при відкритті таба (як у тебе раніше)
-    document.querySelector('[data-tab="statistics"]')
-        ?.addEventListener("click", () => loadSpecialistsAndSpecialties());
+// =======================
+// AVERAGE PATIENTS
+// =======================
+    async function loadAveragePatients() {
+        try {
+            const specialistId = document.getElementById("avgSpecId").value.trim();
+            const specialty = document.getElementById("avgSpecType").value.trim();
+            let url = `/administrator/statistics/avg-patients`;
+            const params = [];
+            if (specialistId) params.push(`specialistId=${specialistId}`);
+            if (specialty) params.push(`specialty=${encodeURIComponent(specialty)}`);
+            if (params.length) url += `?${params.join("&")}`;
 
-    let medPaymentsChart = null;
+            const res = await authFetch(url);
+            if (!res.ok) throw new Error("Failed to load average patients");
 
-// ------------------------
-// Завантажити список пацієнтів для селекту
-// ------------------------
+            const data = await res.json();
+            const resultBox = document.getElementById("avg-patients-result");
+            resultBox.classList.remove("d-none");
+            resultBox.innerHTML = `
+            <strong>Specialist ID:</strong> ${data.specialistId || "-"}<br>
+            <strong>Specialty:</strong> ${data.specialty || "-"}<br>
+            <strong>Average Patients Per Day:</strong> <span class="text-primary">${data.averagePatientsPerDay}</span>
+        `;
+            renderAvgPatientsChart(data.averagePatientsPerDay);
+        } catch (err) {
+            console.error(err);
+            alert("Помилка при завантаженні середньої кількості пацієнтів.");
+        }
+    }
+
+    function renderAvgPatientsChart(value) {
+        const ctx = document.getElementById("avgPatientsChart");
+        if (avgPatientsChart) avgPatientsChart.destroy();
+        avgPatientsChart = new Chart(ctx, {
+            type: "bar",
+            data: { labels: ["Average Patients Per Day"], datasets: [{ label: "Patients", data: [value] }] },
+            options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+        });
+    }
+
+    document.getElementById("btnLoadAvgPatients")?.addEventListener("click", loadAveragePatients);
+
+// =======================
+// REVENUE
+// =======================
+    async function loadRevenue() {
+        try {
+            const specialistId = document.getElementById("revSpecId").value;
+            const start = document.getElementById("revStart").value;
+            const end = document.getElementById("revEnd").value;
+            if (!specialistId || !start || !end) return alert("Будь ласка, оберіть спеціаліста та обидві дати.");
+
+            const res = await authFetch(`/administrator/statistics/revenue?specialistId=${specialistId}&start=${start}&end=${end}`);
+            if (!res.ok) throw new Error("Failed to load revenue");
+
+            const data = await res.json();
+            const resultBox = document.getElementById("revenue-result");
+            resultBox.classList.remove("d-none");
+            resultBox.innerHTML = `
+            <strong>Specialist ID:</strong> ${data.specialistId}<br>
+            <strong>Period:</strong> ${data.start.split("T")[0]} — ${data.end.split("T")[0]}<br>
+            <strong>Revenue:</strong> <span class="text-success fw-bold">${data.revenue} грн</span>
+        `;
+            renderRevenueChart(data.revenue);
+        } catch (err) {
+            console.error(err);
+            alert("Помилка при завантаженні виручки.");
+        }
+    }
+
+    function renderRevenueChart(value) {
+        const ctx = document.getElementById("revenueChart");
+        if (revenueChart) revenueChart.destroy();
+        revenueChart = new Chart(ctx, {
+            type: "bar",
+            data: { labels: ["Revenue"], datasets: [{ label: "UAH", data: [value] }] },
+            options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+        });
+    }
+
+    document.getElementById("btnLoadRevenue")?.addEventListener("click", loadRevenue);
+
+// =======================
+// MEDICATION PAYMENTS
+// =======================
     async function loadPatientsForMedPayments() {
         try {
             const res = await authFetch("/administrator/patients");
             if (!res.ok) throw new Error("Failed to load patients");
-
             const patients = await res.json();
             const select = document.getElementById("medPatientId");
-            if (!select) return;
-
             select.innerHTML = `<option value="">-- Select Patient --</option>`;
             patients.forEach(p => {
                 const opt = document.createElement("option");
-                opt.value = p.medicalRecordNumber; // використовуємо medicalRecord як id
+                opt.value = p.medicalRecordNumber;
                 opt.textContent = `${p.fullName} (Record: ${p.medicalRecordNumber})`;
                 select.appendChild(opt);
             });
@@ -597,34 +616,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-// ------------------------
-// Завантажити суму оплати за ліки (POST)
-// ------------------------
     async function loadMedicationPayments() {
         try {
             const patientRecord = document.getElementById("medPatientId").value;
             const start = document.getElementById("medStart").value;
             const end = document.getElementById("medEnd").value;
+            if (!patientRecord || !start || !end) return alert("Будь ласка, оберіть пацієнта та дати.");
 
-            if (!patientRecord || !start || !end) {
-                alert("Будь ласка, оберіть пацієнта та обидві дати.");
-                return;
-            }
-
-            const body = {
-                PatientMedicalRecord: parseInt(patientRecord),
-                Start: new Date(start).toISOString(),
-                End: new Date(end).toISOString()
-            };
-
-            const res = await authFetch("/administrator/statistics/patient-medications", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(body)
-            });
-
+            const body = { PatientMedicalRecord: parseInt(patientRecord), Start: new Date(start).toISOString(), End: new Date(end).toISOString() };
+            const res = await authFetch("/administrator/statistics/patient-medications", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
             if (!res.ok) throw new Error("Failed to load medication payments");
-
             const data = await res.json();
 
             const resultBox = document.getElementById("med-payments-result");
@@ -634,187 +635,46 @@ document.addEventListener("DOMContentLoaded", () => {
             <strong>Period:</strong> ${data.start.split("T")[0]} — ${data.end.split("T")[0]}<br>
             <strong>Total Medication Payments:</strong> <span class="text-success">${data.totalMedicationPayments} грн</span>
         `;
-
             renderMedPaymentsChart(data.totalMedicationPayments);
-
         } catch (err) {
             console.error(err);
             alert("Помилка при завантаженні оплати за ліки.");
         }
     }
 
-    document.getElementById("btnLoadMedPayments")
-        ?.addEventListener("click", loadMedicationPayments);
-
-
-// ------------------------
-// Графік Medication Payments
-// ------------------------
     function renderMedPaymentsChart(value) {
         const ctx = document.getElementById("medPaymentsChart");
-
         if (medPaymentsChart) medPaymentsChart.destroy();
-
         medPaymentsChart = new Chart(ctx, {
             type: "bar",
-            data: {
-                labels: ["Medication Payments"],
-                datasets: [{
-                    label: "Payments (грн)",
-                    data: [value],
-                    backgroundColor: "#17a2b8"
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true } }
-            }
+            data: { labels: ["Medication Payments"], datasets: [{ label: "Payments (грн)", data: [value], backgroundColor: "#17a2b8" }] },
+            options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
         });
     }
 
-    document.querySelector('[data-tab="statistics"]')
-        ?.addEventListener("click", loadPatientsForMedPayments);
-// -----------------------------------------------------
-// LOAD AVERAGE PATIENTS PER DAY
-// -----------------------------------------------------
-    async function loadAveragePatients() {
-        try {
-            const specialistId = document.getElementById("avgSpecId").value.trim();
-            const specialty = document.getElementById("avgSpecType").value.trim();
-
-            let url = `/administrator/statistics/avg-patients`;
-
-            // Формуємо query parameters
-            const params = [];
-            if (specialistId) params.push(`specialistId=${specialistId}`);
-            if (specialty) params.push(`specialty=${encodeURIComponent(specialty)}`);
-
-            if (params.length > 0) url += `?${params.join("&")}`;
-
-            const res = await authFetch(url);
-            if (!res.ok) throw new Error("Failed to load average patients");
-
-            const data = await res.json();
-
-            // Show result
-            const resultBox = document.getElementById("avg-patients-result");
-            resultBox.classList.remove("d-none");
-            resultBox.innerHTML = `
-            <strong>Specialist ID:</strong> ${data.specialistId || "-"}<br>
-            <strong>Specialty:</strong> ${data.specialty || "-"}<br>
-            <strong>Average Patients Per Day:</strong> 
-            <span class="text-primary">${data.averagePatientsPerDay}</span>
-        `;
-
-            // Render chart
-            renderAvgPatientsChart(data.averagePatientsPerDay);
-
-        } catch (err) {
-            console.error(err);
-            alert("Помилка при завантаженні середньої кількості пацієнтів.");
-        }
-    }
-
-    document.getElementById("btnLoadAvgPatients")
-        ?.addEventListener("click", loadAveragePatients);
+    document.getElementById("btnLoadMedPayments")?.addEventListener("click", loadMedicationPayments);
 
 // =======================
-// RENDER CHART
+// TAB SWITCHING LOGIC
 // =======================
-    function renderAvgPatientsChart(value) {
-        const ctx = document.getElementById("avgPatientsChart");
-
-        if (avgPatientsChart) avgPatientsChart.destroy();
-
-        avgPatientsChart = new Chart(ctx, {
-            type: "bar",
-            data: {
-                labels: ["Average Patients Per Day"],
-                datasets: [{
-                    label: "Patients",
-                    data: [value]
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
+    document.querySelectorAll("#statsTabs button").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const targetId = btn.dataset.block;
+            document.querySelectorAll("#statsTabs button").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            document.querySelectorAll(".stats-block").forEach(block => block.classList.add("d-none"));
+            const targetBlock = document.getElementById(targetId);
+            if (targetBlock) targetBlock.classList.remove("d-none");
         });
-    }
+    });
 
-    let revenueChart = null;
-
-    async function loadRevenue() {
-        try {
-            const specialistId = document.getElementById("revSpecId").value;
-            const start = document.getElementById("revStart").value;
-            const end = document.getElementById("revEnd").value;
-
-            if (!specialistId) {
-                alert("Please select a specialist.");
-                return;
-            }
-            if (!start || !end) {
-                alert("Please select both dates.");
-                return;
-            }
-
-            const res = await authFetch(
-                `/administrator/statistics/revenue?specialistId=${specialistId}&start=${start}&end=${end}`
-            );
-
-            if (!res.ok) throw new Error("Failed to load revenue");
-
-            const data = await res.json();
-
-            const resultBox = document.getElementById("revenue-result");
-            resultBox.classList.remove("d-none");
-            resultBox.innerHTML = `
-            <strong>Specialist ID:</strong> ${data.specialistId}<br>
-            <strong>Period:</strong> ${data.start.split("T")[0]} — ${data.end.split("T")[0]}<br>
-            <strong>Revenue:</strong> <span class="text-success fw-bold">${data.revenue} грн</span>
-        `;
-
-            renderRevenueChart(data.revenue);
-
-        } catch (err) {
-            console.error(err);
-            alert("Помилка при завантаженні виручки.");
-        }
-    }
-
-    function renderRevenueChart(value) {
-        const ctx = document.getElementById("revenueChart");
-
-        if (revenueChart) revenueChart.destroy();
-
-        revenueChart = new Chart(ctx, {
-            type: "bar",
-            data: {
-                labels: ["Revenue"],
-                datasets: [{
-                    label: "UAH",
-                    data: [value]
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true } }
-            }
-        });
-    }
-
-    document.getElementById("btnLoadRevenue")
-        ?.addEventListener("click", loadRevenue);
+// =======================
+// INITIAL LOAD ON STATISTICS TAB
+// =======================
+    document.querySelector('[data-tab="statistics"]')?.addEventListener("click", () => {
+        loadSpecialistsAndSpecialties();
+        loadPatientsForMedPayments();
+    });
     // =====================================================================
 //                            USERS CRUD
 // =====================================================================
