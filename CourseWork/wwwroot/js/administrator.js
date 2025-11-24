@@ -507,6 +507,57 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let avgPatientsChart = null;
 
+// -----------------------------------------------------
+// LOAD SPECIALISTS + SPECIALTIES INTO SELECTS
+// -----------------------------------------------------
+    async function loadSpecialistsAndSpecialties() {
+        try {
+            const res = await authFetch("/administrator/specialists");
+            if (!res.ok) throw new Error("Failed to load specialists");
+
+            const specialists = await res.json();
+
+            const specSelect = document.getElementById("avgSpecId");
+            const typeSelect = document.getElementById("avgSpecType");
+
+            // Очистити
+            specSelect.innerHTML = `<option value="">-- All Specialists --</option>`;
+            typeSelect.innerHTML = `<option value="">-- All Specialties --</option>`;
+
+            // Наповнити specialists (ID + Full Name + Specialty)
+            specialists.forEach(s => {
+                const opt = document.createElement("option");
+                opt.value = s.id;
+                opt.textContent = `${s.fullName} (${s.speciality})`;
+                specSelect.appendChild(opt);
+            });
+
+            // Унікальні спеціальності
+            const uniqueTypes = [...new Set(specialists.map(s => s.speciality))];
+
+            uniqueTypes.forEach(t => {
+                const opt = document.createElement("option");
+                opt.value = t;
+                opt.textContent = t;
+                typeSelect.appendChild(opt);
+            });
+
+        } catch (err) {
+            console.error(err);
+            alert("Помилка при завантаженні списку спеціалістів.");
+        }
+    }
+
+// Run when statistics tab becomes visible
+    document.querySelector('[data-tab="statistics"]')
+        ?.addEventListener("click", () => {
+            loadSpecialistsAndSpecialties();
+        });
+
+
+// -----------------------------------------------------
+// LOAD AVERAGE PATIENTS PER DAY
+// -----------------------------------------------------
     async function loadAveragePatients() {
         try {
             const specialistId = document.getElementById("avgSpecId").value.trim();
@@ -514,6 +565,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             let url = `/administrator/statistics/avg-patients`;
 
+            // Формуємо query parameters
             const params = [];
             if (specialistId) params.push(`specialistId=${specialistId}`);
             if (specialty) params.push(`specialty=${encodeURIComponent(specialty)}`);
@@ -531,9 +583,11 @@ document.addEventListener("DOMContentLoaded", () => {
             resultBox.innerHTML = `
             <strong>Specialist ID:</strong> ${data.specialistId || "-"}<br>
             <strong>Specialty:</strong> ${data.specialty || "-"}<br>
-            <strong>Average Patients Per Day:</strong> <span class="text-primary">${data.averagePatientsPerDay}</span>
+            <strong>Average Patients Per Day:</strong> 
+            <span class="text-primary">${data.averagePatientsPerDay}</span>
         `;
 
+            // Render chart
             renderAvgPatientsChart(data.averagePatientsPerDay);
 
         } catch (err) {
@@ -544,7 +598,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("btnLoadAvgPatients")
         ?.addEventListener("click", loadAveragePatients);
-
 
 // =======================
 // RENDER CHART

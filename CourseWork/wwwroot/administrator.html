@@ -186,14 +186,21 @@
                     <h4>👨‍⚕️ Average Patients Per Day</h4>
 
                     <div class="row g-3 mt-2">
+
+                        <!-- Specialist list -->
                         <div class="col-md-4">
-                            <label>Specialist ID (optional)</label>
-                            <input id="avgSpecId" type="text" class="form-control" placeholder="ObjectId...">
+                            <label>Select Specialist (optional)</label>
+                            <select id="avgSpecId" class="form-select">
+                                <option value="">-- All Specialists --</option>
+                            </select>
                         </div>
 
+                        <!-- Specialty list -->
                         <div class="col-md-4">
-                            <label>Specialty (optional)</label>
-                            <input id="avgSpecType" type="text" class="form-control" placeholder="Cardiologist, Dentist...">
+                            <label>Select Specialty (optional)</label>
+                            <select id="avgSpecType" class="form-select">
+                                <option value="">-- All Specialties --</option>
+                            </select>
                         </div>
 
                         <div class="col-md-4 d-flex align-items-end">
@@ -201,6 +208,7 @@
                                 Calculate
                             </button>
                         </div>
+
                     </div>
 
                     <div id="avg-patients-result" class="alert alert-secondary mt-3 d-none"></div>
