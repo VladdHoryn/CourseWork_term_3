@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using CourseWork.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Сoursework.Models;
@@ -19,7 +20,7 @@ public class PatientController : Controller
         PatientService patientService,
         VisitService visitService,
         PaymentService paymentService,
-        SpecialistService specialistService)  // 🔥 додаємо
+        SpecialistService specialistService)
     {
         _patientService = patientService;
         _visitService = visitService;
@@ -74,6 +75,40 @@ public class PatientController : Controller
             .ToList();
 
         return Ok(payments);
+    }
+    
+    // -------------------- PAYMENTS --------------------
+    [HttpPost("payments/pay")]
+    public IActionResult Pay([FromBody] PaymentPayDto dto)
+    {
+        var patient = GetCurrentPatient();
+        if (patient == null || patient.MedicalRecordNumber == null)
+            return Unauthorized();
+
+        try
+        {
+            var payment = _paymentService.GetPaymentById(dto.PaymentId);
+
+            if (payment.PatientMedicalRecord != patient.MedicalRecordNumber.Value)
+                return Forbid("You can pay only your own bills.");
+
+            payment.ProcessPayment(dto.Amount);
+            _paymentService.UpdatePayment(payment.Id, payment);
+
+            return Ok(payment);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound("Payment not found.");
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
     }
 
     // -------------------- PROFILE --------------------
