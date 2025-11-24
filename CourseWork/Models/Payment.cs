@@ -57,26 +57,38 @@ public class Payment
         DueDate = DateTime.UtcNow.AddDays(dueDays);
     }
 
-    public bool ProcessPayment(decimal amount)
+    public void ProcessPayment(decimal amount)
     {
+        if (Status == PaymentStatus.Cancelled)
+            throw new InvalidOperationException("This payment is cancelled and cannot be paid.");
+
+        if (Status == PaymentStatus.Paid)
+            throw new InvalidOperationException("This payment is already fully paid.");
+
+        if (RemainingAmount <= 0)
+            throw new InvalidOperationException("Nothing to pay. Payment is already completed.");
+
         if (amount <= 0)
-            throw new ArgumentException("Payment amount must be greater than zero", nameof(amount));
+            throw new InvalidOperationException("Amount must be greater than zero.");
 
         if (amount > RemainingAmount)
-            throw new InvalidOperationException(
-                $"Payment amount ({amount}) exceeds remaining amount ({RemainingAmount})");
-
-        if (!CanAcceptPayment())
-            throw new InvalidOperationException($"Cannot accept payment. Current status: {Status}");
-
+            throw new InvalidOperationException("You cannot pay more than the remaining balance.");
+        
         PaidAmount += amount;
-        RemainingAmount -= amount;
+        
         LastPaymentDate = DateTime.UtcNow;
+        
+        if (PaidAmount >= TotalAmount)
+            Status = PaymentStatus.Paid;
+        else if (PaidAmount > 0)
+            Status = PaymentStatus.PartiallyPaid;
+        
+        RemainingAmount = TotalAmount - PaidAmount;
 
-        UpdateStatus();
-
-        return IsFullyPaid();
+        Validate();
     }
+
+
 
     public void AddPartialPayment(decimal amount)
     {
@@ -188,7 +200,7 @@ public class Payment
         if (PaidAmount > TotalAmount)
             throw new InvalidOperationException("Paid amount cannot exceed total amount");
 
-        if (RemainingAmount != CalculateRemainingAmount())
+        if (Math.Abs(RemainingAmount - CalculateRemainingAmount()) > 0.01m)
             throw new InvalidOperationException("Remaining amount calculation mismatch");
 
         return true;
