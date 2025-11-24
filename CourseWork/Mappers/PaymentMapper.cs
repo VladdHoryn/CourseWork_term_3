@@ -15,8 +15,10 @@ public static class PaymentMapper
         RemainingAmount = p.RemainingAmount,
         Status = p.Status.ToString(),
         IssuedDate = p.IssuedDate,
-        DueDate = p.DueDate
+        DueDate = p.DueDate,
+        LastPaymentDate = p.LastPaymentDate  
     };
+
     public static PaymentResponseDto ToResponseDto(Payment payment)
     {
         return new PaymentResponseDto
