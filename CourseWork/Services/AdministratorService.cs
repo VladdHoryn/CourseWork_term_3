@@ -195,5 +195,4 @@ public class AdministratorService : UserService
 
         return totalPatients / totalDays;
     }
-
 }

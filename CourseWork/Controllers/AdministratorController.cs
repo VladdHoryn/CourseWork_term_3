@@ -17,13 +17,15 @@ namespace CourseWork.Controllers;
 public class AdministratorController : ControllerBase
 {
     private readonly AdministratorService _adminService;
+    private readonly SpecialistService _specialistService;
     private readonly MongoDBRepository _repo;
     private readonly PasswordHasher<User> _hasher = new();
 
-    public AdministratorController(AdministratorService adminService, MongoDBRepository repo)
+    public AdministratorController(AdministratorService adminService, MongoDBRepository repo, SpecialistService specialistService)
     {
         _adminService = adminService;
         _repo = repo;
+        _specialistService = specialistService;
     }
     
     // public IMongoDatabase GetMongoDatabase()
@@ -397,5 +399,21 @@ public class AdministratorController : ControllerBase
             AveragePatientsPerDay = Math.Round(avg, 2)
         });
     }
+    
+    [HttpGet("statistics/revenue")]
+    public IActionResult GetRevenueForSpecialist(
+        [FromQuery] string specialistId,
+        [FromQuery] DateTime start,
+        [FromQuery] DateTime end)
+    {
+        var revenue = _specialistService.GetRevenueForSpecialist(specialistId, start, end);
 
+        return Ok(new
+        {
+            specialistId,
+            start,
+            end,
+            revenue
+        });
+    }
 }

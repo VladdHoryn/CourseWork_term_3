@@ -629,6 +629,21 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    async function loadRevenue() {
+        const id = document.getElementById("revSpecId").value;
+        const start = document.getElementById("revStart").value;
+        const end = document.getElementById("revEnd").value;
+
+        const res = await authFetch(`/administrator/statistics/revenue?specialistId=${id}&start=${start}&end=${end}`);
+        const data = await res.json();
+
+        document.getElementById("revenue-result").innerHTML = `
+        <strong>Specialist:</strong> ${data.specialistId}<br>
+        <strong>Period:</strong> ${data.start} — ${data.end}<br>
+        <strong>Revenue:</strong> <span class="text-success">${data.revenue} грн</span>
+    `;
+    }
     // =====================================================================
 //                            USERS CRUD
 // =====================================================================
