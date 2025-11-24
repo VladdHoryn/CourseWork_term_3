@@ -896,4 +896,8 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Failed to delete payment");
         }
     });
+
+    document.getElementById('btn-logout').addEventListener('click', function() {
+        window.location.href = '/guest.html';
+    });
 });
