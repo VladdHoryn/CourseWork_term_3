@@ -51,10 +51,11 @@ public class Payment
         PaidAmount = paidAmount;
     }
 
-    public Payment(string visitId, int patientMedicalRecord, decimal totalAmount, int dueDays, decimal paidAmount)
+    public Payment(string visitId, int patientMedicalRecord, decimal totalAmount, int dueDays, decimal paidAmount, DateTime lastPaymentDate)
         : this(visitId, patientMedicalRecord, totalAmount, paidAmount)
     {
         DueDate = DateTime.UtcNow.AddDays(dueDays);
+        LastPaymentDate = lastPaymentDate;
     }
 
     public void ProcessPayment(decimal amount)

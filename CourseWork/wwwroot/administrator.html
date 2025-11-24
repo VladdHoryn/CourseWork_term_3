@@ -258,7 +258,7 @@
                         <div class="col-md-6 mb-3">
                             <label>Role</label>
                             <select name="role" class="form-control" required id="addUserRole">
-                                <option value="Administrator">Administrator</option>
+<!--                                <option value="Administrator">Administrator</option>-->
                                 <option value="Operator">Operator</option>
                                 <option value="Specialist">Specialist</option>
                                 <option value="Patient">Patient</option>
@@ -298,7 +298,6 @@
                         <div class="col-md-6 mb-3">
                             <label>Role</label>
                             <select name="role" class="form-control" required>
-                                <option value="Administrator">Administrator</option>
                                 <option value="Operator">Operator</option>
                                 <option value="Specialist">Specialist</option>
                                 <option value="Patient">Patient</option>
@@ -592,13 +591,16 @@
                         <select name="status" class="form-control">
                             <option>Pending</option>
                             <option>Paid</option>
+                            <option>PartiallyPaid</option>
                             <option>Overdue</option>
+                            <option>Cancelled</option>
                         </select>
                     </div>
 
                     <button class="btn btn-primary w-100 mt-3">Save Changes</button>
                 </form>
             </div>
+        </div>
         </div>
     </div>
 </div>
