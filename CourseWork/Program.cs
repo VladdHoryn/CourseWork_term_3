@@ -52,6 +52,7 @@ builder.Services.AddScoped<AdministratorService>();
 builder.Services.AddScoped<GuestService>();
 builder.Services.AddScoped<RegistrationRequestService>();
 builder.Services.AddSingleton<TokenService>();
+builder.Services.AddSingleton<LoggingService>();
 
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
