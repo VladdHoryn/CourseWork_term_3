@@ -726,29 +726,95 @@ document.addEventListener("DOMContentLoaded", () => {
 // =====================================================================
 
     let users = [];
+    let filteredUsers = [];
+    let userSort = { field: null, asc: true };
 
     async function loadUsers() {
         try {
             const res = await authFetch("/administrator/users");
             users = res.ok ? await res.json() : [];
-            renderUsersTable();
+            applyUsersFilters();
         } catch (err) {
             console.error(err);
             alert("Помилка при завантаженні користувачів.");
         }
     }
 
+    function applyUsersFilters() {
+        const search = document.getElementById("search-users").value.trim().toLowerCase();
+        const role = document.getElementById("filter-role").value;
+
+        const dateFrom = document.getElementById("filter-date-from")?.value;
+        const dateTo = document.getElementById("filter-date-to")?.value;
+
+        let data = [...users];
+
+        // ----- ROLE FILTER -----
+        if (role !== "") {
+            const targetRole = roleMap[role];   // convert text -> number
+            data = data.filter(u => Number(u.userRole) === targetRole);
+        }
+
+        // ----- SEARCH -----
+        if (search) {
+            data = data.filter(u => {
+                const searchTarget = [
+                    u.fullName,
+                    u.userName,
+                    u.phone,
+                    u.address,
+                    u.speciality,
+                    u.medicalRecordNumber
+                ].join(" ").toLowerCase();
+
+                return searchTarget.includes(search);
+            });
+        }
+
+        // ----- REGISTRATION DATE FROM -----
+        if (dateFrom) {
+            const from = new Date(dateFrom);
+            data = data.filter(u => new Date(u.createdAt) >= from);
+        }
+
+        // ----- REGISTRATION DATE TO -----
+        if (dateTo) {
+            const to = new Date(dateTo);
+            to.setHours(23, 59, 59);
+            data = data.filter(u => new Date(u.createdAt) <= to);
+        }
+
+        // Save + sort
+        filteredUsers = data;
+
+        if (userSort.field) {
+            filteredUsers.sort((a, b) => {
+                let x = a[userSort.field];
+                let y = b[userSort.field];
+
+                if (typeof x === "string") x = x.toLowerCase();
+                if (typeof y === "string") y = y.toLowerCase();
+
+                if (x < y) return userSort.asc ? -1 : 1;
+                if (x > y) return userSort.asc ? 1 : -1;
+                return 0;
+            });
+        }
+
+        renderUsersTable();
+    }
+
+
     function renderUsersTable() {
         const container = document.getElementById("users-table-container");
 
-        if (!users.length) {
+        if (!filteredUsers.length) {
             container.innerHTML = "<p class='text-muted'>No users found</p>";
             return;
         }
 
         const columns = new Set();
-        users.forEach(u => Object.keys(u).forEach(k => columns.add(k)));
-
+        filteredUsers.forEach(u => Object.keys(u).forEach(k => columns.add(k)));
         columns.delete("passwordHash");
 
         const colArray = Array.from(columns);
@@ -764,18 +830,17 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
         colArray.forEach(c => {
-            html += `<th>${c}</th>`;
+            const arrow = (userSort.field === c) ? (userSort.asc ? "▲" : "▼") : "";
+            html += `<th class="sortable" data-field="${c}" style="cursor:pointer">${c} ${arrow}</th>`;
         });
 
         html += `<th>Actions</th></tr></thead><tbody>`;
 
-        users.forEach(user => {
+        filteredUsers.forEach(user => {
             html += `<tr>`;
-
             colArray.forEach(c => {
                 let val = user[c];
 
-                // Форматування дат
                 if (c.toLowerCase().includes("date") && val)
                     val = new Date(val).toISOString().split("T")[0];
 
@@ -784,12 +849,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             html += `
             <td>
-                <button class="btn btn-sm btn-warning btn-edit-user" data-id="${user.id}">
-                    Edit
-                </button>
-                <button class="btn btn-sm btn-danger btn-delete-user" data-id="${user.id}">
-                    Delete
-                </button>
+                <button class="btn btn-sm btn-warning btn-edit-user" data-id="${user.id}">Edit</button>
+                <button class="btn btn-sm btn-danger btn-delete-user" data-id="${user.id}">Delete</button>
             </td>
         </tr>`;
         });
@@ -799,7 +860,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
         bindEditUserButtons();
         bindDeleteUserButtons();
+        bindUsersSorting();
     }
+
+    function bindUsersSorting() {
+        document.querySelectorAll("#users-table-container th.sortable").forEach(th => {
+            th.addEventListener("click", () => {
+                const field = th.dataset.field;
+
+                if (userSort.field === field) {
+                    userSort.asc = !userSort.asc;
+                } else {
+                    userSort.field = field;
+                    userSort.asc = true;
+                }
+
+                applyUsersFilters();
+            });
+        });
+    }
+
+    // Live reactions
+    // document.getElementById("search-users")?.addEventListener("input", applyUsersFilters);
+    // document.getElementById("filter-role")?.addEventListener("change", applyUsersFilters);
+    document.getElementById("apply-users-filters")?.addEventListener("click", applyUsersFilters);
 
 // ---------------- CREATE USER ----------------
     const roleMap = {
@@ -814,7 +898,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     roleSelect.addEventListener("change", () => {
         const role = roleSelect.value;
-        roleFieldsContainer.innerHTML = ""; // очищаємо попередні поля
+        roleFieldsContainer.innerHTML = "";
 
         if (role === "Patient") {
             roleFieldsContainer.innerHTML = `

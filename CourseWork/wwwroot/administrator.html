@@ -137,16 +137,48 @@
                     <h2>🧍 Users</h2>
                 </div>
 
-                <div class="row mt-3">
-                    <div class="col-md-4 mb-3">
-                        <label>Filter by role</label>
-                        <select id="filter-role" class="form-control">
-                            <option value="">All</option>
-                            <option value="Administrator">Administrator</option>
-                            <option value="Operator">Operator</option>
-                            <option value="Specialist">Specialist</option>
-                            <option value="Patient">Patient</option>
-                        </select>
+                <!-- Filters -->
+                <div class="card p-3 mt-3">
+                    <div class="row g-2">
+
+                        <!-- Search -->
+                        <div class="col-md-4">
+                            <label class="form-label small">Search</label>
+                            <input id="search-users" class="form-control"
+                                   placeholder="Search by name, username, phone...">
+                        </div>
+
+                        <!-- Registration date from -->
+                        <div class="col-md-3">
+                            <label class="form-label small">Registered from</label>
+                            <input type="date" id="filter-date-from" class="form-control">
+                        </div>
+
+                        <!-- Registration date to -->
+                        <div class="col-md-3">
+                            <label class="form-label small">Registered to</label>
+                            <input type="date" id="filter-date-to" class="form-control">
+                        </div>
+
+                        <!-- Role -->
+                        <div class="col-md-4">
+                            <label class="form-label small">Filter by role</label>
+                            <select id="filter-role" class="form-control">
+                                <option value="">All</option>
+                                <option value="Administrator">Administrator</option>
+                                <option value="Operator">Operator</option>
+                                <option value="Specialist">Specialist</option>
+                                <option value="Patient">Patient</option>
+                            </select>
+                        </div>
+
+                        <!-- Apply -->
+                        <div class="col-md-4">
+                            <button id="apply-users-filters" class="btn btn-primary w-100 mt-4">
+                                Apply
+                            </button>
+                        </div>
+
                     </div>
                 </div>
 
