@@ -1054,13 +1054,25 @@ let adminVisits = [];
 let adminPatients = [];
 let adminSpecialists = [];
 let deleteVisitId = null;
+let filteredVisits = [];
+let sortColumn = null;
+let sortAsc = true;
+
+const VisitStatusMap = {
+    "Scheduled": "Scheduled",
+    "InProgress": "In Progress",
+    "Completed": "Completed",
+    "Cancelled": "Cancelled",
+    "NoShow": "No Show"
+};
 
 // -------------------- Load Visits --------------------
 async function loadVisits() {
     try {
         const res = await authFetch("/administrator/visits");
         adminVisits = res.ok ? await res.json() : [];
-        renderVisitsTable();
+        filteredVisits = [...adminVisits];
+        renderVisitsTable(filteredVisits);
     } catch (err) {
         console.error(err);
         alert("Помилка при завантаженні візитів.");
@@ -1068,10 +1080,10 @@ async function loadVisits() {
 }
 
 // -------------------- Render Table --------------------
-function renderVisitsTable() {
+function renderVisitsTable(data) {
     const container = document.getElementById("visits-table-container");
 
-    if (!adminVisits.length) {
+    if (!data.length) {
         container.innerHTML = "<p class='text-muted'>No visits found</p>";
         return;
     }
@@ -1080,32 +1092,32 @@ function renderVisitsTable() {
     <table class="table table-bordered table-hover">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Patient MRN</th>
-                <th>Specialist</th>
-                <th>Date</th>
-                <th>Status</th>
+                <th data-sort="id">ID</th>
+                <th data-sort="patientMedicalRecord">Patient MRN</th>
+                <th data-sort="specialistId">Specialist</th>
+                <th data-sort="visitDate">Date</th>
+                <th data-sort="status">Status</th>
                 <th>First Visit</th>
                 <th>Anamnesis</th>
                 <th>Diagnosis</th>
                 <th>Treatment</th>
                 <th>Recommendations</th>
-                <th>Service Cost</th>
-                <th>Medication Cost</th>
+                <th data-sort="serviceCost">Service Cost</th>
+                <th data-sort="medicationCost">Medication Cost</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
     `;
 
-    adminVisits.forEach(v => {
+    data.forEach(v => {
         html += `
             <tr>
                 <td>${v.id}</td>
                 <td>${v.patientMedicalRecord}</td>
                 <td>${v.specialistId}</td>
-                <td>${v.visitDate ?? "-"}</td>
-                <td>${v.status}</td>
+                <td>${v.visitDate ? new Date(v.visitDate).toLocaleString() : "-"}</td>
+                <td>${VisitStatusMap[v.status] ?? v.status}</td>
                 <td>${v.isFirstVisit ? "Yes" : "No"}</td>
                 <td>${v.anamnesis ?? "-"}</td>
                 <td>${v.diagnosis ?? "-"}</td>
@@ -1124,7 +1136,12 @@ function renderVisitsTable() {
     html += `</tbody></table>`;
     container.innerHTML = html;
 
-    // Edit buttons
+    // Sort handlers
+    document.querySelectorAll("th[data-sort]").forEach(th =>
+        th.addEventListener("click", () => applySort(th.dataset.sort))
+    );
+
+    // Edit
     document.querySelectorAll("[data-edit]").forEach(btn =>
         btn.addEventListener("click", () => {
             const visit = adminVisits.find(v => v.id == btn.dataset.edit);
@@ -1132,7 +1149,7 @@ function renderVisitsTable() {
         })
     );
 
-    // Delete buttons
+    // Delete
     document.querySelectorAll("[data-delete]").forEach(btn =>
         btn.addEventListener("click", () => {
             deleteVisitId = btn.dataset.delete;
@@ -1141,6 +1158,82 @@ function renderVisitsTable() {
             ).show();
         })
     );
+}
+
+// ---------------------- APPLY FILTERS ----------------------
+const StatusFilterMap = {
+    "0": "Scheduled",
+    "1": "InProgress",
+    "2": "Completed",
+    "3": "Cancelled",
+    "4": "NoShow"
+};
+
+document.getElementById("apply-visit-filters")
+    ?.addEventListener("click", applyVisitFilters);
+
+function applyVisitFilters() {
+    const search = document.getElementById("visit-patient-search").value.trim().toLowerCase();
+    const dateFrom = document.getElementById("visit-date-from").value;
+    const dateTo = document.getElementById("visit-date-to").value;
+    const status = document.getElementById("visit-status-filter").value;
+
+    let data = [...adminVisits];
+
+    // Search
+    if (search) {
+        data = data.filter(v =>
+            String(v.patientMedicalRecord || "").toLowerCase().includes(search)
+        );
+    }
+
+    // Date from
+    if (dateFrom) {
+        const from = new Date(dateFrom);
+        data = data.filter(v => new Date(v.visitDate) >= from);
+    }
+
+    // Date to
+    if (dateTo) {
+        const to = new Date(dateTo);
+        to.setHours(23, 59, 59);
+        data = data.filter(v => new Date(v.visitDate) <= to);
+    }
+
+    // Status
+    if (status !== "") {
+        const mappedStatus = StatusFilterMap[status];
+        data = data.filter(v => v.status === mappedStatus);
+    }
+
+    filteredVisits = data;
+    renderVisitsTable(filteredVisits);
+}
+
+// ---------------------- SORTING ----------------------
+function applySort(column) {
+    if (sortColumn === column) {
+        sortAsc = !sortAsc;
+    } else {
+        sortColumn = column;
+        sortAsc = true;
+    }
+
+    filteredVisits.sort((a, b) => {
+        let v1 = a[column];
+        let v2 = b[column];
+
+        if (column === "visitDate") {
+            v1 = new Date(v1);
+            v2 = new Date(v2);
+        }
+
+        if (v1 > v2) return sortAsc ? 1 : -1;
+        if (v1 < v2) return sortAsc ? -1 : 1;
+        return 0;
+    });
+
+    renderVisitsTable(filteredVisits);
 }
 
 // -------------------- Load Patients + Specialists --------------------
