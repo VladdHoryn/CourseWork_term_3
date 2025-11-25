@@ -97,8 +97,8 @@
 
             <!-- ====================== DASHBOARD ====================== -->
             <section id="dashboard" class="tab active">
-                <h2>📊 Administrator Dashboard</h2>
-                <div class="row mt-4">
+                <h2 class="mb-4">📊 Administrator Dashboard</h2>
+                <div class="row mt-4 mb-4 g-3"> <!-- додано mt-4 і mb-4, g-3 для відстані між колонками -->
 
                     <div class="col-md-2">
                         <div class="card p-3 text-center bg-primary text-white pointer dashboard-box" data-tab="users">
@@ -135,9 +135,16 @@
                             <h4>SQL Queries</h4>
                         </div>
                     </div>
+
+                    <div class="col-md-2">
+                        <div class="card p-3 text-center bg-dark text-white pointer dashboard-box" data-tab="logs">
+                            <h4>Logs</h4>
+                        </div>
+                    </div>
+
                 </div>
             </section>
-            
+
             <!-- ====================== USERS ====================== -->
             <section id="users" class="tab d-none">
                 <div class="d-flex justify-content-between align-items-center">

@@ -154,7 +154,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const res = await authFetch("/administrator/dashboard");
             if (!res.ok) throw new Error("Failed to load dashboard");
             const data = await res.json();
-            
+
+            // Додаємо клік для всіх dashboard-box, включно з новим Logs
             document.querySelectorAll(".dashboard-box").forEach(box => {
                 box.addEventListener("click", () => {
                     const tab = box.getAttribute("data-tab");
@@ -167,7 +168,6 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Помилка при завантаженні Dashboard.");
         }
     }
-
 
     let payments = [];
     let deletePaymentId = null;

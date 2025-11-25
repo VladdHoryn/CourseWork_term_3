@@ -58,10 +58,10 @@ public class AdministratorController : ControllerBase
         return Ok(new
         {
             Message = "Administrator dashboard is active",
-            Sections = new[] { "users", "visits", "payments", "registration-requests", "statistics" }
+            Sections = new[] { "users", "visits", "payments", "registration-requests", "statistics", "logs" }
         });
     }
-
+    
     // -------------------- Admins & Users Management --------------------
     [HttpGet("admins")]
     public IActionResult GetAdmins()
