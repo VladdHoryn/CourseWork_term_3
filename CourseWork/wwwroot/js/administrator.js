@@ -880,9 +880,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Live reactions
-    // document.getElementById("search-users")?.addEventListener("input", applyUsersFilters);
-    // document.getElementById("filter-role")?.addEventListener("change", applyUsersFilters);
     document.getElementById("apply-users-filters")?.addEventListener("click", applyUsersFilters);
 
 // ---------------- CREATE USER ----------------

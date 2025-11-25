@@ -95,7 +95,36 @@
                     </button>
                 </div>
 
-                <!-- Table rendered by operator.js -->
+                <!-- Filters -->
+                <div class="card p-3 mt-3">
+                    <div class="row g-2">
+
+                        <!-- Search -->
+                        <div class="col-md-4">
+                            <label class="form-label small">Search</label>
+                            <input id="search-patients" class="form-control" placeholder="Search by name, username, phone...">
+                        </div>
+
+                        <!-- Registration date from -->
+                        <div class="col-md-3">
+                            <label class="form-label small">Registered from</label>
+                            <input type="date" id="filter-date-from" class="form-control">
+                        </div>
+
+                        <!-- Registration date to -->
+                        <div class="col-md-3">
+                            <label class="form-label small">Registered to</label>
+                            <input type="date" id="filter-date-to" class="form-control">
+                        </div>
+
+                        <!-- Apply -->
+                        <div class="col-md-2">
+                            <button id="apply-patients-filters" class="btn btn-primary w-100 mt-4">Apply</button>
+                        </div>
+
+                    </div>
+                </div>
+
                 <div id="patients-table-container" class="mt-3"></div>
             </section>
 

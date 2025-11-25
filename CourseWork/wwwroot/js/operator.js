@@ -92,10 +92,65 @@ document.addEventListener("DOMContentLoaded", () => {
 // =====================================================================
 
     let patients = [];
+    let filteredPatients = [];
+    let patientSort = { field: null, asc: true };
 
     async function loadPatients() {
         const res = await authFetch("/operator/patients");
         patients = res.ok ? await res.json() : [];
+        applyPatientsFilters();
+    }
+
+    function applyPatientsFilters() {
+        const search = document.getElementById("search-patients").value.trim().toLowerCase();
+        const dateFrom = document.getElementById("filter-date-from")?.value;
+        const dateTo = document.getElementById("filter-date-to")?.value;
+
+        let data = [...patients];
+
+        // ----- SEARCH -----
+        if (search) {
+            data = data.filter(p => {
+                const searchTarget = [
+                    p.fullName,
+                    p.userName,
+                    p.phone,
+                    p.address,
+                    p.medicalRecordNumber
+                ].join(" ").toLowerCase();
+                return searchTarget.includes(search);
+            });
+        }
+
+        // ----- REGISTRATION DATE FROM -----
+        if (dateFrom) {
+            const from = new Date(dateFrom);
+            data = data.filter(p => new Date(p.createdAt) >= from);
+        }
+
+        // ----- REGISTRATION DATE TO -----
+        if (dateTo) {
+            const to = new Date(dateTo);
+            to.setHours(23, 59, 59);
+            data = data.filter(p => new Date(p.createdAt) <= to);
+        }
+
+        // Save + sort
+        filteredPatients = data;
+
+        if (patientSort.field) {
+            filteredPatients.sort((a, b) => {
+                let x = a[patientSort.field];
+                let y = b[patientSort.field];
+
+                if (typeof x === "string") x = x.toLowerCase();
+                if (typeof y === "string") y = y.toLowerCase();
+
+                if (x < y) return patientSort.asc ? -1 : 1;
+                if (x > y) return patientSort.asc ? 1 : -1;
+                return 0;
+            });
+        }
 
         renderPatientsTable();
     }
@@ -103,46 +158,36 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderPatientsTable() {
         const container = document.getElementById("patients-table-container");
 
-        if (!patients.length) {
+        if (!filteredPatients.length) {
             container.innerHTML = "<p class='text-muted'>No patients found</p>";
             return;
         }
 
-        let html = `
-    <table class="table table-hover table-bordered">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>UserName</th>
-                <th>Full Name</th>
-                <th>Phone</th>
-                <th>Address</th>
-                <th>Medical Record #</th>
-                <th>Date of Birth</th>
-                <th>Created At</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-    `;
+        const columns = ["id","userName","fullName","phone","address","medicalRecordNumber","dateOfBirth","createdAt"];
+        let html = `<table class="table table-hover table-bordered">
+        <thead><tr>`;
 
-        patients.forEach(p => {
+        columns.forEach(c => {
+            const arrow = (patientSort.field === c) ? (patientSort.asc ? "▲" : "▼") : "";
+            html += `<th class="sortable" data-field="${c}" style="cursor:pointer">${c} ${arrow}</th>`;
+        });
+
+        html += `<th>Actions</th></tr></thead><tbody>`;
+
+        filteredPatients.forEach(p => {
+            html += `<tr>`;
+            columns.forEach(c => {
+                let val = p[c];
+                if (c.toLowerCase().includes("date") && val)
+                    val = new Date(val).toISOString().split("T")[0];
+                html += `<td>${val ?? "-"}</td>`;
+            });
             html += `
-        <tr>
-            <td>${p.id}</td>
-            <td>${p.userName}</td>
-            <td>${p.fullName}</td>
-            <td>${p.phone ?? "-"}</td>
-            <td>${p.address ?? "-"}</td>
-            <td>${p.medicalRecordNumber ?? "-"}</td>
-            <td>${p.dateOfBirth ?? "-"}</td>
-            <td>${p.createdAt ?? "-"}</td>
-            <td>
-                <button class="btn btn-sm btn-warning btn-edit-patient" data-id="${p.id}">Edit</button>
-                <button class="btn btn-sm btn-danger btn-delete-patient" data-id="${p.id}">Delete</button>
-            </td>
-        </tr>
-    `;
+        <td>
+            <button class="btn btn-sm btn-warning btn-edit-patient" data-id="${p.id}">Edit</button>
+            <button class="btn btn-sm btn-danger btn-delete-patient" data-id="${p.id}">Delete</button>
+        </td>
+        </tr>`;
         });
 
         html += `</tbody></table>`;
@@ -150,7 +195,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
         bindEditPatientButtons();
         bindDeletePatientButtons();
+        bindPatientsSorting();
     }
+
+    function bindPatientsSorting() {
+        document.querySelectorAll("#patients-table-container th.sortable").forEach(th => {
+            th.addEventListener("click", () => {
+                const field = th.dataset.field;
+                if (patientSort.field === field) {
+                    patientSort.asc = !patientSort.asc;
+                } else {
+                    patientSort.field = field;
+                    patientSort.asc = true;
+                }
+                applyPatientsFilters();
+            });
+        });
+    }
+
+// Apply button
+    document.getElementById("apply-patients-filters")?.addEventListener("click", applyPatientsFilters);
 
 // ====================== CREATE PATIENT ======================
 
