@@ -225,4 +225,31 @@ public class AdministratorService : UserService
 
         return total;
     }
+    
+    public List<User> GetPatientsBySpecialistProfile(string specialty)
+    {
+        if (string.IsNullOrWhiteSpace(specialty))
+            return new List<User>();
+        
+        var specialists = GetAllSpecialists()
+            .Where(s => s.Speciality.Equals(specialty, StringComparison.OrdinalIgnoreCase))
+            .Select(s => s.Id)
+            .ToList();
+
+        if (!specialists.Any())
+            return new List<User>();
+        
+        var visits = GetAllVisits()
+            .Where(v => specialists.Contains(v.SpecialistId))
+            .ToList();
+        
+        var patientIds = visits.Select(v => v.PatientMedicalRecord).Distinct().ToList();
+
+        var patients = GetAllPatients()
+            .Where(p => p.MedicalRecordNumber.HasValue && patientIds.Contains(p.MedicalRecordNumber.Value))
+            .OrderBy(p => p.FullName)
+            .ToList();
+
+        return patients;
+    }
 }

@@ -457,4 +457,14 @@ public class AdministratorController : ControllerBase
             monthlyCosts
         });
     }
+    
+    [HttpGet("statistics/patients-by-profile")]
+    public IActionResult GetPatientsBySpecialistProfile([FromQuery] string specialty)
+    {
+        if (string.IsNullOrWhiteSpace(specialty))
+            return BadRequest("Specialty is required.");
+
+        var patients = _adminService.GetPatientsBySpecialistProfile(specialty);
+        return Ok(patients);
+    }
 }

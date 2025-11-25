@@ -796,6 +796,128 @@ document.addEventListener("DOMContentLoaded", () => {
         loadPatientsForMedPayments();
         loadPatientsForTotalCost();
     });
+
+    async function loadPatientsBySpecialty() {
+        try {
+            const specialty = document.getElementById("profileSpecialty").value.trim();
+            if (!specialty) return alert("Будь ласка, оберіть спеціальність.");
+
+            const res = await authFetch(`/administrator/statistics/patients-by-profile?specialty=${encodeURIComponent(specialty)}`);
+            if (!res.ok) throw new Error("Failed to load patients");
+
+            const patients = await res.json();
+            const container = document.getElementById("patientsByProfileResult");
+            container.classList.remove("d-none");
+
+            if (!patients.length) {
+                container.innerHTML = "No patients found for this specialty.";
+                return;
+            }
+
+            container.innerHTML = `<ul>${patients.map(p => `<li>${p.fullName} (Record: ${p.medicalRecordNumber})</li>`).join("")}</ul>`;
+        } catch (err) {
+            console.error(err);
+            alert("Помилка при завантаженні пацієнтів за спеціальністю.");
+        }
+    }
+
+    document.getElementById("btnLoadPatientsByProfile")?.addEventListener("click", loadPatientsBySpecialty);
+
+// Заповнення списку спеціальностей при завантаженні
+    function loadSpecialtiesForPatientsByProfile() {
+        const typeSelect = document.getElementById("profileSpecialty");
+        typeSelect.innerHTML = `<option value="">-- Select Specialty --</option>`;
+
+        authFetch('/administrator/specialists')
+            .then(res => {
+                if (!res.ok) throw new Error("Failed to load specialties");
+                return res.json();
+            })
+            .then(specialists => {
+                if (!specialists || !specialists.length) return;
+
+                const specialties = [...new Set(specialists.map(s => s.speciality).filter(s => s))];
+                specialties.forEach(s => {
+                    const opt = document.createElement("option");
+                    opt.value = s;
+                    opt.textContent = s;
+                    typeSelect.appendChild(opt);
+                });
+
+                if (specialties.length > 0) {
+                    document.getElementById("patientsBySpecialistBlock").classList.remove("d-none");
+                }
+            })
+            .catch(err => console.error("Error loading specialties:", err));
+    }
+
+    function loadPatientsBySpecialistProfile() {
+        const specialty = document.getElementById("profileSpecialty").value;
+        const resultBlock = document.getElementById("patientsByProfileResult");
+
+        if (!specialty) {
+            resultBlock.classList.remove("d-none");
+            resultBlock.classList.add("alert-warning");
+            resultBlock.classList.remove("alert-secondary");
+            resultBlock.textContent = "Please select a specialty.";
+            return;
+        }
+
+        fetch(`/api/admin/statistics/patients-by-profile?specialty=${encodeURIComponent(specialty)}`)
+            .then(res => res.json())
+            .then(patients => {
+                resultBlock.classList.remove("d-none");
+                resultBlock.classList.remove("alert-warning");
+                resultBlock.classList.add("alert-secondary");
+
+                if (!patients || patients.length === 0) {
+                    resultBlock.textContent = "No patients found for this specialty.";
+                    return;
+                }
+
+                // Створюємо таблицю
+                let html = `<table class="table table-sm table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Full Name</th>
+                                    <th>Medical Record</th>
+                                    <th>Phone</th>
+                                    <th>Address</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+
+                patients.forEach((p, index) => {
+                    html += `<tr>
+                            <td>${index + 1}</td>
+                            <td>${p.fullName ?? "-"}</td>
+                            <td>${p.medicalRecordNumber ?? "-"}</td>
+                            <td>${p.phone ?? "-"}</td>
+                            <td>${p.address ?? "-"}</td>
+                         </tr>`;
+                });
+
+                html += `</tbody></table>`;
+                resultBlock.innerHTML = html;
+            })
+            .catch(err => {
+                console.error(err);
+                resultBlock.classList.remove("d-none");
+                resultBlock.classList.add("alert-danger");
+                resultBlock.textContent = "Error loading patients. Check console for details.";
+            });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadSpecialtiesForPatientsByProfile();
+
+        document.getElementById("btnLoadPatientsByProfile")
+            .addEventListener("click", loadPatientsBySpecialistProfile);
+    });
+
+// Викликати після завантаження спеціалістів
+    loadSpecialtiesForPatientsByProfile();
     // =====================================================================
 //                            USERS CRUD
 // =====================================================================

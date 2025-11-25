@@ -318,6 +318,7 @@
                     <button class="btn btn-outline-warning" data-block="revenueBlock">Revenue</button>
                     <button class="btn btn-outline-info" data-block="medPaymentsBlock">Medication Payments</button>
                     <button class="btn btn-outline-secondary" data-block="totalPatientCostBlock">Total Patient Cost</button>
+                    <button class="btn btn-outline-dark" data-block="patientsBySpecialistBlock">Patients by Profile</button>
                 </div>
 
                 <!-- SYSTEM STATISTICS -->
@@ -462,6 +463,25 @@
                     </div>
                     <div class="card p-3 mt-4">
                         <canvas id="patientCostChart" height="120"></canvas>
+                    </div>
+                </div>
+
+                <!-- PATIENTS BY SPECIALIST PROFILE -->
+                <div id="patientsBySpecialistBlock" class="stats-block mt-4 d-none">
+                    <div class="card p-3">
+                        <h4>🧑‍⚕️ Patients by Specialist Profile</h4>
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <label>Select Specialty</label>
+                                <select id="profileSpecialty" class="form-select">
+                                    <option value="">-- Select Specialty --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-end">
+                                <button id="btnLoadPatientsByProfile" class="btn btn-secondary w-100">Load Patients</button>
+                            </div>
+                        </div>
+                        <div id="patientsByProfileResult" class="alert alert-secondary mt-3 d-none"></div>
                     </div>
                 </div>
             </section>
