@@ -1,5 +1,12 @@
 ﻿import {authFetch, getToken, getUserRole} from "./auth.js";
 
+const AdminPaymentStatusMap = {
+    0: "Pending",
+    1: "Paid",
+    2: "PartiallyPaid",
+    3: "Overdue",
+    4: "Cancelled"
+};
 document.addEventListener("DOMContentLoaded", () => {
 
     // ------------------------
@@ -164,8 +171,13 @@ document.addEventListener("DOMContentLoaded", () => {
         renderPaymentsTable();
     }
 
-    function renderPaymentsTable() {
+    function renderPaymentsTable(data = payments) {
         const container = document.getElementById("payments-table-container");
+
+        if (!data || data.length === 0) {
+            container.innerHTML = "<p>No payments found</p>";
+            return;
+        }
 
         let html = `
     <table class="table table-bordered table-hover">
@@ -187,7 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <tbody>
     `;
 
-        payments.forEach(p => {
+        data.forEach(p => {
             html += `
         <tr>
             <td>${p.id}</td>
@@ -226,6 +238,40 @@ document.addEventListener("DOMContentLoaded", () => {
             })
         );
     }
+
+    document.getElementById("apply-payment-filters")?.addEventListener("click", () => {
+        let filtered = [...payments];
+
+        const patientSearch = (document.getElementById("payment-patient-filter").value || "").toLowerCase();
+        const totalMin = parseFloat(document.getElementById("payment-total-min")?.value || "");
+        const totalMax = parseFloat(document.getElementById("payment-total-max")?.value || "");
+        const dateFrom = document.getElementById("payment-issued-from").value;
+        const dateTo = document.getElementById("payment-issued-to").value;
+        const status = document.getElementById("payment-status-filter")?.value || "";
+
+        if (patientSearch)
+            filtered = filtered.filter(p => String(p.patientMedicalRecord).toLowerCase().includes(patientSearch));
+
+        if (!isNaN(totalMin))
+            filtered = filtered.filter(p => (p.totalAmount || 0) >= totalMin);
+
+        if (!isNaN(totalMax))
+            filtered = filtered.filter(p => (p.totalAmount || 0) <= totalMax);
+
+        if (dateFrom)
+            filtered = filtered.filter(p => new Date(p.issuedDate) >= new Date(dateFrom));
+
+        if (dateTo) {
+            let to = new Date(dateTo);
+            to.setHours(23, 59, 59);
+            filtered = filtered.filter(p => new Date(p.issuedDate) <= to);
+        }
+
+        if (status !== "")
+            filtered = filtered.filter(p => p.status === status);
+
+        renderPaymentsTable(filtered);
+    });
 
     // -------------------- Open Add/Edit Modal --------------------
     let editingPayment = null;
