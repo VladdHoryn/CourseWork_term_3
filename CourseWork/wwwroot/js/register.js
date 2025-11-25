@@ -14,7 +14,7 @@
             address: document.getElementById("address").value.trim()
         };
 
-        // Відправка запиту
+        // Send request
         try {
             const response = await fetch("/guest/register", {
                 method: "POST",
@@ -33,7 +33,7 @@
             if (response.ok) {
                 form.reset();
 
-                // Опціонально: повернути назад до guest.html
+                // Optional: redirect back to guest.html
                 setTimeout(() => {
                     window.location.href = "guest.html";
                 }, 1500);
@@ -42,7 +42,7 @@
         } catch (err) {
             msg.innerHTML = `
                 <div class="alert alert-danger">
-                    Помилка з'єднання з сервером.
+                    Server connection error.
                 </div>
             `;
         }
