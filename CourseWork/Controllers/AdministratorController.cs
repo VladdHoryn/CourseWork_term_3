@@ -437,4 +437,24 @@ public class AdministratorController : ControllerBase
             TotalMedicationPayments = total
         });
     }
+    
+    [HttpGet("statistics/patient-total-cost")]
+    public IActionResult GetPatientTotalCost(
+        [FromQuery] int patientRecord,
+        [FromQuery] int year)
+    {
+        if (patientRecord <= 0 || year < 2000 || year > 2100)
+            return BadRequest("Invalid patient record or year");
+
+        var monthlyCosts = new decimal[12]; // Jan - Dec
+        decimal totalCost = _adminService.GetPatientTotalCostByYear(patientRecord, year, ref monthlyCosts);
+
+        return Ok(new
+        {
+            patientMedicalRecord = patientRecord,
+            year,
+            totalCost,
+            monthlyCosts
+        });
+    }
 }

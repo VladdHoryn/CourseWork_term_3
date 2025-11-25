@@ -201,4 +201,28 @@ public class AdministratorService : UserService
         if (end < start) return 0;
         return _paymentService.GetPatientMedicationPaymentsByPeriod(patientMedicalRecord, start, end);
     }
+    
+    public decimal GetPatientTotalCostByYear(int patientMedicalRecord, int year, ref decimal[] monthlyCosts)
+    {
+        var allVisits = _visitService.GetAllVisits()
+            .Where(v => v.PatientMedicalRecord == patientMedicalRecord && v.VisitDate.Year == year)
+            .ToList();
+
+        if (!allVisits.Any())
+        {
+            monthlyCosts = new decimal[12];
+            return 0;
+        }
+
+        decimal total = 0;
+        foreach (var visit in allVisits)
+        {
+            Console.WriteLine($"Visit: {visit.Id}, Service: {visit.ServiceCost}, Med: {visit.MedicationCost}, Date: {visit.VisitDate}");
+            int monthIndex = visit.VisitDate.Month - 1;
+            monthlyCosts[monthIndex] += visit.TotalCost;
+            total += visit.TotalCost;
+        }
+
+        return total;
+    }
 }

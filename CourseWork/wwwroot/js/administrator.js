@@ -700,6 +700,80 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("btnLoadMedPayments")?.addEventListener("click", loadMedicationPayments);
 
+    // =======================
+// TOTAL PATIENT COST PER YEAR
+// =======================
+    async function loadPatientsForTotalCost() {
+        try {
+            const res = await authFetch("/administrator/patients");
+            if (!res.ok) throw new Error("Failed to load patients");
+            const patients = await res.json();
+            const select = document.getElementById("costPatientId");
+            select.innerHTML = `<option value="">-- Select Patient --</option>`;
+            patients.forEach(p => {
+                const opt = document.createElement("option");
+                opt.value = p.medicalRecordNumber;
+                opt.textContent = `${p.fullName} (Record: ${p.medicalRecordNumber})`;
+                select.appendChild(opt);
+            });
+        } catch (err) {
+            console.error(err);
+            alert("Помилка при завантаженні пацієнтів.");
+        }
+    }
+
+    async function loadTotalPatientCost() {
+        try {
+            const patientRecord = document.getElementById("costPatientId").value;
+            const year = document.getElementById("costYear").value;
+            if (!patientRecord || !year) return alert("Будь ласка, оберіть пацієнта та рік.");
+
+            const res = await authFetch(`/administrator/statistics/patient-total-cost?patientRecord=${patientRecord}&year=${year}`);
+            if (!res.ok) throw new Error("Failed to load patient total cost");
+            const data = await res.json();
+
+            const resultBox = document.getElementById("patient-cost-result");
+            resultBox.classList.remove("d-none");
+            resultBox.innerHTML = `
+            <strong>Patient Record:</strong> ${data.patientMedicalRecord}<br>
+            <strong>Year:</strong> ${year}<br>
+            <strong>Total Cost:</strong> <span class="text-secondary fw-bold">${data.totalCost} грн</span>
+        `;
+
+            renderPatientCostChart(data.monthlyCosts);
+        } catch (err) {
+            console.error(err);
+            alert("Помилка при завантаженні загальної вартості пацієнта.");
+        }
+    }
+
+    let patientCostChart = null; // глобальна змінна
+
+    function renderPatientCostChart(monthlyCosts) {
+        const ctx = document.getElementById("patientCostChart");
+
+        // Знищуємо попередній графік, якщо він існує
+        if (patientCostChart) {
+            patientCostChart.destroy();
+        }
+
+        // Створюємо новий
+        patientCostChart = new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+                datasets: [{ label: "Cost (грн)", data: monthlyCosts, backgroundColor: "#6c757d" }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+
+    document.getElementById("btnLoadPatientCost")?.addEventListener("click", loadTotalPatientCost);
+
 // =======================
 // TAB SWITCHING LOGIC
 // =======================
@@ -720,6 +794,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector('[data-tab="statistics"]')?.addEventListener("click", () => {
         loadSpecialistsAndSpecialties();
         loadPatientsForMedPayments();
+        loadPatientsForTotalCost();
     });
     // =====================================================================
 //                            USERS CRUD
