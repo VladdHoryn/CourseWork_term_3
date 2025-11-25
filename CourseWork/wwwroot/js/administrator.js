@@ -67,6 +67,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 case "mongo":
                     loadMongoQueries();
                     break;
+                    case "logs":
+                        loadLogs();
+                    break;
             }
         });
     });
@@ -151,7 +154,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const res = await authFetch("/administrator/dashboard");
             if (!res.ok) throw new Error("Failed to load dashboard");
             const data = await res.json();
-            
+
+            // Додаємо клік для всіх dashboard-box, включно з новим Logs
             document.querySelectorAll(".dashboard-box").forEach(box => {
                 box.addEventListener("click", () => {
                     const tab = box.getAttribute("data-tab");
@@ -164,7 +168,6 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Помилка при завантаженні Dashboard.");
         }
     }
-
 
     let payments = [];
     let deletePaymentId = null;
@@ -1659,6 +1662,75 @@ async function rejectRequest(id) {
         alert("Error rejecting.");
     }
 }
+
+async function loadLogs() {
+    try {
+        const res = await authFetch("/administrator/logs");
+        if (!res.ok) throw new Error("Failed to load logs");
+
+        let logs = await res.json();
+
+        // Фільтрування по користувачу та даті
+        const userFilter = document.getElementById("logs-user-filter").value.trim().toLowerCase();
+        const dateFrom = document.getElementById("logs-date-from").value;
+        const dateTo = document.getElementById("logs-date-to").value;
+
+        if (userFilter) {
+            logs = logs.filter(l => l.userName.toLowerCase().includes(userFilter) || l.userId.toLowerCase().includes(userFilter));
+        }
+        if (dateFrom) {
+            logs = logs.filter(l => new Date(l.timestamp) >= new Date(dateFrom));
+        }
+        if (dateTo) {
+            logs = logs.filter(l => new Date(l.timestamp) <= new Date(dateTo));
+        }
+
+        const container = document.getElementById("logs-table-container");
+        if (!logs.length) {
+            container.innerHTML = '<div class="alert alert-secondary">No logs found</div>';
+            return;
+        }
+
+        // Таблиця
+        let html = `<table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>User</th>
+                    <th>Action</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+        logs.forEach(l => {
+            html += `<tr>
+                <td>${new Date(l.timestamp).toLocaleString()}</td>
+                <td>${l.userName} (${l.userId})</td>
+                <td>${l.action}</td>
+                <td>${l.details}</td>
+            </tr>`;
+        });
+
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+
+    } catch (err) {
+        console.error(err);
+        document.getElementById("logs-table-container").innerHTML = `<div class="alert alert-danger">Error loading logs: ${err.message}</div>`;
+    }
+}
+
+// APPLY FILTER BUTTON
+document.getElementById("btnApplyLogsFilter").addEventListener("click", loadLogs);
+
+// Додати до switch case при перемиканні вкладок
+switch (tab) {
+    case "logs":
+        loadLogs();
+        break;
+}
+
 
 
 
