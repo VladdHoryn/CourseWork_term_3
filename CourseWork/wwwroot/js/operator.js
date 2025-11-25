@@ -885,12 +885,54 @@ document.addEventListener("DOMContentLoaded", () => {
 // =====================================================================
 
     let payments = [];
+    let filteredPayments = [];
     let deletePaymentId = null;
+    // let sortColumn = null;
+    // let sortAsc = true;
 
 // -------------------- Load Payments --------------------
     async function loadPayments() {
         const res = await authFetch("/operator/payments");
         payments = res.ok ? await res.json() : [];
+        filteredPayments = [...payments];
+        renderPaymentsTable();
+    }
+
+    // -------------------- APPLY FILTERS --------------------
+    document.getElementById("apply-payment-filters")?.addEventListener("click", applyPaymentFilters);
+
+    function applyPaymentFilters() {
+        const patientSearch = (document.getElementById("payment-patient-filter").value || "").toLowerCase();
+        const totalMin = parseFloat(document.getElementById("payment-total-min")?.value || "");
+        const totalMax = parseFloat(document.getElementById("payment-total-max")?.value || "");
+        const dateFrom = document.getElementById("payment-issued-from").value;
+        const dateTo = document.getElementById("payment-issued-to").value;
+        const status = document.getElementById("payment-status-filter")?.value || "";
+
+        let data = [...payments];
+
+        if (patientSearch)
+            data = data.filter(p => String(p.patientMedicalRecord || "").toLowerCase().includes(patientSearch));
+
+        if (!isNaN(totalMin))
+            data = data.filter(p => (p.totalAmount || 0) >= totalMin);
+
+        if (!isNaN(totalMax))
+            data = data.filter(p => (p.totalAmount || 0) <= totalMax);
+
+        if (dateFrom)
+            data = data.filter(p => new Date(p.issuedDate) >= new Date(dateFrom));
+
+        if (dateTo) {
+            let to = new Date(dateTo);
+            to.setHours(23, 59, 59);
+            data = data.filter(p => new Date(p.issuedDate) <= to);
+        }
+
+        if (status !== "")
+            data = data.filter(p => p.status === status);
+
+        filteredPayments = data;
         renderPaymentsTable();
     }
 
@@ -898,29 +940,31 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderPaymentsTable() {
         const container = document.getElementById("payments-table-container");
 
-        let html = `
-    <table class="table table-bordered table-hover">
+        if (!filteredPayments.length) {
+            container.innerHTML = "<p class='text-muted'>No payments found</p>";
+            return;
+        }
+
+        let html = `<table class="table table-bordered table-hover">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Visit ID</th>
-                <th>Patient MRN</th>
-                <th>Total Amount</th>
-                <th>Paid Amount</th>
-                <th>Remaining</th>
-                <th>Issued</th>
-                <th>Due</th>
-                <th>Last Payment</th>
-                <th>Status</th>
+                <th data-sort="id">ID</th>
+                <th data-sort="visitId">Visit ID</th>
+                <th data-sort="patientMedicalRecord">Patient MRN</th>
+                <th data-sort="totalAmount">Total Amount</th>
+                <th data-sort="paidAmount">Paid Amount</th>
+                <th data-sort="remainingAmount">Remaining</th>
+                <th data-sort="issuedDate">Issued</th>
+                <th data-sort="dueDate">Due</th>
+                <th data-sort="lastPaymentDate">Last Payment</th>
+                <th data-sort="status">Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
-        <tbody>
-    `;
+        <tbody>`;
 
-        payments.forEach(p => {
-            html += `
-        <tr>
+        filteredPayments.forEach(p => {
+            html += `<tr>
             <td>${p.id}</td>
             <td>${p.visitId}</td>
             <td>${p.patientMedicalRecord}</td>
@@ -932,8 +976,8 @@ document.addEventListener("DOMContentLoaded", () => {
             <td>${p.lastPaymentDate ?? "-"}</td>
             <td>${p.status}</td>
             <td>
-                <button class="btn btn-warning btn-sm" data-id="${p.id}" data-edit>Edit</button>
-                <button class="btn btn-danger btn-sm" data-id="${p.id}" data-delete>Delete</button>
+                <button class="btn btn-warning btn-sm" data-edit="${p.id}">Edit</button>
+                <button class="btn btn-danger btn-sm" data-delete="${p.id}">Delete</button>
             </td>
         </tr>`;
         });
@@ -941,10 +985,15 @@ document.addEventListener("DOMContentLoaded", () => {
         html += `</tbody></table>`;
         container.innerHTML = html;
 
+        // -------------------- SORTING --------------------
+        document.querySelectorAll("th[data-sort]").forEach(th =>
+            th.addEventListener("click", () => applySort(th.dataset.sort))
+        );
+
         // Edit buttons
         document.querySelectorAll("[data-edit]").forEach(btn =>
             btn.addEventListener("click", () => {
-                const payment = payments.find(p => p.id == btn.dataset.id);
+                const payment = payments.find(p => p.id == btn.dataset.edit);
                 openPaymentModal(payment);
             })
         );
@@ -952,10 +1001,31 @@ document.addEventListener("DOMContentLoaded", () => {
         // Delete buttons
         document.querySelectorAll("[data-delete]").forEach(btn =>
             btn.addEventListener("click", () => {
-                deletePaymentId = btn.dataset.id;
+                deletePaymentId = btn.dataset.delete;
                 new bootstrap.Modal(document.getElementById("modalDeletePayment")).show();
             })
         );
+    }
+
+    // -------------------- SORT FUNCTION --------------------
+    function applySort(column) {
+        if (sortColumn === column) sortAsc = !sortAsc;
+        else {
+            sortColumn = column;
+            sortAsc = true;
+        }
+
+        filteredPayments.sort((a, b) => {
+            let v1 = a[column], v2 = b[column];
+            if (["issuedDate","dueDate","lastPaymentDate"].includes(column)) {
+                v1 = new Date(v1); v2 = new Date(v2);
+            }
+            if (v1 > v2) return sortAsc ? 1 : -1;
+            if (v1 < v2) return sortAsc ? -1 : 1;
+            return 0;
+        });
+
+        renderPaymentsTable();
     }
 
 // -------------------- Open Add/Edit Modal --------------------
