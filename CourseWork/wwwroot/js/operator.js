@@ -757,7 +757,38 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 // -------------------- Open Add/Edit Modal --------------------
-    document.getElementById("btnAddVisit").addEventListener("click", () => openVisitModal());
+    const addVisitModalEl = document.getElementById("modalAddVisit");
+    const addVisitModal = new bootstrap.Modal(addVisitModalEl);
+
+    document.getElementById("btnAddVisit").addEventListener("click", async () => {
+        await loadPatientsAndSpecialists();
+
+        const form = addVisitModalEl.querySelector("form");
+        form.reset();
+
+        // Populate dropdowns
+        const patientSelect = form.patientId;
+        const specialistSelect = form.specialistId;
+        patientSelect.innerHTML = "";
+        specialistSelect.innerHTML = "";
+
+        patients.forEach(p => {
+            const opt = document.createElement("option");
+            opt.value = p.id;
+            opt.textContent = `${p.fullName} (MRN: ${p.medicalRecordNumber})`;
+            patientSelect.appendChild(opt);
+        });
+
+        specialists.forEach(s => {
+            const opt = document.createElement("option");
+            opt.value = s.id;
+            opt.textContent = `${s.fullName} (${s.speciality})`;
+            specialistSelect.appendChild(opt);
+        });
+
+        // Відкриваємо модалку через існуючий екземпляр
+        addVisitModal.show();
+    });
     async function openVisitModal(visit = null) {
         await loadPatientsAndSpecialists(); // підвантажуємо перед відкриттям модалки
 
