@@ -339,68 +339,112 @@ document.addEventListener("DOMContentLoaded", () => {
 // =====================================================================
 
     let specialists = [];
+    let filteredSpecialists = [];
+    let specialistSort = { field: null, asc: true };
 
 // ====================== LOAD & RENDER ======================
-
     async function loadSpecialists() {
         const res = await authFetch("/operator/specialists");
         specialists = res.ok ? await res.json() : [];
+        applySpecialistsFilters();
+    }
+
+    // ====================== FILTERS / SEARCH / SORT ======================
+    function applySpecialistsFilters() {
+        const search = document.getElementById("search-specialists").value.trim().toLowerCase();
+        const dateFrom = document.getElementById("filter-date-from-specialist")?.value;
+        const dateTo = document.getElementById("filter-date-to-specialist")?.value;
+
+        let data = [...specialists];
+
+        // ----- SEARCH -----
+        if (search) {
+            data = data.filter(s => {
+                const searchTarget = [
+                    s.fullName,
+                    s.userName,
+                    s.phone,
+                    s.address,
+                    s.speciality
+                ].join(" ").toLowerCase();
+                return searchTarget.includes(search);
+            });
+        }
+
+        // ----- REGISTRATION DATE FROM -----
+        if (dateFrom) {
+            const from = new Date(dateFrom);
+            data = data.filter(s => new Date(s.createdAt) >= from);
+        }
+
+        // ----- REGISTRATION DATE TO -----
+        if (dateTo) {
+            const to = new Date(dateTo);
+            to.setHours(23, 59, 59);
+            data = data.filter(s => new Date(s.createdAt) <= to);
+        }
+
+        filteredSpecialists = data;
+
+        // ----- SORTING -----
+        if (specialistSort.field) {
+            filteredSpecialists.sort((a, b) => {
+                let x = a[specialistSort.field];
+                let y = b[specialistSort.field];
+
+                if (typeof x === "string") x = x.toLowerCase();
+                if (typeof y === "string") y = y.toLowerCase();
+
+                if (x < y) return specialistSort.asc ? -1 : 1;
+                if (x > y) return specialistSort.asc ? 1 : -1;
+                return 0;
+            });
+        }
+
         renderSpecialistsTable();
     }
 
+    // ====================== RENDER ======================
     function renderSpecialistsTable() {
         const container = document.getElementById("specialists-table-container");
 
-        if (!specialists.length) {
+        if (!filteredSpecialists.length) {
             container.innerHTML = "<p class='text-muted'>No specialists found</p>";
             return;
         }
 
-        // Кнопка Group by Specialty над таблицею
-        let html = `
-        <button class="btn btn-secondary mb-3" id="btn-group-specialty">Group by Specialty</button>
+        const columns = ["id","userName","fullName","speciality","phone","address","createdAt"];
+        let html = `<button class="btn btn-secondary mb-3" id="btn-group-specialty">Group by Specialty</button>
+    <table class="table table-bordered table-hover">
+        <thead><tr>`;
 
-        <table class="table table-bordered table-hover">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>UserName</th>
-                    <th>Full Name</th>
-                    <th>Specialty</th>
-                    <th>Phone</th>
-                    <th>Address</th>
-                    <th>Created At</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
+        columns.forEach(c => {
+            const arrow = (specialistSort.field === c) ? (specialistSort.asc ? "▲" : "▼") : "";
+            html += `<th class="sortable" data-field="${c}" style="cursor:pointer">${c} ${arrow}</th>`;
+        });
 
-        specialists.forEach(s => {
+        html += `<th>Actions</th></tr></thead><tbody>`;
+
+        filteredSpecialists.forEach(s => {
+            html += `<tr>`;
+            columns.forEach(c => {
+                let val = s[c];
+                if (c.toLowerCase().includes("date") && val)
+                    val = new Date(val).toISOString().split("T")[0];
+                html += `<td>${val ?? "-"}</td>`;
+            });
             html += `
-        <tr>
-            <td>${s.id}</td>
-            <td>${s.userName}</td>
-            <td>${s.fullName}</td>
-            <td>${s.speciality}</td>
-            <td>${s.phone ?? "-"}</td>
-            <td>${s.address ?? "-"}</td>
-            <td>${s.createdAt ?? "-"}</td>
-            <td>
-                <button class="btn btn-warning btn-sm btn-edit" data-id="${s.id}">Edit</button>
-                <button class="btn btn-danger btn-sm btn-delete" data-id="${s.id}">Delete</button>
-            </td>
-        </tr>`;
+        <td>
+            <button class="btn btn-warning btn-sm btn-edit" data-id="${s.id}">Edit</button>
+            <button class="btn btn-danger btn-sm btn-delete" data-id="${s.id}">Delete</button>
+        </td></tr>`;
         });
 
         html += `</tbody></table>`;
-
         container.innerHTML = html;
 
-        // Прив'язка кнопки Group by Specialty
         document.getElementById("btn-group-specialty").addEventListener("click", loadGroupedBySpecialty);
 
-        // Edit & Delete кнопки
         document.querySelectorAll(".btn-edit").forEach(btn =>
             btn.addEventListener("click", () => {
                 const specialist = specialists.find(s => s.id == btn.dataset.id);
@@ -411,7 +455,28 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll(".btn-delete").forEach(btn =>
             btn.addEventListener("click", () => deleteSpecialist(btn.dataset.id))
         );
+
+        bindSpecialistsSorting();
     }
+
+    // ====================== SORTING ======================
+    function bindSpecialistsSorting() {
+        document.querySelectorAll("#specialists-table-container th.sortable").forEach(th => {
+            th.addEventListener("click", () => {
+                const field = th.dataset.field;
+                if (specialistSort.field === field) {
+                    specialistSort.asc = !specialistSort.asc;
+                } else {
+                    specialistSort.field = field;
+                    specialistSort.asc = true;
+                }
+                applySpecialistsFilters();
+            });
+        });
+    }
+
+// ====================== APPLY BUTTON ======================
+    document.getElementById("apply-specialists-filters")?.addEventListener("click", applySpecialistsFilters);
 
 // ====================== MODAL HANDLING ======================
 
