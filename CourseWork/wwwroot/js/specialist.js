@@ -196,37 +196,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("apply-visit-filters")
         ?.addEventListener("click", applyVisitFilters);
 
-    function renderVisitsTable(data) {
-        const container = document.getElementById("visits-table-container");
-        if (!container) return;
-        if (data.length === 0) {
-            container.innerHTML = "<p>No visits found</p>";
-            return;
-        }
-        let html = `<table class="table table-bordered table-hover">
-            <thead><tr>
-            <th>Date</th><th>Patient MR</th><th>Diagnosis</th><th>Status</th><th>Cost</th><th>Actions</th>
-            </tr></thead><tbody>`;
-        data.forEach(v => {
-            html += `<tr>
-                <td>${new Date(v.visitDate).toLocaleString()}</td>
-                <td>${v.patientMedicalRecord}</td>
-                <td>${v.diagnosis}</td>
-                <td>${VisitStatusMap[v.status] ?? "Unknown"}</td>
-                <td>${v.serviceCost + v.medicationCost}</td>
-                <td>
-                    <button class="btn btn-sm btn-primary btn-edit-visit" data-id="${v.id}">Edit</button>
-                    <button class="btn btn-sm btn-danger btn-cancel-visit" data-id="${v.id}">Cancel</button>
-                </td>
-            </tr>`;
-        });
-        html += "</tbody></table>";
-        container.innerHTML = html;
-    }
-
-    document.getElementById("apply-visit-filters")
-        ?.addEventListener("click", applyVisitFilters);
-
     function applyVisitFilters() {
         let filtered = [...visitsData];
 
@@ -595,8 +564,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 alert("Cancel payment failed: " + text);
                 return;
             }
-
-            // Закриваємо модалку
+            
             const cancelModalEl = document.getElementById("cancelPaymentModal");
             const cancelModal = bootstrap.Modal.getInstance(cancelModalEl);
             cancelModal?.hide();

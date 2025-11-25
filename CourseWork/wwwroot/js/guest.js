@@ -2,7 +2,7 @@
     const tabs = document.querySelectorAll(".nav-link");
     const sections = document.querySelectorAll(".tab");
 
-    // --- Таби ---
+    // --- Tabs ---
     tabs.forEach(tab => {
         tab.addEventListener("click", () => {
             tabs.forEach(t => t.classList.remove("active"));
@@ -13,43 +13,43 @@
         });
     });
 
-    // --- Автоматично завантажити Dashboard ---
+    // --- Automatically load Dashboard ---
     const welcomeMsg = document.getElementById("welcome-message");
 
     fetch("/guest/dashboard")
         .then(res => res.json())
         .then(data => {
-            welcomeMsg.textContent = `${data.message}. Доступні дії: ${data.options.join(", ")}.`;
+            welcomeMsg.textContent = `${data.message}. Available actions: ${data.options.join(", ")}.`;
         })
         .catch(() => {
-            welcomeMsg.textContent = "Не вдалося завантажити інформацію.";
+            welcomeMsg.textContent = "Failed to load information.";
         });
 
-    // --- Завантаження статистики ---
+    // --- Load Statistics ---
     document.getElementById("load-stats").addEventListener("click", () => {
         const start = document.getElementById("start-date").value;
         const end = document.getElementById("end-date").value;
         const resultDiv = document.getElementById("stats-result");
 
         if (!start || !end) {
-            alert("Оберіть діапазон дат!");
+            alert("Please select a date range!");
             return;
         }
 
         fetch(`/guest/statistics?start=${start}&end=${end}`)
             .then(res => {
-                if (!res.ok) throw new Error("Помилка при отриманні статистики");
+                if (!res.ok) throw new Error("Failed to fetch statistics");
                 return res.json();
             })
             .then(data => {
                 resultDiv.classList.remove("d-none", "alert-danger");
                 resultDiv.classList.add("alert-info");
                 resultDiv.innerHTML = `
-          <strong>Результати:</strong><br>
-          👥 Користувачів: ${data.totalUsers}<br>
-          🕓 Відвідувань: ${data.totalVisits}<br>
-          💳 Платежів: ${data.totalPayments}<br>
-          💰 Дохід: ${data.totalRevenue} ₴
+          <strong>Results:</strong><br>
+          👥 Users: ${data.totalUsers}<br>
+          🕓 Visits: ${data.totalVisits}<br>
+          💳 Payments: ${data.totalPayments}<br>
+          💰 Revenue: ${data.totalRevenue} ₴
         `;
             })
             .catch(err => {
@@ -60,8 +60,8 @@
     });
 
     // ==============================
-//     Load Specialists Tab
-// ==============================
+    //     Load Specialists Tab
+    // ==============================
     function loadSpecialists() {
         const list = document.getElementById("specialist-list");
         const filter = document.getElementById("spec-filter");
@@ -69,30 +69,30 @@
         fetch("/guest/specialists")
             .then(res => res.json())
             .then(data => {
-                // Зберігаємо для фільтрації та пошуку
+                // Save for filtering and search
                 window.allSpecialists = data;
 
-                // --- Формуємо список спеціальностей для селекту ---
+                // --- Generate specialties list for select ---
                 const specialties = [...new Set(data.map(s => s.speciality).filter(Boolean))].sort();
-                filter.innerHTML = `<option value="">Всі спеціальності</option>` +
+                filter.innerHTML = `<option value="">All Specialties</option>` +
                     specialties.map(s => `<option value="${s}">${s}</option>`).join("");
 
-                // Відображення всіх спеціалістів
+                // Display all specialists
                 renderSpecialists(data);
             })
             .catch(() => {
-                list.innerHTML = `<div class="alert alert-danger">Не вдалося завантажити спеціалістів</div>`;
+                list.innerHTML = `<div class="alert alert-danger">Failed to load specialists</div>`;
             });
     }
 
-// ==============================
-//     Render Specialists
-// ==============================
+    // ==============================
+    //     Render Specialists
+    // ==============================
     function renderSpecialists(arr) {
         const list = document.getElementById("specialist-list");
 
         if (!arr.length) {
-            list.innerHTML = `<div class="alert alert-warning">Спеціалістів не знайдено.</div>`;
+            list.innerHTML = `<div class="alert alert-warning">No specialists found.</div>`;
             return;
         }
 
@@ -100,15 +100,15 @@
         <div class="col-md-4">
             <div class="card shadow-sm border-0 h-100">
                 <div class="card-body">
-                    <h5 class="card-title fw-bold">${s.fullName ?? "Не вказано"}</h5>
+                    <h5 class="card-title fw-bold">${s.fullName ?? "Not specified"}</h5>
                     <p class="card-text text-secondary m-0">
-                        <i class="bi bi-briefcase"></i> ${s.speciality ?? "Не вказано"}
+                        <i class="bi bi-briefcase"></i> ${s.speciality ?? "Not specified"}
                     </p>
                     ${s.dateOfBirth ? `<p class="card-text text-muted m-0">
-                        <i class="bi bi-calendar"></i> ${new Date(s.dateOfBirth).toLocaleDateString("uk-UA")}
+                        <i class="bi bi-calendar"></i> ${new Date(s.dateOfBirth).toLocaleDateString("en-US")}
                     </p>` : ""}
                     <p class="card-text text-muted m-0">
-                        <i class="bi bi-person-badge"></i> Роль: ${s.speciality}
+                        <i class="bi bi-person-badge"></i> Role: ${s.speciality}
                     </p>
                 </div>
             </div>
@@ -116,9 +116,9 @@
     `).join("");
     }
 
-// ==============================
-//     Search and Filter
-// ==============================
+    // ==============================
+    //     Search and Filter
+    // ==============================
     document.getElementById("spec-search").addEventListener("input", () => {
         const query = document.getElementById("spec-search").value.toLowerCase();
         const filtered = window.allSpecialists.filter(s =>
@@ -136,14 +136,14 @@
         renderSpecialists(filtered);
     });
 
-// ==============================
-//     Manual Refresh
-// ==============================
+    // ==============================
+    //     Manual Refresh
+    // ==============================
     document.getElementById("spec-refresh").addEventListener("click", () => loadSpecialists());
 
-// ==============================
-//     Load Specialists on Tab Click
-// ==============================
+    // ==============================
+    //     Load Specialists on Tab Click
+    // ==============================
     document.querySelector("[data-tab='specialists']").addEventListener("click", () => {
         loadSpecialists();
     });
@@ -153,7 +153,7 @@
 
     document.getElementById("btn-open-forgot-password")
         .addEventListener("click", () => window.location.href = "forgot-password.html");
-    
+
     document.getElementById("loginForm").addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -167,7 +167,7 @@
         });
 
         if (!response.ok) {
-            alert("Невірний логін або пароль");
+            alert("Incorrect username or password");
             return;
         }
 
@@ -176,13 +176,13 @@
 
         localStorage.setItem("token", token);
 
-        // Декодуємо JWT
+        // Decode JWT
         const payload = JSON.parse(atob(token.split(".")[1]));
         const role = payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-        
+
         console.log("User role =", role);
 
-        // Перехід відповідно до ролі
+        // Redirect based on role
         switch (role) {
             case "Patient":
                 window.location.href = "/patient.html";
@@ -197,10 +197,8 @@
                 window.location.href = "/administrator.html";
                 break;
             default:
-                alert("Невідома роль!");
+                alert("Unknown role!");
                 break;
         }
     });
 });
-
-

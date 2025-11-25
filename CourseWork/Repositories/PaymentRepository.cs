@@ -66,5 +66,20 @@ public class PaymentRepository
 
         return payments.Sum(p => p.PaidAmount);
     }
+    
+    public decimal GetPatientMedicationPaymentsByPeriod(int patientMedicalRecord, DateTime start, DateTime end)
+    {
+        var payments = _db_collection
+            .Find(p =>
+                p.PatientMedicalRecord == patientMedicalRecord &&
+                p.PaidAmount > 0 &&
+                (
+                    (p.LastPaymentDate.HasValue && p.LastPaymentDate.Value >= start && p.LastPaymentDate.Value <= end) ||
+                    (!p.LastPaymentDate.HasValue && p.IssuedDate >= start && p.IssuedDate <= end)
+                )
+            )
+            .ToList();
 
+        return payments.Sum(p => p.PaidAmount);
+    }
 }

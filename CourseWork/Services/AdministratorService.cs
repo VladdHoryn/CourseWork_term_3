@@ -195,5 +195,61 @@ public class AdministratorService : UserService
 
         return totalPatients / totalDays;
     }
+    
+    public decimal GetPatientMedicationPaymentsByPeriod(int patientMedicalRecord, DateTime start, DateTime end)
+    {
+        if (end < start) return 0;
+        return _paymentService.GetPatientMedicationPaymentsByPeriod(patientMedicalRecord, start, end);
+    }
+    
+    public decimal GetPatientTotalCostByYear(int patientMedicalRecord, int year, ref decimal[] monthlyCosts)
+    {
+        var allVisits = _visitService.GetAllVisits()
+            .Where(v => v.PatientMedicalRecord == patientMedicalRecord && v.VisitDate.Year == year)
+            .ToList();
 
+        if (!allVisits.Any())
+        {
+            monthlyCosts = new decimal[12];
+            return 0;
+        }
+
+        decimal total = 0;
+        foreach (var visit in allVisits)
+        {
+            Console.WriteLine($"Visit: {visit.Id}, Service: {visit.ServiceCost}, Med: {visit.MedicationCost}, Date: {visit.VisitDate}");
+            int monthIndex = visit.VisitDate.Month - 1;
+            monthlyCosts[monthIndex] += visit.TotalCost;
+            total += visit.TotalCost;
+        }
+
+        return total;
+    }
+    
+    public List<User> GetPatientsBySpecialistProfile(string specialty)
+    {
+        if (string.IsNullOrWhiteSpace(specialty))
+            return new List<User>();
+        
+        var specialists = GetAllSpecialists()
+            .Where(s => s.Speciality.Equals(specialty, StringComparison.OrdinalIgnoreCase))
+            .Select(s => s.Id)
+            .ToList();
+
+        if (!specialists.Any())
+            return new List<User>();
+        
+        var visits = GetAllVisits()
+            .Where(v => specialists.Contains(v.SpecialistId))
+            .ToList();
+        
+        var patientIds = visits.Select(v => v.PatientMedicalRecord).Distinct().ToList();
+
+        var patients = GetAllPatients()
+            .Where(p => p.MedicalRecordNumber.HasValue && patientIds.Contains(p.MedicalRecordNumber.Value))
+            .OrderBy(p => p.FullName)
+            .ToList();
+
+        return patients;
+    }
 }

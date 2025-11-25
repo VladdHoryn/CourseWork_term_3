@@ -17,13 +17,15 @@ namespace CourseWork.Controllers;
 public class AdministratorController : ControllerBase
 {
     private readonly AdministratorService _adminService;
+    private readonly SpecialistService _specialistService;
     private readonly MongoDBRepository _repo;
     private readonly PasswordHasher<User> _hasher = new();
 
-    public AdministratorController(AdministratorService adminService, MongoDBRepository repo)
+    public AdministratorController(AdministratorService adminService, MongoDBRepository repo, SpecialistService specialistService)
     {
         _adminService = adminService;
         _repo = repo;
+        _specialistService = specialistService;
     }
     
     // public IMongoDatabase GetMongoDatabase()
@@ -397,5 +399,72 @@ public class AdministratorController : ControllerBase
             AveragePatientsPerDay = Math.Round(avg, 2)
         });
     }
+    
+    [HttpGet("statistics/revenue")]
+    public IActionResult GetRevenueForSpecialist(
+        [FromQuery] string specialistId,
+        [FromQuery] DateTime start,
+        [FromQuery] DateTime end)
+    {
+        var revenue = _specialistService.GetRevenueForSpecialist(specialistId, start, end);
 
+        return Ok(new
+        {
+            specialistId,
+            start,
+            end,
+            revenue
+        });
+    }
+    
+    [HttpPost("statistics/patient-medications")]
+    public IActionResult GetPatientMedicationPayments([FromBody] PatientMedicationRequest request)
+    {
+        if (request == null)
+            return BadRequest("Request body is missing");
+
+        var total = _adminService.GetPatientMedicationPaymentsByPeriod(
+            request.PatientMedicalRecord,
+            request.Start,
+            request.End
+        );
+
+        return Ok(new
+        {
+            request.PatientMedicalRecord,
+            request.Start,
+            request.End,
+            TotalMedicationPayments = total
+        });
+    }
+    
+    [HttpGet("statistics/patient-total-cost")]
+    public IActionResult GetPatientTotalCost(
+        [FromQuery] int patientRecord,
+        [FromQuery] int year)
+    {
+        if (patientRecord <= 0 || year < 2000 || year > 2100)
+            return BadRequest("Invalid patient record or year");
+
+        var monthlyCosts = new decimal[12]; // Jan - Dec
+        decimal totalCost = _adminService.GetPatientTotalCostByYear(patientRecord, year, ref monthlyCosts);
+
+        return Ok(new
+        {
+            patientMedicalRecord = patientRecord,
+            year,
+            totalCost,
+            monthlyCosts
+        });
+    }
+    
+    [HttpGet("statistics/patients-by-profile")]
+    public IActionResult GetPatientsBySpecialistProfile([FromQuery] string specialty)
+    {
+        if (string.IsNullOrWhiteSpace(specialty))
+            return BadRequest("Specialty is required.");
+
+        var patients = _adminService.GetPatientsBySpecialistProfile(specialty);
+        return Ok(patients);
+    }
 }

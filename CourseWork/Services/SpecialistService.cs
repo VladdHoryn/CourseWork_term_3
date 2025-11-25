@@ -294,4 +294,26 @@ public class SpecialistService : UserService
 
         return result;
     }
+    
+    // =====================================================================
+// ==================== SPECIALIST REVENUE CALCULATION =================
+// =====================================================================
+
+    public decimal GetRevenueForSpecialist(string specialistId, DateTime start, DateTime end)
+    {
+        var payments = GetPaymentsForSpecialist(specialistId);
+
+        if (payments == null || payments.Count == 0)
+            return 0;
+        
+        var filtered = payments.Where(p =>
+            (p.Status == PaymentStatus.Paid || p.Status == PaymentStatus.PartiallyPaid) &&
+            p.IssuedDate >= start &&
+            p.IssuedDate <= end
+        );
+        
+        decimal revenue = filtered.Sum(p => p.PaidAmount);
+
+        return revenue;
+    }
 }

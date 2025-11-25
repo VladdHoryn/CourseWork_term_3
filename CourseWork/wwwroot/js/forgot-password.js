@@ -19,7 +19,6 @@
     }
 
     function evaluatePasswordStrength(pwd) {
-        // Простий алгоритм оцінки: довжина + наявність цифр/великих/маленьких/символів
         let score = 0;
         if (!pwd) return score;
 
@@ -39,13 +38,12 @@
 
         let text = '—';
         let cls = '';
-        if (score <= 1) { text = 'Дуже слабий'; cls = 'bg-danger'; }
-        else if (score === 2) { text = 'Слабкий'; cls = 'bg-warning'; }
-        else if (score === 3) { text = 'Середній'; cls = 'bg-info'; }
-        else if (score >= 4) { text = 'Сильний'; cls = 'bg-success'; }
+        if (score <= 1) { text = 'Very Weak'; cls = 'bg-danger'; }
+        else if (score === 2) { text = 'Weak'; cls = 'bg-warning'; }
+        else if (score === 3) { text = 'Medium'; cls = 'bg-info'; }
+        else if (score >= 4) { text = 'Strong'; cls = 'bg-success'; }
 
-        strengthText.textContent = `Сила пароля: ${text}`;
-        // remove previous classes and add new
+        strengthText.textContent = `Password strength: ${text}`;
         strengthBar.className = 'progress-bar ' + cls;
     }
 
@@ -62,46 +60,38 @@
         const confirmPassword = confirmPasswordInput.value;
 
         if (!username || !newPassword || !confirmPassword) {
-            showMessage('Заповніть усі поля.', 'warning');
+            showMessage('Please fill in all fields.', 'warning');
             return;
         }
 
         if (newPassword.length < 6) {
-            showMessage('Пароль має містити щонайменше 6 символів.', 'warning');
+            showMessage('Password must be at least 6 characters.', 'warning');
             return;
         }
 
         if (newPassword !== confirmPassword) {
-            showMessage('Паролі не співпадають.', 'warning');
+            showMessage('Passwords do not match.', 'warning');
             return;
         }
 
-        // Disable button to avoid double submits
         submitBtn.disabled = true;
         const origHtml = submitBtn.innerHTML;
-        submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Зачекайте...`;
+        submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Please wait...`;
 
         try {
-            // Заміни шлях, якщо API в іншому місці
             const response = await fetch('/guest/update-password', {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    username: username,
-                    newPassword: newPassword
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, newPassword })
             });
 
             if (response.ok) {
                 const text = await response.text().catch(() => null);
-                showMessage(text || 'Пароль успішно змінено.', 'success');
+                showMessage(text || 'Password successfully changed.', 'success');
                 form.reset();
                 updateStrengthUI('');
             } else {
-                // спробуємо отримати повідомлення з відповіді
-                let errText = 'Не вдалось змінити пароль.';
+                let errText = 'Failed to change password.';
                 try {
                     const json = await response.json();
                     if (json && (json.message || json.error)) {
@@ -110,17 +100,15 @@
                         errText = json;
                     }
                 } catch {
-                    // не JSON
                     try {
                         const txt = await response.text();
                         if (txt) errText = txt;
                     } catch {}
                 }
-
                 showMessage(errText, 'danger');
             }
         } catch (err) {
-            showMessage('Помилка мережі або сервер недоступний.', 'danger');
+            showMessage('Network error or server unavailable.', 'danger');
             console.error(err);
         } finally {
             submitBtn.disabled = false;
@@ -129,7 +117,7 @@
     });
 });
 
-// Функція для кнопки "Назад"
+// Back button function
 function goBack() {
     window.history.back();
 }
