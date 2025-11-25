@@ -93,44 +93,47 @@
 
             <!-- ====================== DASHBOARD ====================== -->
             <section id="dashboard" class="tab active">
-                <h2>📌 Dashboard</h2>
+                <h2>📊 Administrator Dashboard</h2>
                 <div class="row mt-4">
 
-                    <div class="col-md-3">
-                        <div class="card shadow-sm text-center p-3">
-                            <h5>Users</h5>
-                            <p id="quick-users">—</p>
-                            <button data-tab="users" class="btn btn-primary switch-tab mt-3">Open</button>
+                    <div class="col-md-2">
+                        <div class="card p-3 text-center bg-primary text-white pointer dashboard-box" data-tab="users">
+                            <h4>Users</h4>
                         </div>
                     </div>
 
-                    <div class="col-md-3">
-                        <div class="card shadow-sm text-center p-3">
-                            <h5>Visits</h5>
-                            <p id="quick-visits">—</p>
-                            <button data-tab="visits" class="btn btn-primary switch-tab mt-3">Open</button>
+                    <div class="col-md-2">
+                        <div class="card p-3 text-center bg-warning text-white pointer dashboard-box" data-tab="visits">
+                            <h4>Visits</h4>
                         </div>
                     </div>
 
-                    <div class="col-md-3">
-                        <div class="card shadow-sm text-center p-3">
-                            <h5>Payments</h5>
-                            <p id="quick-payments">—</p>
-                            <button data-tab="payments" class="btn btn-primary switch-tab mt-3">Open</button>
+                    <div class="col-md-2">
+                        <div class="card p-3 text-center bg-danger text-white pointer dashboard-box" data-tab="payments">
+                            <h4>Payments</h4>
                         </div>
                     </div>
 
-                    <div class="col-md-3">
-                        <div class="card shadow-sm text-center p-3">
-                            <h5>Requests</h5>
-                            <p id="quick-requests">—</p>
-                            <button data-tab="requests" class="btn btn-primary switch-tab mt-3">Open</button>
+                    <div class="col-md-2">
+                        <div class="card p-3 text-center bg-success text-white pointer dashboard-box" data-tab="requests">
+                            <h4>Requests</h4>
                         </div>
                     </div>
 
+                    <div class="col-md-2">
+                        <div class="card p-3 text-center bg-info text-white pointer dashboard-box" data-tab="statistics">
+                            <h4>Statistics</h4>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="card p-3 text-center bg-secondary text-white pointer dashboard-box" data-tab="mongo">
+                            <h4>SQL Queries</h4>
+                        </div>
+                    </div>
                 </div>
             </section>
-
+            
             <!-- ====================== USERS ====================== -->
             <section id="users" class="tab d-none">
                 <div class="d-flex justify-content-between align-items-center">

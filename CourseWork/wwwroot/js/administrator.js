@@ -151,16 +151,20 @@ document.addEventListener("DOMContentLoaded", () => {
             const res = await authFetch("/administrator/dashboard");
             if (!res.ok) throw new Error("Failed to load dashboard");
             const data = await res.json();
-
-            document.getElementById("quick-users").innerText = data.users;
-            document.getElementById("quick-visits").innerText = data.visits;
-            document.getElementById("quick-payments").innerText = data.payments;
-            document.getElementById("quick-requests").innerText = data.requests;
+            
+            document.querySelectorAll(".dashboard-box").forEach(box => {
+                box.addEventListener("click", () => {
+                    const tab = box.getAttribute("data-tab");
+                    const switchBtn = document.querySelector(`button[data-tab="${tab}"]`);
+                    if (switchBtn) switchBtn.click();
+                });
+            });
         } catch (err) {
             console.error(err);
             alert("Помилка при завантаженні Dashboard.");
         }
     }
+
 
     let payments = [];
     let deletePaymentId = null;
