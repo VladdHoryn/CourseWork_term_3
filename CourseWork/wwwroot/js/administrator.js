@@ -1526,6 +1526,8 @@ async function loadPatientsAndSpecialists() {
 }
 
 // ======================== OPEN EDIT VISIT MODAL ========================
+document.getElementById("btnAddVisit")?.addEventListener("click", () => openVisitModal());
+
 async function openVisitModal(visit = null) {
     await loadPatientsAndSpecialists();
 
@@ -1533,32 +1535,18 @@ async function openVisitModal(visit = null) {
     const modalElement = document.getElementById(modalId);
     const form = modalElement.querySelector("form");
 
-    if (!form) {
-        console.error("Form not found inside modal:", modalId);
-        return;
-    }
+    if (!form) return;
 
-    const patientSelect = form.querySelector("[name='patientId']");
-    const specialistSelect = form.querySelector("[name='specialistId']");
-
-    // CREATE: populate dropdowns
+    // Populate dropdowns for Add
     if (!visit) {
-        if (patientSelect) {
-            patientSelect.innerHTML = adminPatients
-                .map(p => `<option value="${p.id}">${p.fullName} (MRN: ${p.medicalRecordNumber})</option>`)
-                .join("");
-        }
-
-        if (specialistSelect) {
-            specialistSelect.innerHTML = adminSpecialists
-                .map(s => `<option value="${s.id}">${s.fullName} (${s.speciality})</option>`)
-                .join("");
-        }
-
+        form.querySelector("[name='patientId']").innerHTML =
+            adminPatients.map(p => `<option value="${p.id}">${p.fullName} (MRN: ${p.medicalRecordNumber})</option>`).join("");
+        form.querySelector("[name='specialistId']").innerHTML =
+            adminSpecialists.map(s => `<option value="${s.id}">${s.fullName} (${s.speciality})</option>`).join("");
         form.reset();
     }
 
-    // EDIT MODE – fill fields
+    // Fill fields for Edit
     if (visit) {
         form.querySelector("[name='id']").value = visit.id;
         form.querySelector("[name='anamnesis']").value = visit.anamnesis ?? "";
@@ -1567,26 +1555,47 @@ async function openVisitModal(visit = null) {
         form.querySelector("[name='recommendations']").value = visit.recommendations ?? "";
         form.querySelector("[name='serviceCost']").value = visit.serviceCost ?? 0;
         form.querySelector("[name='medicationCost']").value = visit.medicationCost ?? 0;
-
-        if (form.querySelector("[name='status']")) {
-            form.querySelector("[name='status']").value = visit.status ?? "Scheduled";
-        }
+        form.querySelector("[name='status']").value = visit.status ?? "Scheduled";
     }
 
-    // Remove default form submission behavior
-    form.onsubmit = saveEditedVisit;
+    form.onsubmit = visit ? saveEditedVisit : saveNewVisit;
 
-    const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
-    modal.show();
+    bootstrap.Modal.getOrCreateInstance(modalElement).show();
+}
+
+// -------------------- ADD VISIT --------------------
+async function saveNewVisit(e) {
+    e.preventDefault();
+    const form = e.target;
+
+    const dto = {
+        patientId: form.patientId.value,
+        patientMedicalRecord: Number(form.patientMedicalRecord.value),
+        specialistId: form.specialistId.value,
+        visitDate: form.visitDate.value,
+        status: form.status.value,
+        isFirstVisit: form.isFirstVisit.value === "true",
+        anamnesis: form.anamnesis.value,
+        diagnosis: form.diagnosis.value,
+        treatment: form.treatment.value,
+        recommendations: form.recommendations.value,
+        serviceCost: Number(form.serviceCost.value),
+        medicationCost: Number(form.medicationCost.value)
+    };
+
+    const res = await authFetch("/administrator/visits", { method: "POST", body: JSON.stringify(dto) });
+
+    if (res.ok) {
+        bootstrap.Modal.getInstance(document.getElementById("modalAddVisit")).hide();
+        loadVisits();
+    } else alert("Failed to create visit");
 }
 
 
 // ======================== SAVE EDITED VISIT (PUT) ========================
-async function saveEditedVisit(event) {
-    event.preventDefault();
-
-    const form = event.target;
-    const id = form.querySelector("[name='id']").value;
+async function saveEditedVisit(e) {
+    e.preventDefault();
+    const form = e.target;
 
     const dto = {
         anamnesis: form.anamnesis.value,
@@ -1598,48 +1607,23 @@ async function saveEditedVisit(event) {
         status: form.status.value
     };
 
-    try {
-        const res = await authFetch(`/administrator/visits/${id}`, {
-            method: "PUT",
-            body: JSON.stringify(dto)
-        });
+    const id = form.querySelector("[name='id']").value;
+    const res = await authFetch(`/administrator/visits/${id}`, { method: "PUT", body: JSON.stringify(dto) });
 
-        if (!res.ok) {
-            const txt = await res.text();
-            alert("Error: " + txt);
-            return;
-        }
-
-        const modal = bootstrap.Modal.getInstance(document.getElementById("modalEditVisit"));
-        modal.hide();
-
-        await loadVisits();
-    } catch (e) {
-        console.error("Update failed:", e);
-        alert("Failed to update visit");
-    }
+    if (res.ok) {
+        bootstrap.Modal.getInstance(document.getElementById("modalEditVisit")).hide();
+        loadVisits();
+    } else alert("Failed to update visit");
 }
 
 // ======================== DELETE VISIT ========================
 document.getElementById("btnConfirmDeleteVisit")?.addEventListener("click", async () => {
     if (!deleteVisitId) return;
-
-    try {
-        const res = await authFetch(`/administrator/visits/${deleteVisitId}`, {
-            method: "DELETE"
-        });
-
-        if (res.ok) {
-            const modal = bootstrap.Modal.getInstance(document.getElementById("modalDeleteVisit"));
-            modal.hide();
-
-            await loadVisits();
-        } else {
-            const txt = await res.text();
-        }
-    } catch (err) {
-        console.error("Delete error:", err);
-    }
+    const res = await authFetch(`/administrator/visits/${deleteVisitId}`, { method: "DELETE" });
+    if (res.ok) {
+        bootstrap.Modal.getInstance(document.getElementById("modalDeleteVisit")).hide();
+        loadVisits();
+    } else alert("Failed to delete visit");
 });
 
 async function approveRequest(id) {
