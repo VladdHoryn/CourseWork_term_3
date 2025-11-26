@@ -32,8 +32,7 @@
 
             if (response.ok) {
                 form.reset();
-
-                // Optional: redirect back to guest.html
+                
                 setTimeout(() => {
                     window.location.href = "guest.html";
                 }, 1500);

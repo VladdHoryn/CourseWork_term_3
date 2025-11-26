@@ -26,8 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = "/unauthorized.html";
         return;
     }
-
-    // Відображаємо ім'я адміністратора
+    
     const payload = JSON.parse(atob(token.split(".")[1]));
     const fullName = payload["name"] || "Administrator";
     document.getElementById("admin-name").innerText = `👤 ${fullName}`;
@@ -76,7 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // -------------------- Mongo Queries Loader --------------------
     function loadMongoQueries() {
-        // Очистити поля вводу та результат
         document.getElementById("mongo-collection").value = "";
         document.getElementById("mongo-operation").value = "find";
         document.getElementById("mongo-filter").value = "";
@@ -133,8 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-
-    // Активуємо дефолтну вкладку
+    
     document.querySelector("[data-tab].active")?.click();
 
     // =====================================================================
@@ -306,6 +303,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 // -------------------- Add Payment --------------------
+    
 // -------------------- Init dropdowns when modal opens --------------------
     document.getElementById("modalAddPayment")
         .addEventListener("show.bs.modal", loadAddPaymentDropdowns);
@@ -358,8 +356,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 op.dataset.patient = v.patientMedicalRecord;
                 visitSelect.appendChild(op);
             });
-
-            // коли змінюється вибір візиту
+            
             visitSelect.addEventListener("change", () => {
                 const selectedOption = visitSelect.selectedOptions[0];
                 patientInput.value = selectedOption ? selectedOption.dataset.patient : "";
@@ -388,7 +385,7 @@ document.addEventListener("DOMContentLoaded", () => {
             status: form.status.value
         };
 
-        const paymentId = form.id.value; // <-- правильний ID
+        const paymentId = form.id.value;
 
         const res = await authFetch(`/administrator/payments/${paymentId}`, {
             method: "PUT",
@@ -754,17 +751,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    let patientCostChart = null; // глобальна змінна
+    let patientCostChart = null;
 
     function renderPatientCostChart(monthlyCosts) {
         const ctx = document.getElementById("patientCostChart");
-
-        // Знищуємо попередній графік, якщо він існує
+        
         if (patientCostChart) {
             patientCostChart.destroy();
         }
-
-        // Створюємо новий
+        
         patientCostChart = new Chart(ctx, {
             type: "bar",
             data: {
@@ -829,8 +824,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     document.getElementById("btnLoadPatientsByProfile")?.addEventListener("click", loadPatientsBySpecialty);
-
-// Заповнення списку спеціальностей при завантаженні
+    
     function loadSpecialtiesForPatientsByProfile() {
         const typeSelect = document.getElementById("profileSpecialty");
         typeSelect.innerHTML = `<option value="">-- Select Specialty --</option>`;
@@ -881,8 +875,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     resultBlock.textContent = "No patients found for this specialty.";
                     return;
                 }
-
-                // Створюємо таблицю
+                
                 let html = `<table class="table table-sm table-striped">
                             <thead>
                                 <tr>
@@ -922,8 +915,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("btnLoadPatientsByProfile")
             .addEventListener("click", loadPatientsBySpecialistProfile);
     });
-
-// Викликати після завантаження спеціалістів
+    
     loadSpecialtiesForPatientsByProfile();
     // =====================================================================
 //                            USERS CRUD
@@ -955,7 +947,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // ----- ROLE FILTER -----
         if (role !== "") {
-            const targetRole = roleMap[role];   // convert text -> number
+            const targetRole = roleMap[role];
             data = data.filter(u => Number(u.userRole) === targetRole);
         }
 
@@ -1138,7 +1130,7 @@ document.addEventListener("DOMContentLoaded", () => {
             userName: form.userName.value,
             fullName: form.fullName.value,
             passwordHash: form.password.value,
-            userRole: roleMap[form.role.value]  // <-- перетворюємо на число
+            userRole: roleMap[form.role.value]
         };
 
         if (form.medicalRecordNumber) dto.medicalRecordNumber = parseInt(form.medicalRecordNumber.value);
@@ -1283,7 +1275,7 @@ document.addEventListener("DOMContentLoaded", () => {
             userName: form.userName.value,
             fullName: form.fullName ? form.fullName.value : null,
             userRole: roleMap[form.role.value],
-            PasswordHash: user.passwordHash // додаємо існуючий хеш пароля
+            PasswordHash: user.passwordHash
         };
 
         if (form.medicalRecordNumber) dto.medicalRecordNumber = parseInt(form.medicalRecordNumber.value);
@@ -1669,8 +1661,7 @@ async function loadLogs() {
         if (!res.ok) throw new Error("Failed to load logs");
 
         let logs = await res.json();
-
-        // Фільтрування по користувачу та даті
+        
         const userFilter = document.getElementById("logs-user-filter").value.trim().toLowerCase();
         const dateFrom = document.getElementById("logs-date-from").value;
         const dateTo = document.getElementById("logs-date-to").value;
@@ -1690,8 +1681,7 @@ async function loadLogs() {
             container.innerHTML = '<div class="alert alert-secondary">No logs found</div>';
             return;
         }
-
-        // Таблиця
+        
         let html = `<table class="table table-striped table-bordered">
             <thead>
                 <tr>
@@ -1724,7 +1714,6 @@ async function loadLogs() {
 // APPLY FILTER BUTTON
 document.getElementById("btnApplyLogsFilter").addEventListener("click", loadLogs);
 
-// Додати до switch case при перемиканні вкладок
 switch (tab) {
     case "logs":
         loadLogs();

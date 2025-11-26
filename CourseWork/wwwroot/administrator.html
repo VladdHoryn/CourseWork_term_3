@@ -98,7 +98,7 @@
             <!-- ====================== DASHBOARD ====================== -->
             <section id="dashboard" class="tab active">
                 <h2 class="mb-4">📊 Administrator Dashboard</h2>
-                <div class="row mt-4 mb-4 g-3"> <!-- додано mt-4 і mb-4, g-3 для відстані між колонками -->
+                <div class="row mt-4 mb-4 g-3">
 
                     <div class="col-md-2">
                         <div class="card p-3 text-center bg-primary text-white pointer dashboard-box" data-tab="users">
@@ -608,7 +608,6 @@
                         <div class="col-md-6 mb-3">
                             <label>Role</label>
                             <select name="role" class="form-control" required id="addUserRole">
-                                <!--                                <option value="Administrator">Administrator</option>-->
                                 <option value="Operator">Operator</option>
                                 <option value="Specialist">Specialist</option>
                                 <option value="Patient">Patient</option>
@@ -654,8 +653,7 @@
                             </select>
                         </div>
                     </div>
-
-                    <!-- Контейнер для fullName, Medical Record, Speciality тощо -->
+                    
                     <div id="editRoleSpecificFields"></div>
 
                     <button class="btn btn-primary w-100 mt-3" type="submit">Save Changes</button>

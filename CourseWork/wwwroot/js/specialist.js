@@ -505,8 +505,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Please select a visit!");
             return;
         }
-
-        // підтягуємо Patient MR з вибраного Visit
+        
         const selectedVisit = visitsList.find(v => v.id === visitId);
         if (!selectedVisit) {
             alert("Selected visit not found!");

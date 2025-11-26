@@ -765,8 +765,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const form = addVisitModalEl.querySelector("form");
         form.reset();
-
-        // Populate dropdowns
+        
         const patientSelect = form.patientId;
         const specialistSelect = form.specialistId;
         patientSelect.innerHTML = "";
@@ -785,8 +784,7 @@ document.addEventListener("DOMContentLoaded", () => {
             opt.textContent = `${s.fullName} (${s.speciality})`;
             specialistSelect.appendChild(opt);
         });
-
-        // Відкриваємо модалку через існуючий екземпляр
+        
         addVisitModal.show();
     });
     async function openVisitModal(visit = null) {
@@ -794,8 +792,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const modal = document.getElementById(visit ? "modalEditVisit" : "modalAddVisit");
         const form = modal.querySelector("form");
-
-        // ---------- Populate dropdowns (only for Add modal) ----------
+        
         if (!visit) {
             const patientSelect = form.patientId;
             const specialistSelect = form.specialistId;
@@ -918,8 +915,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let payments = [];
     let filteredPayments = [];
     let deletePaymentId = null;
-    // let sortColumn = null;
-    // let sortAsc = true;
 
 // -------------------- Load Payments --------------------
     async function loadPayments() {
@@ -1085,6 +1080,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 // -------------------- Add Payment --------------------
+    
     // -------------------- Init dropdowns when modal opens --------------------
     document.getElementById("modalAddPayment")
         .addEventListener("show.bs.modal", loadAddPaymentDropdowns);
@@ -1167,7 +1163,7 @@ document.addEventListener("DOMContentLoaded", () => {
             status: form.status.value
         };
 
-        const paymentId = form.id.value; // <-- правильний ID
+        const paymentId = form.id.value;
 
         const res = await authFetch(`/operator/payments/${paymentId}`, {
             method: "PUT",

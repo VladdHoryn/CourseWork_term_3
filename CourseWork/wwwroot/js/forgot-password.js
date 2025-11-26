@@ -28,7 +28,7 @@
         if (/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) score += 1;
         if (/[^A-Za-z0-9]/.test(pwd)) score += 1;
 
-        return score; // 0..5
+        return score;
     }
 
     function updateStrengthUI(pwd) {

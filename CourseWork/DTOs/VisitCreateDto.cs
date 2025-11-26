@@ -2,17 +2,17 @@
 
 public class VisitCreateDto
 {
-    public string PatientId { get; set; }                 // ID пацієнта (для контролера)
-    public int PatientMedicalRecord { get; set; }        // Номер мед. картки пацієнта
-    public DateTime VisitDate { get; set; }              // Дата візиту
+    public string PatientId { get; set; }           
+    public int PatientMedicalRecord { get; set; }      
+    public DateTime VisitDate { get; set; }          
 
     // Медична інформація
-    public string Anamnesis { get; set; }               // Анамнез
-    public string Diagnosis { get; set; }               // Діагноз
-    public string Treatment { get; set; }               // Лікування
-    public string? Recommendations { get; set; }       // Рекомендації (необов'язково)
+    public string Anamnesis { get; set; }            
+    public string Diagnosis { get; set; }            
+    public string Treatment { get; set; }              
+    public string? Recommendations { get; set; }      
 
     // Вартість
-    public decimal ServiceCost { get; set; }            // Вартість послуг
-    public decimal MedicationCost { get; set; }         // Вартість ліків
+    public decimal ServiceCost { get; set; }        
+    public decimal MedicationCost { get; set; }        
 }

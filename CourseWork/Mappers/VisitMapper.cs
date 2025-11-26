@@ -28,8 +28,8 @@ public class VisitMapper
             patientMedicalRecord,
             specialistId,
             dto.VisitDate,
-            VisitStatus.Scheduled, // новий візит завжди Scheduled
-            isFirstVisit,          // автоматичне визначення
+            VisitStatus.Scheduled,
+            isFirstVisit,
             dto.Anamnesis,
             dto.Diagnosis,
             dto.Treatment,

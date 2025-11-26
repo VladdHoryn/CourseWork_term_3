@@ -187,8 +187,6 @@ public class UserService
         var user = _userRepo.GetByName(request.UserName)
                    ?? throw new KeyNotFoundException("User not found.");
 
-        // Використовуємо ASP.NET Identity password hasher
-
         var verificationResult = _hasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
 
         if (verificationResult == PasswordVerificationResult.Failed)

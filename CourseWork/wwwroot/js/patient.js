@@ -95,14 +95,12 @@ async function loadBills() {
     bills.forEach((b, index) => {
         const rem = b.totalAmount - b.paidAmount;
         const isOverdue = new Date(b.dueDate) < new Date() && rem > 0;
-
-        // ❗ Нормальна перевірка чи можна платити
+        
         const isPayDisabled =
             b.status === "Paid" ||
             b.status === "Cancelled" ||
             rem <= 0;
-
-        // Badge by status
+        
         const statusColor = {
             Pending: "secondary",
             PartiallyPaid: "warning",
@@ -150,8 +148,7 @@ async function loadBills() {
 
         container.appendChild(card);
     });
-
-    // Attach button events
+    
     document.querySelectorAll(".btn-pay").forEach(btn => {
         btn.addEventListener("click", () => {
             currentBillId = btn.getAttribute("data-id");

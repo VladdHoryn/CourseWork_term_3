@@ -55,7 +55,7 @@ public static class PaymentMapper
             PaidAmount = 0,
             RemainingAmount = dto.Amount,
             IssuedDate = DateTime.UtcNow,
-            DueDate = DateTime.UtcNow.AddDays(30), // стандартний термін
+            DueDate = DateTime.UtcNow.AddDays(30),
             Status = PaymentStatus.Pending
         };
 
