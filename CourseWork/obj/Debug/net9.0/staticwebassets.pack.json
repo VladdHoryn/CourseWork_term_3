@@ -1,20 +1,48 @@
 {
   "Files": [
     {
-      "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\scopedcss\\projectbundle\\CourseWork.bundle.scp.css",
-      "PackagePath": "staticwebassets\\CourseWork.whmnvjakgv.bundle.scp.css"
+      "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\administrator.html",
+      "PackagePath": "staticwebassets\\administrator.html"
+    },
+    {
+      "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\forgot-password.html",
+      "PackagePath": "staticwebassets\\forgot-password.html"
     },
     {
       "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\guest.html",
       "PackagePath": "staticwebassets\\guest.html"
     },
     {
+      "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\administrator.js",
+      "PackagePath": "staticwebassets\\js\\administrator.js"
+    },
+    {
+      "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\auth.js",
+      "PackagePath": "staticwebassets\\js\\auth.js"
+    },
+    {
+      "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\forgot-password.js",
+      "PackagePath": "staticwebassets\\js\\forgot-password.js"
+    },
+    {
       "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\guest.js",
       "PackagePath": "staticwebassets\\js\\guest.js"
     },
     {
+      "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\operator.js",
+      "PackagePath": "staticwebassets\\js\\operator.js"
+    },
+    {
+      "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\patient.js",
+      "PackagePath": "staticwebassets\\js\\patient.js"
+    },
+    {
       "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\register.js",
       "PackagePath": "staticwebassets\\js\\register.js"
+    },
+    {
+      "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\specialist.js",
+      "PackagePath": "staticwebassets\\js\\specialist.js"
     },
     {
       "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\lib\\bootstrap\\LICENSE",
@@ -257,8 +285,20 @@
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.slim.min.map"
     },
     {
+      "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\operator.html",
+      "PackagePath": "staticwebassets\\operator.html"
+    },
+    {
+      "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\patient.html",
+      "PackagePath": "staticwebassets\\patient.html"
+    },
+    {
       "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\register.html",
       "PackagePath": "staticwebassets\\register.html"
+    },
+    {
+      "Id": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\specialist.html",
+      "PackagePath": "staticwebassets\\specialist.html"
     },
     {
       "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.CourseWork.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",

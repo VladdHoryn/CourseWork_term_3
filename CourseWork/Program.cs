@@ -1,9 +1,11 @@
 using System.Text;
+using CourseWork;
 using CourseWork.Controllers.AuthController;
 using CourseWork.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using MongoDB.Driver;
 using Сoursework.Models;
 using Сoursework.Repositories;
 using Сoursework.Services;
@@ -26,6 +28,19 @@ var dbName = mongoDbSettings["DatabaseName"]
              ?? throw new InvalidOperationException("MongoDB DatabaseName not found.");
 
 builder.Services.AddSingleton(new MongoDBRepository(connectionString, dbName));
+
+
+// Create MongoDB client and get the database
+var client = new MongoClient(connectionString); // Use connectionString from config
+var database = client.GetDatabase(dbName);      // Use dbName from config
+
+// database.DropCollection("users");
+// database.DropCollection("visits");
+// database.DropCollection("payments");
+// database.DropCollection("registration_requests");
+
+// Seed the database with initial data if collections are empty
+DatabaseSeeder.SeedDatabase(database, new PasswordHasher<User>());
 
 // ========================
 // Repositories
