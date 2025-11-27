@@ -112,11 +112,11 @@ C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compre
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\zpbeyaunbk-htqq7f643v.gz
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\n4dkopgc0m-vdfzyk7q29.gz
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\rguqrk168c-fl44k8n1bk.gz
-C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\8idcvpltf7-n9y853v2wz.gz
-C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\ph4kp1pli3-80vvp0bqjg.gz
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\lglpandyq9-jwa7blizq1.gz
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\n8lxxup7iq-3axzb5p9xl.gz
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\czxy2fp0fr-x8gruvtj9k.gz
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\v73x7azm4e-485lu74zdc.gz
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\dfolihd8x3-w5p3gcwwyj.gz
 C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\zka9rd9jco-ld8702as3g.gz
+C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\8idcvpltf7-lvelfc5un4.gz
+C:\Users\Vlad\Desktop\Курсач\CourseWork\CourseWork\obj\Debug\net9.0\compressed\ph4kp1pli3-whz9zhe9bm.gz

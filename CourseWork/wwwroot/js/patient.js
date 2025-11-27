@@ -1,4 +1,12 @@
-﻿// ========= AUTH FETCH ==========
+﻿const VisitStatusMap = {
+    0: "Scheduled",
+    1: "InProgress",
+    2: "Completed",
+    3: "Cancelled",
+    4: "NoShow"
+};
+
+// ========= AUTH FETCH ==========
 async function authFetch(url, options = {}) {
     const token = localStorage.getItem("token");
     if (!token) return null;
@@ -64,9 +72,7 @@ async function loadVisits() {
         card.innerHTML = `
             <div class="card-body">
                 <h5>${new Date(v.visitDate).toLocaleString()}</h5>
-                <p><b>Specialist:</b> ${v.specialistName}</p>
-                <p><b>Purpose:</b> ${v.purpose}</p>
-                <p><b>Status:</b> ${v.status}</p>
+                <p><b>Status:</b> ${VisitStatusMap[v.status]}</p>
                 <p><b>Total Cost:</b> ${v.totalCost} грн</p>
             </div>
         `;

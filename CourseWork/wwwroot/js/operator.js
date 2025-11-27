@@ -1133,8 +1133,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 op.dataset.patient = v.patientMedicalRecord;
                 visitSelect.appendChild(op);
             });
-
-            // коли змінюється вибір візиту
+            
             visitSelect.addEventListener("change", () => {
                 const selectedOption = visitSelect.selectedOptions[0];
                 patientInput.value = selectedOption ? selectedOption.dataset.patient : "";

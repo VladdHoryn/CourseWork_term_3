@@ -138,8 +138,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>n9y853v2wz</Fingerprint>
-      <Integrity>e+CBrA9ufsFWOoEl5kr6rZQcCLK8lL65ajyszT1EF74=</Integrity>
+      <Fingerprint>lvelfc5un4</Fingerprint>
+      <Integrity>b9ISOLx8B8PNgKN7163CVQx9UA5dXRI3SpAK5mdvZ5E=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\operator.js'))</OriginalItemSpec>
@@ -156,8 +156,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>80vvp0bqjg</Fingerprint>
-      <Integrity>SGjdo8ufCVS+5w7j1tgnxhPe7rbdyAILPDGp95pImdw=</Integrity>
+      <Fingerprint>whz9zhe9bm</Fingerprint>
+      <Integrity>DN2c8utH9qqPaWbMbMpqA4IM6QOeWJ9I0ofdxTX+IZA=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\patient.js'))</OriginalItemSpec>

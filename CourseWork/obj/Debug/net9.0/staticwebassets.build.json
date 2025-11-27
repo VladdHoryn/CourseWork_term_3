@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "cP9ISZWdsi+q6R8gy+dg+1atHNy23RYlQWuyd0nDN5M=",
+  "Hash": "FzqkPivpd3bDhK+97706udy3qKRzQMxfUWxEpYfKgPM=",
   "Source": "CourseWork",
   "BasePath": "_content/CourseWork",
   "Mode": "Default",
@@ -269,12 +269,12 @@
       "OriginalItemSpec": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css"
     },
     {
-      "Identity": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\8idcvpltf7-n9y853v2wz.gz",
+      "Identity": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\8idcvpltf7-lvelfc5un4.gz",
       "SourceId": "CourseWork",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\",
       "BasePath": "_content/CourseWork",
-      "RelativePath": "js/operator#[.{fingerprint=n9y853v2wz}]?.js.gz",
+      "RelativePath": "js/operator#[.{fingerprint=lvelfc5un4}]?.js.gz",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Alternative",
@@ -283,8 +283,8 @@
       "RelatedAsset": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\operator.js",
       "AssetTraitName": "Content-Encoding",
       "AssetTraitValue": "gzip",
-      "Fingerprint": "1m50j0ejzm",
-      "Integrity": "aa+DJ3D0O+tWkZ/r4mA54uLIUvaSs/V9gLI32I30Z2I=",
+      "Fingerprint": "4q61teoph2",
+      "Integrity": "TM2DqmqP6R9V7+3yNoHEN9jBgmTGrWZdKj/iLmoL2+Y=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\operator.js"
@@ -1046,12 +1046,12 @@
       "OriginalItemSpec": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.min.js"
     },
     {
-      "Identity": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\ph4kp1pli3-80vvp0bqjg.gz",
+      "Identity": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\ph4kp1pli3-whz9zhe9bm.gz",
       "SourceId": "CourseWork",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\",
       "BasePath": "_content/CourseWork",
-      "RelativePath": "js/patient#[.{fingerprint=80vvp0bqjg}]?.js.gz",
+      "RelativePath": "js/patient#[.{fingerprint=whz9zhe9bm}]?.js.gz",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Alternative",
@@ -1060,8 +1060,8 @@
       "RelatedAsset": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\patient.js",
       "AssetTraitName": "Content-Encoding",
       "AssetTraitValue": "gzip",
-      "Fingerprint": "623matwkey",
-      "Integrity": "/paZKXLuLvQOagQO/ZP+FuxFPUP2t2d9dkYRKp4PPVI=",
+      "Fingerprint": "d733bxljrl",
+      "Integrity": "B66KtP97M32ZI03Fv+//OllPTmyQGUguAeEfO/AbeOQ=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\patient.js"
@@ -1732,8 +1732,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "n9y853v2wz",
-      "Integrity": "e+CBrA9ufsFWOoEl5kr6rZQcCLK8lL65ajyszT1EF74=",
+      "Fingerprint": "lvelfc5un4",
+      "Integrity": "b9ISOLx8B8PNgKN7163CVQx9UA5dXRI3SpAK5mdvZ5E=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\js\\operator.js"
@@ -1753,8 +1753,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "80vvp0bqjg",
-      "Integrity": "SGjdo8ufCVS+5w7j1tgnxhPe7rbdyAILPDGp95pImdw=",
+      "Fingerprint": "whz9zhe9bm",
+      "Integrity": "DN2c8utH9qqPaWbMbMpqA4IM6QOeWJ9I0ofdxTX+IZA=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\js\\patient.js"
@@ -5235,12 +5235,12 @@
     },
     {
       "Route": "js/operator.js",
-      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\8idcvpltf7-n9y853v2wz.gz",
+      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\8idcvpltf7-lvelfc5un4.gz",
       "Selectors": [
         {
           "Name": "Content-Encoding",
           "Value": "gzip",
-          "Quality": "0.000141924496"
+          "Quality": "0.000142979697"
         }
       ],
       "ResponseHeaders": [
@@ -5250,15 +5250,15 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "7045"
+          "Value": "6993"
         },
         {
           "Name": "ETag",
-          "Value": "\"aa+DJ3D0O+tWkZ/r4mA54uLIUvaSs/V9gLI32I30Z2I=\""
+          "Value": "\"TM2DqmqP6R9V7+3yNoHEN9jBgmTGrWZdKj/iLmoL2+Y=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 26 Nov 2025 00:53:56 GMT"
+          "Value": "Thu, 27 Nov 2025 06:00:47 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -5278,13 +5278,13 @@
         },
         {
           "Name": "ETag",
-          "Value": "W/\"e+CBrA9ufsFWOoEl5kr6rZQcCLK8lL65ajyszT1EF74=\""
+          "Value": "W/\"b9ISOLx8B8PNgKN7163CVQx9UA5dXRI3SpAK5mdvZ5E=\""
         }
       ],
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-e+CBrA9ufsFWOoEl5kr6rZQcCLK8lL65ajyszT1EF74="
+          "Value": "sha256-b9ISOLx8B8PNgKN7163CVQx9UA5dXRI3SpAK5mdvZ5E="
         }
       ]
     },
@@ -5299,7 +5299,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "44536"
+          "Value": "44478"
         },
         {
           "Name": "Content-Type",
@@ -5307,11 +5307,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"e+CBrA9ufsFWOoEl5kr6rZQcCLK8lL65ajyszT1EF74=\""
+          "Value": "\"b9ISOLx8B8PNgKN7163CVQx9UA5dXRI3SpAK5mdvZ5E=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 26 Nov 2025 00:53:56 GMT"
+          "Value": "Thu, 27 Nov 2025 06:00:47 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -5321,13 +5321,13 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-e+CBrA9ufsFWOoEl5kr6rZQcCLK8lL65ajyszT1EF74="
+          "Value": "sha256-b9ISOLx8B8PNgKN7163CVQx9UA5dXRI3SpAK5mdvZ5E="
         }
       ]
     },
     {
       "Route": "js/operator.js.gz",
-      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\8idcvpltf7-n9y853v2wz.gz",
+      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\8idcvpltf7-lvelfc5un4.gz",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -5336,7 +5336,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "7045"
+          "Value": "6993"
         },
         {
           "Name": "Content-Type",
@@ -5344,11 +5344,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"aa+DJ3D0O+tWkZ/r4mA54uLIUvaSs/V9gLI32I30Z2I=\""
+          "Value": "\"TM2DqmqP6R9V7+3yNoHEN9jBgmTGrWZdKj/iLmoL2+Y=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 26 Nov 2025 00:53:56 GMT"
+          "Value": "Thu, 27 Nov 2025 06:00:47 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -5366,18 +5366,18 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-aa+DJ3D0O+tWkZ/r4mA54uLIUvaSs/V9gLI32I30Z2I="
+          "Value": "sha256-TM2DqmqP6R9V7+3yNoHEN9jBgmTGrWZdKj/iLmoL2+Y="
         }
       ]
     },
     {
-      "Route": "js/operator.n9y853v2wz.js",
-      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\8idcvpltf7-n9y853v2wz.gz",
+      "Route": "js/operator.lvelfc5un4.js",
+      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\8idcvpltf7-lvelfc5un4.gz",
       "Selectors": [
         {
           "Name": "Content-Encoding",
           "Value": "gzip",
-          "Quality": "0.000141924496"
+          "Quality": "0.000142979697"
         }
       ],
       "ResponseHeaders": [
@@ -5387,15 +5387,15 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "7045"
+          "Value": "6993"
         },
         {
           "Name": "ETag",
-          "Value": "\"aa+DJ3D0O+tWkZ/r4mA54uLIUvaSs/V9gLI32I30Z2I=\""
+          "Value": "\"TM2DqmqP6R9V7+3yNoHEN9jBgmTGrWZdKj/iLmoL2+Y=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 26 Nov 2025 00:53:56 GMT"
+          "Value": "Thu, 27 Nov 2025 06:00:47 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -5415,13 +5415,13 @@
         },
         {
           "Name": "ETag",
-          "Value": "W/\"e+CBrA9ufsFWOoEl5kr6rZQcCLK8lL65ajyszT1EF74=\""
+          "Value": "W/\"b9ISOLx8B8PNgKN7163CVQx9UA5dXRI3SpAK5mdvZ5E=\""
         }
       ],
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "n9y853v2wz"
+          "Value": "lvelfc5un4"
         },
         {
           "Name": "label",
@@ -5429,12 +5429,12 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-e+CBrA9ufsFWOoEl5kr6rZQcCLK8lL65ajyszT1EF74="
+          "Value": "sha256-b9ISOLx8B8PNgKN7163CVQx9UA5dXRI3SpAK5mdvZ5E="
         }
       ]
     },
     {
-      "Route": "js/operator.n9y853v2wz.js",
+      "Route": "js/operator.lvelfc5un4.js",
       "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\operator.js",
       "Selectors": [],
       "ResponseHeaders": [
@@ -5444,7 +5444,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "44536"
+          "Value": "44478"
         },
         {
           "Name": "Content-Type",
@@ -5452,11 +5452,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"e+CBrA9ufsFWOoEl5kr6rZQcCLK8lL65ajyszT1EF74=\""
+          "Value": "\"b9ISOLx8B8PNgKN7163CVQx9UA5dXRI3SpAK5mdvZ5E=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 26 Nov 2025 00:53:56 GMT"
+          "Value": "Thu, 27 Nov 2025 06:00:47 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -5466,7 +5466,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "n9y853v2wz"
+          "Value": "lvelfc5un4"
         },
         {
           "Name": "label",
@@ -5474,13 +5474,13 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-e+CBrA9ufsFWOoEl5kr6rZQcCLK8lL65ajyszT1EF74="
+          "Value": "sha256-b9ISOLx8B8PNgKN7163CVQx9UA5dXRI3SpAK5mdvZ5E="
         }
       ]
     },
     {
-      "Route": "js/operator.n9y853v2wz.js.gz",
-      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\8idcvpltf7-n9y853v2wz.gz",
+      "Route": "js/operator.lvelfc5un4.js.gz",
+      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\8idcvpltf7-lvelfc5un4.gz",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -5489,7 +5489,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "7045"
+          "Value": "6993"
         },
         {
           "Name": "Content-Type",
@@ -5497,11 +5497,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"aa+DJ3D0O+tWkZ/r4mA54uLIUvaSs/V9gLI32I30Z2I=\""
+          "Value": "\"TM2DqmqP6R9V7+3yNoHEN9jBgmTGrWZdKj/iLmoL2+Y=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 26 Nov 2025 00:53:56 GMT"
+          "Value": "Thu, 27 Nov 2025 06:00:47 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -5519,7 +5519,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "n9y853v2wz"
+          "Value": "lvelfc5un4"
         },
         {
           "Name": "label",
@@ -5527,18 +5527,18 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-aa+DJ3D0O+tWkZ/r4mA54uLIUvaSs/V9gLI32I30Z2I="
+          "Value": "sha256-TM2DqmqP6R9V7+3yNoHEN9jBgmTGrWZdKj/iLmoL2+Y="
         }
       ]
     },
     {
-      "Route": "js/patient.80vvp0bqjg.js",
-      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\ph4kp1pli3-80vvp0bqjg.gz",
+      "Route": "js/patient.js",
+      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\ph4kp1pli3-whz9zhe9bm.gz",
       "Selectors": [
         {
           "Name": "Content-Encoding",
           "Value": "gzip",
-          "Quality": "0.000359453630"
+          "Quality": "0.000353606789"
         }
       ],
       "ResponseHeaders": [
@@ -5548,19 +5548,19 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "2781"
+          "Value": "2827"
         },
         {
           "Name": "ETag",
-          "Value": "\"/paZKXLuLvQOagQO/ZP+FuxFPUP2t2d9dkYRKp4PPVI=\""
+          "Value": "\"B66KtP97M32ZI03Fv+//OllPTmyQGUguAeEfO/AbeOQ=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 26 Nov 2025 00:53:56 GMT"
+          "Value": "Thu, 27 Nov 2025 07:49:38 GMT"
         },
         {
           "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
+          "Value": "no-cache"
         },
         {
           "Name": "Content-Encoding",
@@ -5576,26 +5576,18 @@
         },
         {
           "Name": "ETag",
-          "Value": "W/\"SGjdo8ufCVS+5w7j1tgnxhPe7rbdyAILPDGp95pImdw=\""
+          "Value": "W/\"DN2c8utH9qqPaWbMbMpqA4IM6QOeWJ9I0ofdxTX+IZA=\""
         }
       ],
       "EndpointProperties": [
         {
-          "Name": "fingerprint",
-          "Value": "80vvp0bqjg"
-        },
-        {
-          "Name": "label",
-          "Value": "js/patient.js"
-        },
-        {
           "Name": "integrity",
-          "Value": "sha256-SGjdo8ufCVS+5w7j1tgnxhPe7rbdyAILPDGp95pImdw="
+          "Value": "sha256-DN2c8utH9qqPaWbMbMpqA4IM6QOeWJ9I0ofdxTX+IZA="
         }
       ]
     },
     {
-      "Route": "js/patient.80vvp0bqjg.js",
+      "Route": "js/patient.js",
       "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\patient.js",
       "Selectors": [],
       "ResponseHeaders": [
@@ -5605,7 +5597,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "10219"
+          "Value": "10253"
         },
         {
           "Name": "Content-Type",
@@ -5613,11 +5605,156 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"SGjdo8ufCVS+5w7j1tgnxhPe7rbdyAILPDGp95pImdw=\""
+          "Value": "\"DN2c8utH9qqPaWbMbMpqA4IM6QOeWJ9I0ofdxTX+IZA=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 26 Nov 2025 00:53:56 GMT"
+          "Value": "Thu, 27 Nov 2025 07:49:38 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-DN2c8utH9qqPaWbMbMpqA4IM6QOeWJ9I0ofdxTX+IZA="
+        }
+      ]
+    },
+    {
+      "Route": "js/patient.js.gz",
+      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\ph4kp1pli3-whz9zhe9bm.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2827"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"B66KtP97M32ZI03Fv+//OllPTmyQGUguAeEfO/AbeOQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 27 Nov 2025 07:49:38 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-B66KtP97M32ZI03Fv+//OllPTmyQGUguAeEfO/AbeOQ="
+        }
+      ]
+    },
+    {
+      "Route": "js/patient.whz9zhe9bm.js",
+      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\ph4kp1pli3-whz9zhe9bm.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000353606789"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2827"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"B66KtP97M32ZI03Fv+//OllPTmyQGUguAeEfO/AbeOQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 27 Nov 2025 07:49:38 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"DN2c8utH9qqPaWbMbMpqA4IM6QOeWJ9I0ofdxTX+IZA=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "whz9zhe9bm"
+        },
+        {
+          "Name": "label",
+          "Value": "js/patient.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-DN2c8utH9qqPaWbMbMpqA4IM6QOeWJ9I0ofdxTX+IZA="
+        }
+      ]
+    },
+    {
+      "Route": "js/patient.whz9zhe9bm.js",
+      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\patient.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "10253"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"DN2c8utH9qqPaWbMbMpqA4IM6QOeWJ9I0ofdxTX+IZA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 27 Nov 2025 07:49:38 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -5627,7 +5764,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "80vvp0bqjg"
+          "Value": "whz9zhe9bm"
         },
         {
           "Name": "label",
@@ -5635,13 +5772,13 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-SGjdo8ufCVS+5w7j1tgnxhPe7rbdyAILPDGp95pImdw="
+          "Value": "sha256-DN2c8utH9qqPaWbMbMpqA4IM6QOeWJ9I0ofdxTX+IZA="
         }
       ]
     },
     {
-      "Route": "js/patient.80vvp0bqjg.js.gz",
-      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\ph4kp1pli3-80vvp0bqjg.gz",
+      "Route": "js/patient.whz9zhe9bm.js.gz",
+      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\ph4kp1pli3-whz9zhe9bm.gz",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -5650,7 +5787,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "2781"
+          "Value": "2827"
         },
         {
           "Name": "Content-Type",
@@ -5658,11 +5795,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"/paZKXLuLvQOagQO/ZP+FuxFPUP2t2d9dkYRKp4PPVI=\""
+          "Value": "\"B66KtP97M32ZI03Fv+//OllPTmyQGUguAeEfO/AbeOQ=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 26 Nov 2025 00:53:56 GMT"
+          "Value": "Thu, 27 Nov 2025 07:49:38 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -5680,7 +5817,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "80vvp0bqjg"
+          "Value": "whz9zhe9bm"
         },
         {
           "Name": "label",
@@ -5688,144 +5825,7 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-/paZKXLuLvQOagQO/ZP+FuxFPUP2t2d9dkYRKp4PPVI="
-        }
-      ]
-    },
-    {
-      "Route": "js/patient.js",
-      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\ph4kp1pli3-80vvp0bqjg.gz",
-      "Selectors": [
-        {
-          "Name": "Content-Encoding",
-          "Value": "gzip",
-          "Quality": "0.000359453630"
-        }
-      ],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "2781"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"/paZKXLuLvQOagQO/ZP+FuxFPUP2t2d9dkYRKp4PPVI=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Wed, 26 Nov 2025 00:53:56 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "no-cache"
-        },
-        {
-          "Name": "Content-Encoding",
-          "Value": "gzip"
-        },
-        {
-          "Name": "Vary",
-          "Value": "Content-Encoding"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/javascript"
-        },
-        {
-          "Name": "ETag",
-          "Value": "W/\"SGjdo8ufCVS+5w7j1tgnxhPe7rbdyAILPDGp95pImdw=\""
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "integrity",
-          "Value": "sha256-SGjdo8ufCVS+5w7j1tgnxhPe7rbdyAILPDGp95pImdw="
-        }
-      ]
-    },
-    {
-      "Route": "js/patient.js",
-      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\wwwroot\\js\\patient.js",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "10219"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/javascript"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"SGjdo8ufCVS+5w7j1tgnxhPe7rbdyAILPDGp95pImdw=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Wed, 26 Nov 2025 00:53:56 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "no-cache"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "integrity",
-          "Value": "sha256-SGjdo8ufCVS+5w7j1tgnxhPe7rbdyAILPDGp95pImdw="
-        }
-      ]
-    },
-    {
-      "Route": "js/patient.js.gz",
-      "AssetFile": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\Debug\\net9.0\\compressed\\ph4kp1pli3-80vvp0bqjg.gz",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "2781"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/javascript"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"/paZKXLuLvQOagQO/ZP+FuxFPUP2t2d9dkYRKp4PPVI=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Wed, 26 Nov 2025 00:53:56 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "no-cache"
-        },
-        {
-          "Name": "Content-Encoding",
-          "Value": "gzip"
-        },
-        {
-          "Name": "Vary",
-          "Value": "Content-Encoding"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "integrity",
-          "Value": "sha256-/paZKXLuLvQOagQO/ZP+FuxFPUP2t2d9dkYRKp4PPVI="
+          "Value": "sha256-B66KtP97M32ZI03Fv+//OllPTmyQGUguAeEfO/AbeOQ="
         }
       ]
     },
