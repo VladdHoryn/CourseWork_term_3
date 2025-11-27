@@ -7,7 +7,6 @@ namespace CourseWork;
 
 public static class DatabaseSeeder
 {
-    // Pass the IPasswordHasher<User> from Program.cs when calling SeedDatabase
     public static void SeedDatabase(IMongoDatabase database, IPasswordHasher<User> hasher)
     {
         // === Users Collection ===
