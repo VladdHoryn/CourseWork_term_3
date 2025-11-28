@@ -81,4 +81,19 @@ public class UserRepository
     {
         Users.DeleteOne(u => u.Id == id);
     }
+    
+    public int GetNextMedicalRecordNumber()
+    {
+        var lastPatient = Users
+            .Find(u => u.UserRole == Role.Patient && u.MedicalRecordNumber != null)
+            .SortByDescending(u => u.MedicalRecordNumber)
+            .Limit(1)
+            .FirstOrDefault();
+
+        return lastPatient?.MedicalRecordNumber switch
+        {
+            null => 10001,
+            int lastMrn => lastMrn + 1
+        };
+    }
 }
