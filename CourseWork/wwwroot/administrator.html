@@ -81,7 +81,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <button class="nav-link text-white w-100 text-start" data-tab="mongo"><i
+                    <button class="nav-link text-white w-100 text-start" data-tab="sql"><i
                             class="bi bi-code-slash"></i> SQL Queries
                     </button>
                 </li>
@@ -131,7 +131,7 @@
                     </div>
 
                     <div class="col-md-2">
-                        <div class="card p-3 text-center bg-secondary text-white pointer dashboard-box" data-tab="mongo">
+                        <div class="card p-3 text-center bg-secondary text-white pointer dashboard-box" data-tab="sql">
                             <h4>SQL Queries</h4>
                         </div>
                     </div>
@@ -504,40 +504,19 @@
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
-            <!-- ====================== MONGO QUERIES ====================== -->
-            <section id="mongo" class="tab d-none">
-                <h2>🧾 MongoDB Raw Queries</h2>
+            <!-- ====================== SQL QUERIES ====================== -->
+            <section id="sql" class="tab d-none">
+                <h2>🧾 SQL Queries (Mongo-like)</h2>
 
                 <div class="mb-2">
-                    <label for="mongo-collection" class="form-label">Collection Name:</label>
-                    <input id="mongo-collection" class="form-control" placeholder="e.g. users">
+                    <label for="sql-query" class="form-label">SQL Query:</label>
+                    <textarea id="sql-query" class="form-control" rows="3"
+                              placeholder="e.g. SELECT * FROM users"></textarea>
                 </div>
 
-                <div class="mb-2">
-                    <label for="mongo-operation" class="form-label">Operation:</label>
-                    <select id="mongo-operation" class="form-select">
-                        <option value="find">find</option>
-                        <option value="insert">insert</option>
-                        <option value="update">update</option>
-                        <option value="delete">delete</option>
-                    </select>
-                </div>
+                <button id="btnRunSql" class="btn btn-primary">Run SQL</button>
 
-                <div class="mb-2">
-                    <label for="mongo-filter" class="form-label">Filter (BSON/JSON):</label>
-                    <textarea id="mongo-filter" class="form-control" rows="3"
-                              placeholder='{"_id": "some-id"}'></textarea>
-                </div>
-
-                <div class="mb-2">
-                    <label for="mongo-document" class="form-label">Document (for insert/update):</label>
-                    <textarea id="mongo-document" class="form-control" rows="3"
-                              placeholder='{"field": "value"}'></textarea>
-                </div>
-
-                <button id="btnRunMongo" class="btn btn-primary">Run</button>
-
-                <div id="mongo-result" class="mt-3"></div>
+                <div id="sql-result" class="mt-3"></div>
             </section>
 
             <!-- ====================== LOGS ====================== -->

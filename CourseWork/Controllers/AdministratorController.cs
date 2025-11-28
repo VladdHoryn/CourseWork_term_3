@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using CourseWork.DTOs;
+using CourseWork.Helpers;
 using CourseWork.Mappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -751,5 +752,26 @@ public class AdministratorController : ControllerBase
         LogAction("GetAllLogsResult", $"Count={logs.Count}");
 
         return Ok(logs);
+    }
+    
+    [HttpPost("sql")]
+    public async Task<IActionResult> ExecuteSql([FromBody] SqlQueryRequest req)
+    {
+        if (string.IsNullOrWhiteSpace(req.Sql))
+            return BadRequest("Empty SQL");
+
+        try
+        {
+            var executor = new SqlToMongoExecutor(_repo.GetDatabase());
+            var result = await executor.ExecuteAsync(req.Sql);
+
+            var plainResult = BsonJsonConverter.ConvertList(result);
+
+            return Ok(plainResult);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
     }
 }

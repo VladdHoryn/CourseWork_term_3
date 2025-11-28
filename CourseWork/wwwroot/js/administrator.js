@@ -63,8 +63,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 case "statistics":
                     loadStatistics();
                     break;
-                case "mongo":
-                    loadMongoQueries();
+                case "sql":
+                    loadSqlQueries();
                     break;
                     case "logs":
                         loadLogs();
@@ -73,52 +73,29 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // -------------------- Mongo Queries Loader --------------------
-    function loadMongoQueries() {
-        document.getElementById("mongo-collection").value = "";
-        document.getElementById("mongo-operation").value = "find";
-        document.getElementById("mongo-filter").value = "";
-        document.getElementById("mongo-document").value = "";
-        document.getElementById("mongo-result").innerHTML = "";
+    function loadSqlQueries() {
+        document.getElementById("sql-query").value = "";
+        document.getElementById("sql-result").innerHTML = "";
     }
 
-    // -------------------- Mongo Queries --------------------
-    document.getElementById("btnRunMongo").addEventListener("click", async () => {
-        const collection = document.getElementById("mongo-collection").value.trim();
-        const operation = document.getElementById("mongo-operation").value;
-        const filterInput = document.getElementById("mongo-filter").value.trim();
-        const docInput = document.getElementById("mongo-document").value.trim();
+// -------------------- SQL Queries --------------------
+    document.getElementById("btnRunSql").addEventListener("click", async () => {
+        const sql = document.getElementById("sql-query").value.trim();
 
-        if (!collection) {
-            alert("Collection name is required");
-            return;
-        }
-
-        let filter = {};
-        let document = {};
-
-        try {
-            if (filterInput) filter = JSON.parse(filterInput);
-            if (docInput) document = JSON.parse(docInput);
-        } catch (err) {
-            alert("Invalid JSON in filter or document");
+        if (!sql) {
+            alert("SQL query is required");
             return;
         }
 
         try {
-            const res = await authFetch("/administrator/mongo/run", {
+            const res = await authFetch("/administrator/sql", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    CollectionName: collection,
-                    Operation: operation,
-                    Filter: Object.keys(filter).length ? filter : null,
-                    Document: Object.keys(document).length ? document : null
-                })
+                body: JSON.stringify({ sql })
             });
 
             const result = await res.json();
-            const container = document.getElementById("mongo-result");
+            const container = document.getElementById("sql-result");
 
             if (res.ok) {
                 container.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
@@ -127,12 +104,13 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         } catch (err) {
             console.error(err);
-            document.getElementById("mongo-result").innerHTML = `<div class="alert alert-danger">Request failed: ${err.message}</div>`;
+            document.getElementById("sql-result").innerHTML = `<div class="alert alert-danger">Request failed: ${err.message}</div>`;
         }
     });
 
-    
+// Виклик при завантаженні
     document.querySelector("[data-tab].active")?.click();
+
 
     // =====================================================================
     // 2) LOGOUT

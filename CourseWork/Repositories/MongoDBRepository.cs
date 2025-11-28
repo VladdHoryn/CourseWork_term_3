@@ -45,4 +45,9 @@ public class MongoDBRepository
         var collection = _database.GetCollection<BsonDocument>(collectionName);
         return await collection.DeleteManyAsync(filter);
     }
+    
+    public IMongoDatabase GetDatabase()
+    {
+        return _database;
+    }
 }
