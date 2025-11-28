@@ -1058,7 +1058,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let editingPayment = null;
 
     function openPaymentModal(payment = null) {
-        editingPayment = payment; // зберігаємо поточний об’єкт
+        editingPayment = payment;
 
         const modal = document.getElementById(payment ? "modalEditPayment" : "modalAddPayment");
         const form = modal.querySelector("form");
