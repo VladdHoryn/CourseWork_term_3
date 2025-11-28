@@ -19,6 +19,7 @@ public static class DatabaseSeeder
                 new User("admin", "", Role.Administrator) { FullName = "Admin User", Phone = "+380123456789" },
                 new User("operator1", "", Role.Operator) { FullName = "Operator One", Phone = "+380987654321" },
                 new User("patient1", "", Role.Patient) { FullName = "Patient One", MedicalRecordNumber = 1001 },
+                new User("patient2", "", Role.Patient) { FullName = "Patient Two", MedicalRecordNumber = 1002 },
                 new User("specialist1", "", Role.Specialist) { FullName = "Dr. Specialist", Speciality = "Therapist" }
             };
 
