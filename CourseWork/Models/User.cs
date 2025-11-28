@@ -67,13 +67,6 @@ public class User
         Address = address;
     }
     
-    // public void SetPasswordHash(string password)
-    // {
-    //     if (string.IsNullOrWhiteSpace(password))
-    //         throw new ArgumentException("Password hash cannot be null or empty", nameof(password));
-    //
-    //     PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
-    // }
     public void SetPasswordHash(string password, IPasswordHasher<User> hasher)
     {
         if (string.IsNullOrWhiteSpace(password))

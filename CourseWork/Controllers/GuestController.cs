@@ -1,6 +1,7 @@
 ﻿using CourseWork.DTOs;
 using CourseWork.Mappers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Сoursework.Models;
 using Сoursework.Services;
@@ -60,6 +61,10 @@ public class GuestController : ControllerBase
         if (dto == null || string.IsNullOrWhiteSpace(dto.Username) || string.IsNullOrWhiteSpace(dto.Password))
             return BadRequest("Username and password are required.");
 
+        IPasswordHasher<User> hasher = new PasswordHasher<User>();
+        
+        dto.Password = hasher.HashPassword(new User(), dto.Password);
+        
         bool success = _guestService.SendRegistrationRequest(
             dto.Username,
             dto.Password,
