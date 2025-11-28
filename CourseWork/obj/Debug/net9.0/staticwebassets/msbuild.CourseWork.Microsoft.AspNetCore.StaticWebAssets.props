@@ -66,8 +66,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>uly01zhvsi</Fingerprint>
-      <Integrity>Mozc6BWp5kIAgRWX/hOj1nFFlgat0rBgnXneNosH8cw=</Integrity>
+      <Fingerprint>udapm64sr4</Fingerprint>
+      <Integrity>0u6bIwrS7wYlsH7q01R490OYHjryrBa/TY3oX/Ar9mY=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\administrator.js'))</OriginalItemSpec>
@@ -138,8 +138,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>lvelfc5un4</Fingerprint>
-      <Integrity>b9ISOLx8B8PNgKN7163CVQx9UA5dXRI3SpAK5mdvZ5E=</Integrity>
+      <Fingerprint>c8yhzfm1rx</Fingerprint>
+      <Integrity>dPmpCTWxf9KvNa+BbZ3X1gFsx7G2AOFMpb3VFT1bTAE=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\operator.js'))</OriginalItemSpec>

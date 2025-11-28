@@ -414,7 +414,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const columns = ["id","userName","fullName","speciality","phone","address","createdAt"];
-        let html = `<button class="btn btn-secondary mb-3" id="btn-group-specialty">Group by Specialty</button>
+        let html = `
     <table class="table table-bordered table-hover">
         <thead><tr>`;
 
@@ -442,8 +442,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         html += `</tbody></table>`;
         container.innerHTML = html;
-
-        document.getElementById("btn-group-specialty").addEventListener("click", loadGroupedBySpecialty);
 
         document.querySelectorAll(".btn-edit").forEach(btn =>
             btn.addEventListener("click", () => {
@@ -565,20 +563,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-// ====================== GROUP BY SPECIALTY ======================
-
-    async function loadGroupedBySpecialty() {
-        const res = await authFetch("/operator/specialists/group-by-specialty");
-        if (!res.ok) return;
-
-        const data = await res.json();
-        // Відображаємо у зручному alert
-        let msg = "Specialists grouped by specialty:\n\n";
-        for (const [specialty, count] of Object.entries(data)) {
-            msg += `${specialty}: ${count}\n`;
-        }
-        alert(msg);
-    }
 
 // ====================== INIT ======================
 
@@ -1058,7 +1042,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let editingPayment = null;
 
     function openPaymentModal(payment = null) {
-        editingPayment = payment; // зберігаємо поточний об’єкт
+        editingPayment = payment;
 
         const modal = document.getElementById(payment ? "modalEditPayment" : "modalAddPayment");
         const form = modal.querySelector("form");
