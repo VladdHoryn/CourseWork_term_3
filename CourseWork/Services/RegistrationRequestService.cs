@@ -52,12 +52,15 @@ public class RegistrationRequestService
             Console.WriteLine($"[Error] Request not found or already processed.");
             return false;
         }
+        
+        var nextMrn = _userRepo.GetNextMedicalRecordNumber();
 
         var newUser = new User(request.UserName, request.PasswordHash, initialRole)
         {
             FullName = request.FullName,
             Phone = request.Phone,
-            Address = request.Address
+            Address = request.Address,
+            MedicalRecordNumber = nextMrn
         };
 
         _userRepo.CreateUser(newUser);
