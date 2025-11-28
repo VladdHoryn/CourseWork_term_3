@@ -119,7 +119,6 @@ public class OperatorController : ControllerBase
         LogAction("GetSpecialists", "Operator requested all specialists");
 
         var specialists = _specialistService.GetAllSpecialists()
-                                            .Select(SpecialistMapper.ToDto)
                                             .ToList();
         return Ok(specialists);
     }
