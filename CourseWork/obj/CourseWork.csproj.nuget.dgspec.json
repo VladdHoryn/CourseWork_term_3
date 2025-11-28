@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\CourseWork.csproj": {}
+    "C:\\Users\\Vlad\\Desktop\\Курсач\\Горин В.М. Dentist\\CourseWork\\CourseWork.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\CourseWork.csproj": {
+    "C:\\Users\\Vlad\\Desktop\\Курсач\\Горин В.М. Dentist\\CourseWork\\CourseWork.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\CourseWork.csproj",
+        "projectUniqueName": "C:\\Users\\Vlad\\Desktop\\Курсач\\Горин В.М. Dentist\\CourseWork\\CourseWork.csproj",
         "projectName": "CourseWork",
-        "projectPath": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\CourseWork.csproj",
+        "projectPath": "C:\\Users\\Vlad\\Desktop\\Курсач\\Горин В.М. Dentist\\CourseWork\\CourseWork.csproj",
         "packagesPath": "C:\\Users\\Vlad\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\obj\\",
+        "outputPath": "C:\\Users\\Vlad\\Desktop\\Курсач\\Горин В.М. Dentist\\CourseWork\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Vlad\\AppData\\Roaming\\NuGet\\NuGet.Config"

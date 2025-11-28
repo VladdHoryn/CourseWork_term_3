@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "y/zKhDoiwIc=",
+  "dgSpecHash": "7aJjfhxKjmw=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Vlad\\Desktop\\Курсач\\CourseWork\\CourseWork\\CourseWork.csproj",
+  "projectFilePath": "C:\\Users\\Vlad\\Desktop\\Курсач\\Горин В.М. Dentist\\CourseWork\\CourseWork.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Vlad\\.nuget\\packages\\aspnetcore.authentication.jwtbearer.extension\\1.0.1\\aspnetcore.authentication.jwtbearer.extension.1.0.1.nupkg.sha512",
     "C:\\Users\\Vlad\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
