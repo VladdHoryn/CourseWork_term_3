@@ -291,9 +291,9 @@ document.addEventListener("DOMContentLoaded", () => {
             form.totalAmount.value = payment.totalAmount;
             form.paidAmount.value = payment.paidAmount ?? 0;
             form.remainingAmount.value = payment.remainingAmount ?? 0;
-            form.issuedDate.value = payment.issuedDate ? new Date(payment.issuedDate).toISOString().slice(0, 16) : "";
-            form.dueDate.value = payment.dueDate ? new Date(payment.dueDate).toISOString().slice(0, 16) : "";
-            form.lastPaymentDate.value = payment.lastPaymentDate ? new Date(payment.lastPaymentDate).toISOString().slice(0, 16) : "";
+            form.issuedDate.value = payment.issuedDate ? new Date(payment.issuedDate) : "";
+            form.dueDate.value = payment.dueDate ? new Date(payment.dueDate) : "";
+            form.lastPaymentDate.value = payment.lastPaymentDate ? new Date(payment.lastPaymentDate) : "";
             form.status.value = payment.status ?? "Pending";
         } else {
             form.reset();
