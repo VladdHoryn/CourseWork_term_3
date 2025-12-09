@@ -19,4 +19,8 @@
       <Folder Include="wwwroot\css\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include=".github\workflows\ci-cd.yml" />
+    </ItemGroup>
+
 </Project>
